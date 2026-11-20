@@ -24,3 +24,6 @@ id_*
 
 # Harness skill symlinks (absolute paths into arcanist-pi, machine-specific)
 .pi/skills/
+
+# Visual brainstorm session (mockups, server state)
+.superpowers/
