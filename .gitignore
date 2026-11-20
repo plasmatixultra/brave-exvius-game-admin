@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local/tool state (agent config, distro state) — machine-specific
+.pi/distro-state.json
+
+# Runtime scratch: staged saves, downloaded saves, backups pulled from athena
+scratch/
+*.staging.json
+backup-*.json
+baseline-*.json
+
+# Local secrets (ssh config overrides, env files)
+.env
+*.pem
+id_*
+
+# OS noise
+.DS_Store
+*.swp
+
+# Harness skill symlinks (absolute paths into arcanist-pi, machine-specific)
+.pi/skills/
