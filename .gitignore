@@ -27,3 +27,6 @@ id_*
 
 # Visual brainstorm session (mockups, server state)
 .superpowers/
+
+# LSP/tool cache (serena)
+.serena/
