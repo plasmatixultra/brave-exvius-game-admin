@@ -17,6 +17,11 @@ class RemoteTest(unittest.TestCase):
             remote.run("exit 3")
         self.assertEqual(ctx.exception.returncode, 3)
 
+    def test_run_timeout_raises_remote_error(self):
+        with self.assertRaises(remote.RemoteError) as ctx:
+            remote.run("sleep 5", timeout=1)
+        self.assertEqual(ctx.exception.returncode, 124)
+
     def test_put_roundtrip(self):
         with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as fh:
             fh.write("ffbe-admin roundtrip\n")
