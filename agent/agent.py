@@ -32,7 +32,7 @@ if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 
 import player_state  # noqa: E402  (needs PYTHONPATH=/app/server inside the image)
-from agent import ops_basic, ops_items  # noqa: E402
+from agent import ops_basic, ops_cards, ops_items  # noqa: E402
 
 USAGE = """usage:
   agent.py summary  <save>
@@ -292,6 +292,20 @@ def apply_materials(ps, value):
     return ops_items.apply_materials(ps, value)
 
 
+def apply_cards(ps, value):
+    return ops_cards.apply_cards(ps, value)
+
+
+def apply_card_levels(ps, value):
+    if not isinstance(value, list):
+        raise ValueError("card_levels: expected a list of {user_vc_id, level}")
+    for row in value:
+        if not isinstance(row, dict) or "user_vc_id" not in row or "level" not in row:
+            raise ValueError(f"card_levels: every row needs user_vc_id and level, got {row!r}")
+        ops_cards.set_card_level(ps, row["user_vc_id"], row["level"])
+    return None
+
+
 def apply_progress(ps, value):
     """Opaque here: the questline project owns `progress` and plugs into this table."""
     return {"ignored": True, "reason": "owned by the questline project"}
@@ -302,6 +316,8 @@ APPLIERS = {
     "tickets": apply_tickets,
     "points": apply_points,
     "materials": apply_materials,
+    "cards": apply_cards,
+    "card_levels": apply_card_levels,
     "progress": apply_progress,
 }
 
