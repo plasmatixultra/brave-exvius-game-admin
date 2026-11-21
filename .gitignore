@@ -9,6 +9,7 @@ venv/
 
 # Runtime scratch: staged saves, downloaded saves, backups pulled from athena
 scratch/
+backups/
 *.staging.json
 backup-*.json
 baseline-*.json
