@@ -147,14 +147,16 @@ def build_tickets(mst_dir, text_dir, server_dir):
         draws = _int(banner.get("draws"), 1)
         cost = banner.get("cost") or {}
         kind = str(cost.get("kind") or "")
-        if kind not in ("item", "important"):
-            continue
+        if kind not in ("item", "important") or draws <= 1:
+            continue    # single-summon banners are F_TICKET_MST ids, not 10+1 tickets
         item_id = _int(cost.get("item_id"))
         item_type = 23 if kind == "important" else 20
         if not item_id or (item_type, item_id) in seen:
             continue
         seen.add((item_type, item_id))
-        name = (important_names if item_type == 23 else item_names).get(str(item_id)) or str(item_id)
+        name = (important_names if item_type == 23 else item_names).get(str(item_id))
+        if not name:
+            continue    # unnamed banner costs are coins/exchange items, not summon tickets
         tickets.append({
             "item_type": item_type,
             "item_id": item_id,
@@ -197,6 +199,7 @@ def build_units(mst_dir, text_dir):
             "name": name,
             "rarity": _int(row.get("9fW0TePj"), 1),
             "nv_group": str(row.get("woghJa61") or master_id),
+            "nv": str(row.get("JPW8Vs40") or "0") == master_id,
         })
     units.sort(key=lambda row: row["master_id"])
     return units

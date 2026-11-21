@@ -81,3 +81,16 @@ def put_tree(local_dir, remote_dir):
         raise RemoteError(124, " ".join(argv), "timed out after 120s") from exc
     if result.returncode != 0:
         raise RemoteError(result.returncode, " ".join(argv), result.stderr)
+
+
+def get_bytes(remote_path, timeout=30):
+    """Read a remote file as bytes (binary-safe: `run` decodes text and would corrupt a PNG)."""
+    argv = ["ssh", *SSH_OPTS, TARGET, f"cat {remote_path}"]
+    try:
+        result = subprocess.run(argv, capture_output=True, timeout=timeout)
+    except subprocess.TimeoutExpired as exc:
+        raise RemoteError(124, f"cat {remote_path}", f"timed out after {timeout}s") from exc
+    if result.returncode != 0:
+        raise RemoteError(result.returncode, f"cat {remote_path}",
+                          result.stderr.decode("utf-8", "replace"))
+    return result.stdout

@@ -31,3 +31,10 @@ id_*
 
 # LSP/tool cache (serena)
 .serena/
+
+# Unit-sprite cache: fetched from athena at runtime. Only the four Lightning seeds are fixtures.
+static/assets/units/*.png
+!static/assets/units/213000105.png
+!static/assets/units/213000106.png
+!static/assets/units/213000107.png
+!static/assets/units/213000117.png

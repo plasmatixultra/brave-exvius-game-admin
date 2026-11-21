@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FFBE Game Admin</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-hp" viewBox="0 0 16 16"><path d="M8 14.2S2 10.3 2 6.2A3.2 3.2 0 0 1 8 4.6 3.2 3.2 0 0 1 14 6.2c0 4.1-6 8-6 8Z"/></symbol>
+  <symbol id="i-mp" viewBox="0 0 16 16"><path d="M8 1.4c3.1 3.8 4.6 6 4.6 8.2a4.6 4.6 0 0 1-9.2 0c0-2.2 1.5-4.4 4.6-8.2Z"/></symbol>
+  <symbol id="i-atk" viewBox="0 0 16 16"><path d="M3.4 12.6 12.6 3.4M12.6 3.4H8.6M12.6 3.4v4M3.4 12.6h3.4M3.4 12.6v-3.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-def" viewBox="0 0 16 16"><path d="M8 1.9 13 3.7v5c0 3-2.2 4.8-5 5.4-2.8-.6-5-2.4-5-5.4v-5L8 1.9Z" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-mag" viewBox="0 0 16 16"><path d="M8 1.4 9.5 6.5 14.6 8 9.5 9.5 8 14.6 6.5 9.5 1.4 8 6.5 6.5 8 1.4Z"/></symbol>
+  <symbol id="i-spr" viewBox="0 0 16 16"><path d="M8 1.8 9.4 6.1 13.9 6.1 10.3 8.7 11.7 13 8 10.4 4.3 13 5.7 8.7 2.1 6.1 6.6 6.1 8 1.8Z"/></symbol>
+</svg>
+<div class="app">
+  <div class="backdrop" aria-hidden="true"></div>
+
+  <header class="top">
+    <img class="wordmark" src="/static/assets/ffbe-wordmark.png" alt="FINAL FANTASY BRAVE EXVIUS">
+    <div class="sep"></div>
+    <div class="brand">Game Admin</div>
+    <div class="wallet">
+      <span class="w"><i class="coin"></i> Gil <b id="wallet-gil">—</b></span>
+      <span class="w"><i class="gem"></i> Lapis <b id="wallet-lapis">—</b> <em>free</em></span>
+    </div>
+    <div class="status" id="server-status"><i class="dot"></i> athena · ffbe running</div>
+  </header>
+
+  <div class="body">
+    <nav class="rail">
+      <div class="cap">Menu</div>
+      <a class="active" data-view="grants"><span class="mk"></span>Quick Grants</a>
+      <a data-view="units"><span class="mk"></span>Unit Builder</a>
+      <a data-view="kit"><span class="mk"></span>Awakening Kit</a>
+      <a data-view="ability"><span class="mk"></span>Ability Awakening</a>
+      <a data-view="vision"><span class="mk"></span>Vision Cards</a>
+      <a data-view="log"><span class="mk"></span>Log <span class="count" id="log-count">0</span></a>
+
+      <div class="glance">
+        <div class="gcap">At a glance</div>
+        <div class="grow"><span>Server</span><b class="ok" id="glance-server">—</b></div>
+        <div class="grow"><span>Save</span><b id="glance-save">—</b></div>
+        <div class="grow"><span>Backup</span><b id="glance-backup">—</b></div>
+        <div class="grow"><span>Roster</span><b id="glance-roster">—</b></div>
+      </div>
+    </nav>
+
+    <main class="content" id="content">
+
+      <!-- ==================== 1. QUICK GRANTS ==================== -->
+      <section class="view on" data-view="grants">
+        <div class="pagehead">
+          <h1>Grant Resources</h1>
+          <div class="rule"></div>
+          <span class="sub" id="saved-at">campaign.json · loading…</span>
+        </div>
+
+        <div class="quick">
+          <section class="panel" style="grid-column:1/-1">
+            <div class="ph">Unit <span class="tag">grant new · master data</span></div>
+            <div class="pb unitgrant">
+              <div>
+                <div class="cap2" id="unit-total"><b>Find</b> — units</div>
+                <input class="find" id="unit-search" data-unit-search placeholder="Search by name or No. …">
+                <div class="row" style="grid-template-columns:70px 1fr;margin-top:10px">
+                  <span class="lbl">Form</span>
+                  <select class="sel" id="unit-form" data-unit-form><option value="base">Base form</option><option value="top">Top form</option><option value="nv">NV</option></select>
+                </div>
+                <p class="note">Arrives at the chosen form, level 1, no pots — build it up in <b>Unit Builder</b> afterwards.</p>
+                <button class="btn gold" id="unit-grant" data-add="unit" style="width:100%;margin-top:4px">Grant unit</button>
+              </div>
+              <div>
+                <div class="cap2" id="unit-results-count"><b>Results</b> 0 of 0</div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="ph">Item <span class="tag">currencies</span></div>
+            <div class="pb">
+              <div class="row">
+                <span class="lbl">Gil</span>
+                <input class="in num" id="gil-input" data-currency="gil" value="0">
+                <button class="btn sm" data-add-currency="gil">Add</button>
+              </div>
+              <div class="row">
+                <span class="lbl">Lapis</span>
+                <input class="in num" id="lapis-input" data-currency="lapis_free" value="0">
+                <button class="btn sm" data-add-currency="lapis_free">Add</button>
+              </div>
+              <div class="kv after"><span class="k">After apply</span><span class="v" id="after-item">—</span></div>
+              <p class="note">Written straight to <b>currencies.*</b> — no quest scoring side effects.</p>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="ph">Tickets <span class="tag">spendable only</span></div>
+            <div class="pb">
+              <div class="row">
+                <span class="lbl">Ticket</span>
+                <select class="sel" id="ticket-select">
+                </select>
+              </div>
+              <div class="row" style="grid-template-columns:64px 1fr auto">
+                <span class="lbl">Count</span>
+                <div class="cnt"><input class="in num" id="ticket-count" value="1"><span class="tick" id="ticket-id">—</span></div>
+                <button class="btn sm" data-add-ticket>Add</button>
+              </div>
+              <div class="kv"><span class="k">10+1 tickets held</span><span class="v" id="tickets-held">—</span></div>
+              <p class="note"><b>10+1 = one item</b> for the whole 11-pull. Unspendable type-23 ids are hidden.</p>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="ph">XP Points <span class="tag">unit exp bank</span></div>
+            <div class="pb">
+              <div class="kv"><span class="k">Bank · XeRVw3s2</span><span class="v g" id="point-bank">—</span></div>
+              <div class="row" style="margin-top:10px">
+                <span class="lbl">Add</span>
+                <input class="in num" id="point-input" data-point="EXP" value="100,000">
+                <button class="btn sm" data-add-point>Add</button>
+              </div>
+              <div class="kv after"><span class="k">After apply</span><span class="v" id="after-points">—</span></div>
+              <p class="note">Points, not items — the game spends them through its own <b>add_unit_exp</b>.</p>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="ph">Vision Card <span class="tag">level</span></div>
+            <div class="pb">
+              <div class="row">
+                <span class="lbl">Card</span>
+                <select class="sel" id="card-select"></select>
+              </div>
+              <div class="row" style="grid-template-columns:64px 1fr auto">
+                <span class="lbl">Level</span>
+                <input class="in num" id="card-level" value="1">
+                <button class="btn sm" data-add-card>Grant</button>
+              </div>
+              <p class="note">Writes <b>level · exp 0 · total_exp</b> from the card's own exp table.</p>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      
+
+      <!-- ==================== 2. UNIT BUILDER ==================== -->
+      <section class="view" data-view="units">
+        <div class="pagehead">
+          <h1>Unit Builder</h1>
+          <div class="rule"></div>
+          <span class="sub">edit an owned unit · or grant a new one</span>
+        </div>
+
+        <section class="panel hero">
+          <div class="ph gold">Unit Builder <span class="tag" style="color:#4a3510">edit existing · grant new</span></div>
+
+          <div class="ubody">
+            <div class="col">
+              <div class="cap2" id="roster-count"><b>Roster</b> —</div>
+              <div class="roster" id="roster">
+                <div class="urow on">
+                  <img src="/static/assets/sprite-213000107.png" alt="">
+                  <div><span class="uname">Lightning</span><span class="umeta">No.258</span></div>
+                  <div class="uright"><span class="rar">★★★★★★★</span><span class="ulv">Lv 120</span></div>
+                </div>
+                <div class="urow">
+                  <span class="uno-img"><svg viewBox="0 0 16 20" aria-hidden="true"><circle cx="8" cy="5" r="3.1" fill="currentColor"/><path d="M1.8 19.4c0-4.1 2.8-6.9 6.2-6.9s6.2 2.8 6.2 6.9z" fill="currentColor"/></svg></span>
+                  <div><span class="uname">Rain</span><span class="umeta">No.8464 · NV+</span></div>
+                  <div class="uright"><span class="rar">★★★★★★★</span><span class="ulv">Lv 130</span></div>
+                </div>
+                <div class="urow">
+                  <span class="uno-img"><svg viewBox="0 0 16 20" aria-hidden="true"><circle cx="8" cy="5" r="3.1" fill="currentColor"/><path d="M1.8 19.4c0-4.1 2.8-6.9 6.2-6.9s6.2 2.8 6.2 6.9z" fill="currentColor"/></svg></span>
+                  <div><span class="uname">Lasswell</span><span class="umeta">No.8465 · NV</span></div>
+                  <div class="uright"><span class="rar">★★★★★★★</span><span class="ulv">Lv 120</span></div>
+                </div>
+                <div class="urow">
+                  <span class="uno-img"><svg viewBox="0 0 16 20" aria-hidden="true"><circle cx="8" cy="5" r="3.1" fill="currentColor"/><path d="M1.8 19.4c0-4.1 2.8-6.9 6.2-6.9s6.2 2.8 6.2 6.9z" fill="currentColor"/></svg></span>
+                  <div><span class="uname">Fina</span><span class="umeta">No.8466 · NV</span></div>
+                  <div class="uright"><span class="rar">★★★★★★★</span><span class="ulv">Lv 118</span></div>
+                </div>
+                <div class="urow">
+                  <span class="uno-img"><svg viewBox="0 0 16 20" aria-hidden="true"><circle cx="8" cy="5" r="3.1" fill="currentColor"/><path d="M1.8 19.4c0-4.1 2.8-6.9 6.2-6.9s6.2 2.8 6.2 6.9z" fill="currentColor"/></svg></span>
+                  <div><span class="uname">Lid</span><span class="umeta">No.8467 · 7★</span></div>
+                  <div class="uright"><span class="rar">★★★★★★★</span><span class="ulv">Lv 115</span></div>
+                </div>
+                <div class="urow">
+                  <span class="uno-img"><svg viewBox="0 0 16 20" aria-hidden="true"><circle cx="8" cy="5" r="3.1" fill="currentColor"/><path d="M1.8 19.4c0-4.1 2.8-6.9 6.2-6.9s6.2 2.8 6.2 6.9z" fill="currentColor"/></svg></span>
+                  <div><span class="uname">Sol -NV-</span><span class="umeta">EX +2</span></div>
+                  <div class="uright"><span class="rar">★★★★★★★</span><span class="ulv">Lv 120</span></div>
+                </div>
+              </div>
+              <div class="newunit" id="to-grants" title="Granting lives in Quick Grants">＋ Grant new unit&nbsp;→</div>
+
+            </div>
+
+            <div class="col">
+              <div class="cap2"><b>Selected</b> form &amp; level</div>
+              <div class="port">
+                <div class="ptop"><span id="portrait-no">—</span><span class="r" id="portrait-stars"></span></div>
+                <div class="stage">
+                  <div class="halo"></div>
+                  <img class="sprite" id="portrait-sprite" src="" alt="">
+                  <div class="floor"></div>
+                </div>
+                <div class="nplate"><div class="pname" id="portrait-name">—</div></div>
+                <div class="bars" id="portrait-bars">
+                  <div class="bar"><span>HP</span><div class="track"><div class="fill hp"></div></div><span class="num2">9,850 / 9,850</span></div>
+                  <div class="bar"><span>MP</span><div class="track"><div class="fill mp"></div></div><span class="num2">420 / 420</span></div>
+                </div>
+              </div>
+              <div class="chain" id="chain">
+                <div class="form on"><img src="/static/assets/sprite-213000105.png" alt=""><span class="fl">5★</span></div>
+                <div class="form"><img src="/static/assets/sprite-213000106.png" alt=""><span class="fl">6★</span></div>
+                <div class="form"><img src="/static/assets/sprite-213000107.png" alt=""><span class="fl">7★</span></div>
+                <div class="form"><img src="/static/assets/sprite-213000117.png" alt=""><span class="fl">NV</span></div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="cap2"><b>Attributes</b> preview</div>
+              <div class="attrs" id="attrs">
+                <div class="arow"><svg class="ico"><use href="#i-hp"/></svg><span class="al">HP</span><span class="av">9,850</span><span class="ad">+240</span></div>
+                <div class="arow"><svg class="ico"><use href="#i-mp"/></svg><span class="al">MP</span><span class="av">420</span><span class="ad">+15</span></div>
+                <div class="arow"><svg class="ico st"><use href="#i-atk"/></svg><span class="al">ATK</span><span class="av">2,104</span><span class="ad">+310</span></div>
+                <div class="arow"><svg class="ico st"><use href="#i-def"/></svg><span class="al">DEF</span><span class="av">618</span><span class="ad">+40</span></div>
+                <div class="arow"><svg class="ico"><use href="#i-mag"/></svg><span class="al">MAG</span><span class="av">782</span><span class="ad">+62</span></div>
+                <div class="arow"><svg class="ico"><use href="#i-spr"/></svg><span class="al">SPR</span><span class="av">641</span><span class="ad">+38</span></div>
+              </div>
+              <p class="note">Computed on athena by the server's own <b>owned_unit_stats()</b> — the numbers the game will show.</p>
+              <button class="btn" id="preview" style="margin-top:auto;align-self:flex-start">Preview stats</button>
+            </div>
+          </div>
+
+          <div class="cfg">
+            <div class="cbox">
+              <div class="caph">Level · LB · EX</div>
+              <div class="pair"><span class="lbl">Level</span><input class="in num" id="spec-level" data-spec="level" value="1"><span class="of" id="spec-level-cap">/ 1</span></div>
+              <div class="pair"><span class="lbl">LB</span><input class="in num" id="spec-lb" data-spec="lb" value="1"><span class="of" id="spec-lb-cap">/ 1</span></div>
+              <div class="chips" style="margin-top:auto">
+                <span class="chip on" data-ex="0">EX 0</span><span class="chip" data-ex="1">EX +1</span><span class="chip" data-ex="2">EX +2</span><span class="chip" data-ex="3">EX +3</span>
+              </div>
+            </div>
+
+            <div class="cbox">
+              <div class="caph">Stat pots · doors</div>
+              <div class="pots">
+                <div class="pot"><span>HP</span><input class="in num" data-spec="pot0" value="0"></div>
+                <div class="pot"><span>MP</span><input class="in num" data-spec="pot1" value="0"></div>
+                <div class="pot"><span>ATK</span><input class="in num" data-spec="pot2" value="0"></div>
+                <div class="pot"><span>DEF</span><input class="in num" data-spec="pot3" value="0"></div>
+                <div class="pot"><span>MAG</span><input class="in num" data-spec="pot4" value="0"></div>
+                <div class="pot"><span>SPR</span><input class="in num" data-spec="pot5" value="0"></div>
+              </div>
+              <div class="pots" style="margin-top:6px">
+                <div class="pot"><span>DHP</span><input class="in num" data-spec="door0" value="0"></div>
+                <div class="pot"><span>DMP</span><input class="in num" data-spec="door1" value="0"></div>
+                <div class="pot"><span>DATK</span><input class="in num" data-spec="door2" value="0"></div>
+                <div class="pot"><span>DDEF</span><input class="in num" data-spec="door3" value="0"></div>
+                <div class="pot"><span>DMAG</span><input class="in num" data-spec="door4" value="0"></div>
+                <div class="pot"><span>DSPR</span><input class="in num" data-spec="door5" value="0"></div>
+              </div>
+              <p class="note" style="margin-top:auto">Caps come from the master data.</p>
+            </div>
+
+            <div class="cbox">
+              <div class="caph">Trust · rewards</div>
+              <div class="slider" data-trust="0">
+                <div class="sl-top"><span>Trust Master <i id="trust-label">—</i></span><b id="trust-readout">0 %</b></div>
+                <div class="track2"><div class="ticks"></div><div class="fillg" style="width:0%"></div><div class="knob" style="left:0"></div></div>
+              </div>
+              <div class="slider" data-trust="1">
+                <div class="sl-top"><span>Super Trust <i id="super-trust-label">needs 7★</i></span><b id="super-trust-readout">0 %</b></div>
+                <div class="track2 dis"><div class="ticks"></div><div class="fillg" style="width:0%"></div><div class="knob" style="left:0"></div></div>
+              </div>
+              <div class="checks">
+                <div class="chk" id="flag-trust" data-flag="trust_reward"><span class="box">✓</span> Also grant Trust Master reward</div>
+                <div class="chk" id="flag-ex" data-flag="ex_rewards"><span class="box">✓</span> Also grant EX awakening rewards</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pb" style="padding-top:0;display:flex;gap:10px;align-items:center">
+            <button class="btn gold" data-add="build">Add to pending</button>
+            <span class="note" style="margin:0">Skipping the reward boxes means the game pays them later, once, the normal way.</span>
+          </div>
+        </section>
+      </section>
+
+      <!-- ==================== 3. AWAKENING KIT ==================== -->
+      <section class="view" data-view="kit">
+        <div class="pagehead">
+          <h1>Awakening Kit</h1>
+          <div class="rule"></div>
+          <span class="sub">materials and gil read from the recipe the game charges</span>
+        </div>
+
+        <section class="panel">
+          <div class="ph">Kit <span class="tag">recipe-driven · 3 tables</span></div>
+          <div class="kit">
+            <div class="kleft">
+              <div class="cap2"><b>Type</b></div>
+              <div class="chips" style="margin-bottom:12px">
+                <span class="chip on" data-kit-type="unit_class_up">NV</span><span class="chip" data-kit-type="ex_class_up">EX</span><span class="chip" data-kit-type="sublimation">Ability</span>
+              </div>
+              <div class="cap2"><b>Unit</b></div>
+              <div class="row" style="grid-template-columns:1fr">
+                <select class="sel" id="kit-unit"></select>
+              </div>
+              <p class="note">Materials and gil come from <b>F_UNIT_CLASS_UP_MST</b> — the exact cost the game charges.</p>
+            </div>
+            <div>
+              <div class="cap2" style="align-items:center"><b>Cost</b> <span id="kit-recipe">recipe —</span>
+                <span class="seg" style="margin-left:auto"><span data-kit-mode="full">Full recipe</span><span class="on" data-kit-mode="shortfall">Shortfall only</span></span>
+              </div>
+              <div class="mats" id="kit-mats"></div>
+              <div class="mkit">
+                <button class="btn gold" data-add="kit">Grant kit + gil</button>
+                <span class="note" style="margin:0">Grants exactly the shortfall, or the full recipe — your call above.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="ph">Free material picker <span class="tag">236 names · by family</span></div>
+          <div class="pb">
+            <div class="row" style="grid-template-columns:100px 1fr 1fr 90px auto">
+              <span class="lbl">Family</span>
+              <select class="sel" id="mat-family"></select>
+              <select class="sel" id="mat-item"></select>
+              <input class="in num" id="mat-count" value="20">
+              <button class="btn sm" data-add-material>Add</button>
+            </div>
+            <p class="note">The wiki list is a grouping aid; <b>master data</b> is the source of truth for ids and caps.</p>
+          </div>
+        </section>
+      </section>
+
+      <!-- ==================== 4. ABILITY AWAKENING ==================== -->
+      <section class="view" data-view="ability">
+        <div class="pagehead">
+          <h1>Ability Awakening</h1>
+          <div class="rule"></div>
+          <span class="sub">cryst ladder · forticite · recipe mode</span>
+        </div>
+
+        <section class="panel">
+          <div class="ph">Cryst ladder <span class="tag">kind × tier · 40 items</span></div>
+          <div class="pb">
+            <div class="mx">
+              <div class="mx-head">
+                <span>Tier</span><span>White</span><span>Black</span><span>Green</span><span>Power</span><span>Guard</span><span>Healing</span><span>Support</span><span>Tech</span>
+              </div>
+              <div class="mx-row"><span class="tier">Alcryst</span><input value="0" data-kind="White" data-tier="Alcryst"><input value="0" data-kind="Black" data-tier="Alcryst"><input value="0" data-kind="Green" data-tier="Alcryst"><input value="0" data-kind="Power" data-tier="Alcryst"><input value="0" data-kind="Guard" data-tier="Alcryst"><input value="0" data-kind="Healing" data-tier="Alcryst"><input value="0" data-kind="Support" data-tier="Alcryst"><input value="0" data-kind="Tech" data-tier="Alcryst"></div>
+              <div class="mx-row"><span class="tier">Milcryst</span><input value="0" data-kind="White" data-tier="Milcryst"><input value="0" data-kind="Black" data-tier="Milcryst"><input value="0" data-kind="Green" data-tier="Milcryst"><input value="0" data-kind="Power" data-tier="Milcryst"><input value="0" data-kind="Guard" data-tier="Milcryst"><input value="0" data-kind="Healing" data-tier="Milcryst"><input value="0" data-kind="Support" data-tier="Milcryst"><input value="0" data-kind="Tech" data-tier="Milcryst"></div>
+              <div class="mx-row"><span class="tier">Heavicryst</span><input value="0" data-kind="White" data-tier="Heavicryst"><input value="0" data-kind="Black" data-tier="Heavicryst"><input value="0" data-kind="Green" data-tier="Heavicryst"><input value="0" data-kind="Power" data-tier="Heavicryst"><input value="0" data-kind="Guard" data-tier="Heavicryst"><input value="0" data-kind="Healing" data-tier="Heavicryst"><input value="0" data-kind="Support" data-tier="Heavicryst"><input value="0" data-kind="Tech" data-tier="Heavicryst"></div>
+              <div class="mx-row"><span class="tier">Giancryst</span><input value="0" data-kind="White" data-tier="Giancryst"><input value="0" data-kind="Black" data-tier="Giancryst"><input value="0" data-kind="Green" data-tier="Giancryst"><input value="0" data-kind="Power" data-tier="Giancryst"><input value="0" data-kind="Guard" data-tier="Giancryst"><input value="0" data-kind="Healing" data-tier="Giancryst"><input value="0" data-kind="Support" data-tier="Giancryst"><input value="0" data-kind="Tech" data-tier="Giancryst"></div>
+              <div class="mx-row"><span class="tier">Purecryst</span><input value="0" data-kind="White" data-tier="Purecryst"><input value="0" data-kind="Black" data-tier="Purecryst"><input value="0" data-kind="Green" data-tier="Purecryst"><input value="0" data-kind="Power" data-tier="Purecryst"><input value="0" data-kind="Guard" data-tier="Purecryst"><input value="0" data-kind="Healing" data-tier="Purecryst"><input value="0" data-kind="Support" data-tier="Purecryst"><input value="0" data-kind="Tech" data-tier="Purecryst"></div>
+            </div>
+            <div class="mkit" style="border-top:0">
+              <button class="btn gold" data-add="matrix">Add matrix to pending</button>
+              <span class="note" style="margin:0">Empty cells are ignored — type only what you need.</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="ph">Or from a recipe <span class="tag">F_SUBLIMATION_RECIPE_MST</span></div>
+          <div class="pb">
+            <div class="row" style="grid-template-columns:100px 1fr 1fr auto">
+              <span class="lbl">Unit</span>
+              <select class="sel" id="ability-unit"></select>
+              <select class="sel" id="ability-recipe"></select>
+              <button class="btn gold" data-add="ability">Add recipe</button>
+            </div>
+            <p class="note">Writes <b>skills</b> only, never <b>slots</b> — that flag belongs to the paid sublimation action.</p>
+          </div>
+        </section>
+      </section>
+
+      <!-- ==================== 5. VISION CARDS ==================== -->
+      <section class="view" data-view="vision">
+        <div class="pagehead">
+          <h1>Vision Cards</h1>
+          <div class="rule"></div>
+          <span class="sub">grant a card · or raise the level of one you own</span>
+        </div>
+
+        <section class="panel hero">
+          <div class="ph gold">Owned cards <span class="tag" style="color:#4a3510" id="vc-count">—</span></div>
+          <div class="pb" id="vc-body">
+            <div class="vhead"><span>Card</span><span>Level</span><span>Set to</span></div>
+            <div class="cardrow" style="border-top:1px solid rgba(140,190,215,.11)">
+              <div><span class="cname">Triumphant Spirit</span> <span class="muted">· vc_id 100000201</span></div>
+              <div class="lvlbar"><div class="track"><div class="fill hp" style="width:38%"></div></div><span class="n">19 / 50</span></div>
+              <div style="display:flex;gap:6px;justify-content:flex-end"><input class="tin" value="50"><button class="btn sm">Set</button></div>
+            </div>
+            <div class="cardrow" style="border-top:1px solid rgba(140,190,215,.11)">
+              <div><span class="cname">A Family Reunited</span> <span class="muted">· vc_id 100000305</span></div>
+              <div class="lvlbar"><div class="track"><div class="fill hp" style="width:82%"></div></div><span class="n">41 / 50</span></div>
+              <div style="display:flex;gap:6px;justify-content:flex-end"><input class="tin" value="50"><button class="btn sm">Set</button></div>
+            </div>
+            <div class="cardrow" style="border-top:1px solid rgba(140,190,215,.11)">
+              <div><span class="cname">Phantom Beast</span> <span class="muted">· vc_id 100000411</span></div>
+              <div class="lvlbar"><div class="track"><div class="fill hp" style="width:100%"></div></div><span class="n">50 / 50</span></div>
+              <div style="display:flex;gap:6px;justify-content:flex-end"><input class="tin" value="50" disabled><button class="btn sm" disabled style="opacity:.45">Max</button></div>
+            </div>
+            <div class="cardrow" style="border-top:1px solid rgba(140,190,215,.11)">
+              <div><span class="cname">Trial by Fire</span> <span class="muted">· vc_id 100000502</span></div>
+              <div class="lvlbar"><div class="track"><div class="fill hp" style="width:14%"></div></div><span class="n">7 / 50</span></div>
+              <div style="display:flex;gap:6px;justify-content:flex-end"><input class="tin" value="50"><button class="btn sm">Set</button></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="ph">Grant a card you don't own <span class="tag">F_VISION_CARD_MST</span></div>
+          <div class="pb">
+            <div class="row" style="grid-template-columns:100px 1fr 90px auto">
+              <span class="lbl">Card</span>
+              <select class="sel" id="vc-grant"></select>
+              <input class="in num" id="vc-grant-level" value="1">
+              <button class="btn gold" data-add-vision>Grant</button>
+            </div>
+            <p class="note">Level writes <b>level · exp 0 · total_exp</b>; a card holding only a level reads as exp 0.</p>
+          </div>
+        </section>
+      </section>
+
+      <!-- ==================== 6. LOG ==================== -->
+      <section class="view" data-view="log">
+        <div class="pagehead">
+          <h1>Log</h1>
+          <div class="rule"></div>
+          <span class="sub">every apply, and the backups it left behind</span>
+        </div>
+
+        <section class="panel">
+          <div class="ph">Activity <span class="tag live">athena</span></div>
+          <div class="pb">
+            <table class="tbl">
+              <thead><tr><th style="width:82px">Time</th><th style="width:96px">Action</th><th>Detail</th><th class="num" style="width:110px">Result</th></tr></thead>
+              <tbody id="log-rows">
+                <tr><td class="muted">22:14:38</td><td>apply</td><td>3 edits · backup 20261119-221438.json · ffbe up 18s</td><td class="num" style="color:var(--pos)">ok</td></tr>
+                <tr><td class="muted">22:14:21</td><td>stop</td><td>docker stop ffbe</td><td class="num" style="color:var(--pos)">4.1 s</td></tr>
+                <tr><td class="muted">22:13:02</td><td>preview</td><td>Lightning 5★ → 7★ · roster capacity unverified</td><td class="num" style="color:var(--warn)">warn</td></tr>
+                <tr><td class="muted">21:58:44</td><td>catalog</td><td>236 materials · 3 ticket families · 412 cards</td><td class="num" style="color:var(--pos)">ok</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="ph">Backups <span class="tag">~/exvius/server/state/backups</span></div>
+          <div class="pb">
+            <table class="tbl">
+              <thead><tr><th>File</th><th class="num">Size</th><th class="num">Gil</th><th class="num">Lapis</th><th style="width:120px"></th></tr></thead>
+              <tbody id="backup-rows">
+                <tr><td class="cname">20261119-221438.json</td><td class="num">4.7 MB</td><td class="num">2,980,094</td><td class="num">1,240</td><td><button class="btn sm">Restore</button></td></tr>
+                <tr><td class="cname">20261119-215823.json</td><td class="num">4.7 MB</td><td class="num">2,980,094</td><td class="num">240</td><td><button class="btn sm">Restore</button></td></tr>
+                <tr><td class="cname">baseline-20261120-011457.json</td><td class="num">4.7 MB</td><td class="num">2,980,094</td><td class="num">240</td><td><button class="btn sm">Restore</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="foot">
+    <div class="pend" id="cart">
+      <span class="plabel">Pending <b id="pending-count">0</b></span>
+      <span class="fstatus" id="apply-status"></span>
+    </div>
+    <div class="gap"></div>
+    <div class="hint"><b>Apply</b> stops ffbe, backs up, edits, validates, starts.<br>The game disconnects for ~20 s.</div>
+    <button class="btn" id="clear" style="height:32px">Clear</button>
+    <button class="btn gold apply" id="apply">Apply</button>
+  </footer>
+
+</div>
+<script src="/static/app.js" defer></script>
+</body>
+</html>

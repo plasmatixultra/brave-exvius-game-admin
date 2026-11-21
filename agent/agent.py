@@ -45,8 +45,8 @@ USAGE = """usage:
 GROUP_ORDER = ("currencies", "tickets", "points", "materials", "cards",
                "card_levels", "units", "abilities", "progress")
 
-OPS = ("summary", "catalog", "preview", "apply", "validate")
-FLAG_NAMES = ("out", "workdir", "baseline", "expected")
+OPS = ("summary", "catalog", "preview", "apply", "validate", "recipe", "abilities")
+FLAG_NAMES = ("out", "workdir", "baseline", "expected", "table", "id", "master")
 
 
 # --------------------------------------------------------------------------- loading
@@ -129,6 +129,32 @@ def unit_names():
             names = {}
         _UNIT_NAMES = names
     return _UNIT_NAMES
+
+
+_VISION_NAMES = None
+
+
+def vision_card_names():
+    """{vc_id: English name} from `F_TEXT_VISION_CARD_NAME` (key `MST_VISION_CARD_NAME_<id>`)."""
+    global _VISION_NAMES
+    if _VISION_NAMES is None:
+        names = {}
+        path = os.path.join(player_state.TEXT_DIR, "F_TEXT_VISION_CARD_NAME.ndjson")
+        try:
+            with open(path, encoding="utf-8") as fh:
+                for line in fh:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    row = json.loads(line)
+                    key = str(row.get("key", ""))
+                    if key.startswith("MST_VISION_CARD_NAME_"):
+                        values = row.get("v") or []
+                        names[key[len("MST_VISION_CARD_NAME_"):]] = str(values[0]) if values else ""
+        except (OSError, ValueError):
+            names = {}
+        _VISION_NAMES = names
+    return _VISION_NAMES
 
 
 _LB_LEVELS = None
@@ -406,15 +432,25 @@ def op_summary(save, _edits, _flags):
             "super_trust": _int_or_zero(points[1]) if len(points) > 1 else 0,
         })
     vision_cards = []
+    card_names = vision_card_names()
     for card in data.get("vision_cards") or []:
         master = cards.get(str(card.get("vc_id"))) or {}
         vision_cards.append({
             "user_vc_id": str(card.get("user_vc_id")),
             "vc_id": str(card.get("vc_id")),
-            "name": master.get("G4L0YIB2") or str(card.get("vc_id")),
+            "name": card_names.get(str(card.get("vc_id"))) or master.get("G4L0YIB2") or str(card.get("vc_id")),
             "level": _int_or_zero(card.get("level")) or 1,
             "cap": _int_or_zero(master.get("aU3o2D4t")) or 1,
         })
+    held_materials = {}
+    tickets_held = {}
+    for row in (data.get("inventory") or {}).get("items") or []:
+        kind = _int_or_zero(row.get("item_type"))
+        if kind == ops_basic.BAG_TYPE:
+            held_materials[str(row.get("item_id"))] = _int_or_zero(row.get("count"))
+        elif kind == ops_basic.IMPORTANT_TYPE:
+            tickets_held[str(row.get("item_id"))] = _int_or_zero(row.get("count"))
+    bank = ((data.get("exvius_unit_points") or {}).get("banks") or {}).get("0") or {}
     currencies = data.get("currencies") or {}
     return {
         "gil": _int_or_zero(currencies.get("gil")),
@@ -422,7 +458,23 @@ def op_summary(save, _edits, _flags):
         "lapis_paid": _int_or_zero(currencies.get("lapis_paid")),
         "roster": roster,
         "vision_cards": vision_cards,
+        "materials_held": held_materials,
+        "tickets_held": tickets_held,
+        "exp_points": _int_or_zero(bank.get("XeRVw3s2")),
     }, []
+
+
+def op_abilities(_save, _edits, flags):
+    master_id = flags.get("master")
+    if not master_id:
+        raise ValueError("abilities needs --master <unit master id>")
+    return {"recipes": ops_abilities.list_recipes(master_id)}, []
+
+
+def op_recipe(_save, _edits, flags):
+    if not flags.get("table") or not flags.get("id"):
+        raise ValueError("recipe needs --table and --id")
+    return ops_items.recipe_kit(flags["table"], flags["id"]), []
 
 
 def op_catalog(_save, _edits, _flags):
@@ -509,6 +561,8 @@ DISPATCH = {
     "preview": op_preview,
     "apply": op_apply,
     "validate": op_validate,
+    "recipe": op_recipe,
+    "abilities": op_abilities,
 }
 
 
