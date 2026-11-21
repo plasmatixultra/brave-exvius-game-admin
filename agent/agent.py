@@ -32,7 +32,7 @@ if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 
 import player_state  # noqa: E402  (needs PYTHONPATH=/app/server inside the image)
-from agent import ops_basic, ops_cards, ops_items  # noqa: E402
+from agent import ops_basic, ops_cards, ops_items, ops_units  # noqa: E402
 
 USAGE = """usage:
   agent.py summary  <save>
@@ -306,6 +306,20 @@ def apply_card_levels(ps, value):
     return None
 
 
+def apply_units(ps, value):
+    if not isinstance(value, list):
+        raise ValueError("units: expected a list of {instance_id, spec}")
+    built = []
+    for row in value:
+        if not isinstance(row, dict):
+            raise ValueError(f"units: every row must be an object, got {row!r}")
+        unit = ops_units.build_unit(ps, row.get("spec") or {}, row.get("instance_id"))
+        built.append({"instance_id": str(unit["instance_id"]),
+                      "master_id": str(unit["master_id"]),
+                      "level": int(unit.get("level") or 1)})
+    return {"units": built}
+
+
 def apply_progress(ps, value):
     """Opaque here: the questline project owns `progress` and plugs into this table."""
     return {"ignored": True, "reason": "owned by the questline project"}
@@ -318,6 +332,7 @@ APPLIERS = {
     "materials": apply_materials,
     "cards": apply_cards,
     "card_levels": apply_card_levels,
+    "units": apply_units,
     "progress": apply_progress,
 }
 
@@ -341,11 +356,8 @@ def requested_currencies(edits):
 
 
 def requested_roster(edits):
-    added = 0
-    for row in edits.get("units") or []:
-        if isinstance(row, dict) and row.get("instance_id") in (None, ""):
-            added += 1
-    return added
+    """Roster rows the edits should add: built units plus the unit rewards they trigger."""
+    return ops_units.expected_roster_added(edits)
 
 
 def snapshot(ps):
@@ -408,7 +420,7 @@ def op_catalog(_save, _edits, _flags):
 def op_preview(save, edits_path, _flags):
     edits = read_edits(edits_path)
     if "unit_spec" in edits:
-        raise ValueError("unit_spec preview is not implemented yet (plan Task 7)")
+        return {"unit": ops_units.preview_unit(edits["unit_spec"])}, []
     ps = load_state(save)
     before = snapshot(ps)
     results = {}
