@@ -374,11 +374,9 @@ def op_summary(save, _edits, _flags):
 
 
 def op_catalog(_save, _edits, _flags):
-    try:
-        from agent import catalog
-    except ImportError:
-        raise ValueError("catalog is not implemented yet (plan Task 4)") from None
-    return catalog.build(player_state.MST_DIR), []
+    from agent import catalog
+    return catalog.build(os.path.dirname(player_state.MST_DIR),
+                         os.path.dirname(os.path.abspath(player_state.__file__))), []
 
 
 def op_preview(save, edits_path, _flags):
