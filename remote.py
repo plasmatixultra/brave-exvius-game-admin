@@ -65,3 +65,19 @@ def put(local, remote_path):
         raise RemoteError(124, " ".join(argv), "timed out after 120s") from exc
     if result.returncode != 0:
         raise RemoteError(result.returncode, " ".join(argv), result.stderr)
+
+
+def put_tree(local_dir, remote_dir):
+    """Mirror a local directory onto the host with rsync (stale files deleted).
+
+    Raises RemoteError on failure, or with returncode 124 if the sync stalls.
+    """
+    ssh = "ssh " + " ".join(SSH_OPTS)
+    argv = ["rsync", "-a", "--delete", "-e", ssh,
+            local_dir.rstrip("/") + "/", f"{TARGET}:{remote_dir.rstrip('/')}/"]
+    try:
+        result = subprocess.run(argv, capture_output=True, text=True, timeout=120)
+    except subprocess.TimeoutExpired as exc:
+        raise RemoteError(124, " ".join(argv), "timed out after 120s") from exc
+    if result.returncode != 0:
+        raise RemoteError(result.returncode, " ".join(argv), result.stderr)
