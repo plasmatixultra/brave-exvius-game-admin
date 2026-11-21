@@ -1,0 +1,4912 @@
+{
+ "version": 2,
+ "meta": {
+  "slot": "campaign",
+  "created_utc": "2026-11-19T18:54:03Z",
+  "client_build": "ver.9.0.0",
+  "overlay": [],
+  "note": ""
+ },
+ "identity": {
+  "user_id": "100000001",
+  "handle_name": "Rain"
+ },
+ "rank": {
+  "level": 2,
+  "exp": 20,
+  "nrg": 83,
+  "nrg_regen_anchor_utc": "2026-11-19T18:54:03Z",
+  "last_up": {
+   "before_level": 1,
+   "before_exp": 20,
+   "before_nrg": 41,
+   "to_level": 2,
+   "to_exp": 0,
+   "to_nrg": 83,
+   "at": "2026-11-19 19:08:50"
+  }
+ },
+ "currencies": {
+  "lapis_free": 2208,
+  "lapis_paid": 0,
+  "gil": 2980094,
+  "friend_point": 0
+ },
+ "profile": {
+  "serial_login_count": 0,
+  "player_emblem_id": 0,
+  "message": "",
+  "decorate_home_vc_id": "",
+  "gift_id": 0,
+  "owned_emblems": []
+ },
+ "emblem_event": {
+  "campaign": "9000001",
+  "milestones": {},
+  "mailed": [
+   "0"
+  ]
+ },
+ "counts": {
+  "unit": 15,
+  "storage": 0,
+  "friend": 0,
+  "equip_item": 0,
+  "item": 0,
+  "materia": 0,
+  "material_item": 0
+ },
+ "orbs": {
+  "clsm": {
+   "point": 10,
+   "anchor_utc": null
+  },
+  "event": {
+   "point": 10,
+   "anchor_utc": null
+  },
+  "equip_grow": {
+   "point": 10,
+   "anchor_utc": null
+  },
+  "tfa": {
+   "point": 10,
+   "anchor_utc": null
+  }
+ },
+ "roster": [
+  {
+   "instance_id": "1795114443283",
+   "master_id": "100000102",
+   "level": 3,
+   "exp": 43,
+   "total_exp": 101,
+   "lb_exp": 150,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": null,
+   "first_get_unit_id": null,
+   "lb_level": 3,
+   "equipment": {
+    "1": "302000100",
+    "2": "0",
+    "3": "404000200",
+    "4": "406000100",
+    "5": "409000100",
+    "6": "0"
+   },
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "",
+    ""
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ]
+  },
+  {
+   "instance_id": "1795114443284",
+   "master_id": "100000202",
+   "level": 3,
+   "exp": 43,
+   "total_exp": 101,
+   "lb_exp": 150,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": null,
+   "first_get_unit_id": null,
+   "lb_level": 3,
+   "equipment": {
+    "1": "302000100",
+    "2": "0",
+    "3": "404000200",
+    "4": "406000100",
+    "5": "409000100",
+    "6": "0"
+   },
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "",
+    ""
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ]
+  },
+  {
+   "instance_id": "1795117630451",
+   "master_id": "201000104",
+   "level": 7,
+   "exp": 690,
+   "total_exp": 2500,
+   "lb_exp": 0,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": 4,
+   "first_get_unit_id": null,
+   "lb_level": 1,
+   "equipment": {},
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "50",
+    "0"
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ],
+   "affinity_reward_claimed": []
+  },
+  {
+   "instance_id": "1795117667300",
+   "master_id": "212000603",
+   "level": 7,
+   "exp": 143,
+   "total_exp": 1500,
+   "lb_exp": 0,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": 3,
+   "first_get_unit_id": null,
+   "lb_level": 1,
+   "equipment": {},
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "50",
+    "0"
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ],
+   "affinity_reward_claimed": []
+  },
+  {
+   "instance_id": "1795117685333",
+   "master_id": "100004303",
+   "level": 8,
+   "exp": 340,
+   "total_exp": 3000,
+   "lb_exp": 0,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": "3",
+   "first_get_unit_id": null,
+   "lb_level": 1,
+   "equipment": {},
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "100",
+    "0"
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ],
+   "affinity_reward_claimed": []
+  },
+  {
+   "instance_id": "1795117699553",
+   "master_id": "100004604",
+   "level": 1,
+   "exp": 0,
+   "total_exp": 0,
+   "lb_exp": 0,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": "4",
+   "first_get_unit_id": null,
+   "lb_level": 1,
+   "equipment": {
+    "1": "0",
+    "2": "0",
+    "3": "0",
+    "4": "0",
+    "5": "0",
+    "6": "0"
+   },
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "",
+    ""
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ],
+   "skin_id": 0
+  },
+  {
+   "instance_id": "1795117715497",
+   "master_id": "209000503",
+   "level": 1,
+   "exp": 0,
+   "total_exp": 0,
+   "lb_exp": 0,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": 3,
+   "first_get_unit_id": null,
+   "lb_level": 1,
+   "equipment": {},
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "",
+    ""
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ]
+  },
+  {
+   "instance_id": "1795117729567",
+   "master_id": "204000503",
+   "level": 1,
+   "exp": 0,
+   "total_exp": 0,
+   "lb_exp": 0,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": 3,
+   "first_get_unit_id": null,
+   "lb_level": 1,
+   "equipment": {},
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "",
+    ""
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ]
+  },
+  {
+   "instance_id": "1795117758642",
+   "master_id": "213000504",
+   "level": 1,
+   "exp": 0,
+   "total_exp": 0,
+   "lb_exp": 0,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": 4,
+   "first_get_unit_id": null,
+   "lb_level": 1,
+   "equipment": {},
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "",
+    ""
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ]
+  },
+  {
+   "instance_id": "1795117772989",
+   "master_id": "100002103",
+   "level": 1,
+   "exp": 0,
+   "total_exp": 0,
+   "lb_exp": 0,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": 3,
+   "first_get_unit_id": null,
+   "lb_level": 1,
+   "equipment": {},
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "",
+    ""
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ]
+  },
+  {
+   "instance_id": "1795117810790",
+   "master_id": "100002403",
+   "level": 1,
+   "exp": 0,
+   "total_exp": 0,
+   "lb_exp": 0,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": 3,
+   "first_get_unit_id": null,
+   "lb_level": 1,
+   "equipment": {},
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "",
+    ""
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ]
+  },
+  {
+   "instance_id": "1795117825675",
+   "master_id": "253000603",
+   "level": 1,
+   "exp": 0,
+   "total_exp": 0,
+   "lb_exp": 0,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": 3,
+   "first_get_unit_id": null,
+   "lb_level": 1,
+   "equipment": {},
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "",
+    ""
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ]
+  },
+  {
+   "instance_id": "1795117862126",
+   "master_id": "205000403",
+   "level": 1,
+   "exp": 0,
+   "total_exp": 0,
+   "lb_exp": 0,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": 3,
+   "first_get_unit_id": null,
+   "lb_level": 1,
+   "equipment": {},
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "",
+    ""
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ]
+  },
+  {
+   "instance_id": "1795117892112",
+   "master_id": "100031607",
+   "level": 1,
+   "exp": 0,
+   "total_exp": 0,
+   "lb_exp": 0,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": 7,
+   "first_get_unit_id": null,
+   "lb_level": 1,
+   "equipment": {
+    "1": "0",
+    "2": "0",
+    "3": "0",
+    "4": "0",
+    "5": "0",
+    "6": "0"
+   },
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "",
+    ""
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ],
+   "shift_equipment": {
+    "1": "0",
+    "2": "0",
+    "3": "0",
+    "4": "0",
+    "5": "0",
+    "6": "0"
+   },
+   "shift_materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "skin_id": 0
+  },
+  {
+   "instance_id": "1795121118926",
+   "master_id": "213000105",
+   "level": 1,
+   "exp": 0,
+   "total_exp": 0,
+   "lb_exp": 0,
+   "nv_ex_level": 0,
+   "guest": 0,
+   "storage_state": 0,
+   "favourite": 0,
+   "granted_rarity": 5,
+   "first_get_unit_id": null,
+   "lb_level": 1,
+   "equipment": {
+    "1": "0",
+    "2": "0",
+    "3": "0",
+    "4": "0",
+    "5": "0",
+    "6": "0"
+   },
+   "materia": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "vision_card": "",
+   "affinity_points": [
+    "",
+    ""
+   ],
+   "affinity_info": [
+    "",
+    ""
+   ],
+   "skin_id": 0
+  }
+ ],
+ "vision_cards": [
+  {
+   "user_vc_id": "1795117892112",
+   "vc_id": "100000201",
+   "level": 1
+  }
+ ],
+ "party": {
+  "active_deck": 0,
+  "decks": [
+   {
+    "id": 0,
+    "name": "Party 1",
+    "members": [
+     {
+      "member_type": 1,
+      "disp_order": 0,
+      "instance_id": "1795114443284"
+     },
+     {
+      "member_type": 0,
+      "disp_order": 1,
+      "instance_id": "1795114443283"
+     }
+    ]
+   },
+   {
+    "id": 1,
+    "name": "Party 2",
+    "members": [
+     {
+      "member_type": 1,
+      "disp_order": 0,
+      "instance_id": "1795114443284"
+     },
+     {
+      "member_type": 0,
+      "disp_order": 1,
+      "instance_id": "1795114443283"
+     }
+    ]
+   },
+   {
+    "id": 2,
+    "name": "Party 3",
+    "members": [
+     {
+      "member_type": 1,
+      "disp_order": 0,
+      "instance_id": "1795114443284"
+     },
+     {
+      "member_type": 0,
+      "disp_order": 1,
+      "instance_id": "1795114443283"
+     }
+    ]
+   },
+   {
+    "id": 3,
+    "name": "Party 4",
+    "members": [
+     {
+      "member_type": 1,
+      "disp_order": 0,
+      "instance_id": "1795114443284"
+     },
+     {
+      "member_type": 0,
+      "disp_order": 1,
+      "instance_id": "1795114443283"
+     }
+    ]
+   },
+   {
+    "id": 4,
+    "name": "Party 5",
+    "members": [
+     {
+      "member_type": 1,
+      "disp_order": 0,
+      "instance_id": "1795114443284"
+     },
+     {
+      "member_type": 0,
+      "disp_order": 1,
+      "instance_id": "1795114443283"
+     }
+    ]
+   },
+   {
+    "id": 5,
+    "name": "Party 6",
+    "members": [
+     {
+      "member_type": 1,
+      "disp_order": 0,
+      "instance_id": "1795114443284"
+     },
+     {
+      "member_type": 0,
+      "disp_order": 1,
+      "instance_id": "1795114443283"
+     }
+    ]
+   },
+   {
+    "id": 6,
+    "name": "Party 7",
+    "members": [
+     {
+      "member_type": 1,
+      "disp_order": 0,
+      "instance_id": "1795114443284"
+     },
+     {
+      "member_type": 0,
+      "disp_order": 1,
+      "instance_id": "1795114443283"
+     }
+    ]
+   },
+   {
+    "id": 7,
+    "name": "Party 8",
+    "members": [
+     {
+      "member_type": 1,
+      "disp_order": 0,
+      "instance_id": "1795114443284"
+     },
+     {
+      "member_type": 0,
+      "disp_order": 1,
+      "instance_id": "1795114443283"
+     }
+    ]
+   },
+   {
+    "id": 8,
+    "name": "Party 9",
+    "members": [
+     {
+      "member_type": 1,
+      "disp_order": 0,
+      "instance_id": "1795114443284"
+     },
+     {
+      "member_type": 0,
+      "disp_order": 1,
+      "instance_id": "1795114443283"
+     }
+    ]
+   },
+   {
+    "id": 9,
+    "name": "Party 10",
+    "members": [
+     {
+      "member_type": 1,
+      "disp_order": 0,
+      "instance_id": "1795114443284"
+     },
+     {
+      "member_type": 0,
+      "disp_order": 1,
+      "instance_id": "1795114443283"
+     }
+    ]
+   }
+  ]
+ },
+ "inventory": {
+  "items": [
+   {
+    "item_type": 23,
+    "item_id": 180,
+    "count": 9
+   },
+   {
+    "item_type": 20,
+    "item_id": 290010000,
+    "count": 2
+   },
+   {
+    "item_type": 20,
+    "item_id": 290020700,
+    "count": 1
+   },
+   {
+    "item_type": 20,
+    "item_id": 290020800,
+    "count": 1
+   },
+   {
+    "item_type": 20,
+    "item_id": 202001700,
+    "count": 1
+   },
+   {
+    "item_type": 20,
+    "item_id": 290050100,
+    "count": 3
+   },
+   {
+    "item_type": 20,
+    "item_id": 290050200,
+    "count": 3
+   },
+   {
+    "item_type": 20,
+    "item_id": 202000400,
+    "count": 2
+   },
+   {
+    "item_type": 20,
+    "item_id": 290020100,
+    "count": 2
+   },
+   {
+    "item_type": 20,
+    "item_id": 202000100,
+    "count": 1
+   },
+   {
+    "item_type": 20,
+    "item_id": 290020400,
+    "count": 2
+   },
+   {
+    "item_type": 20,
+    "item_id": 203000100,
+    "count": 3
+   },
+   {
+    "item_type": 20,
+    "item_id": 1209001319,
+    "count": 0
+   },
+   {
+    "item_type": 23,
+    "item_id": 260,
+    "count": 10
+   },
+   {
+    "item_type": 23,
+    "item_id": 50,
+    "count": 0
+   },
+   {
+    "item_type": 23,
+    "item_id": 70,
+    "count": 0
+   },
+   {
+    "item_type": 20,
+    "item_id": 106213030,
+    "count": 1
+   },
+   {
+    "item_type": 20,
+    "item_id": 290020600,
+    "count": 1
+   },
+   {
+    "item_type": 20,
+    "item_id": 290020500,
+    "count": 2
+   },
+   {
+    "item_type": 20,
+    "item_id": 202000300,
+    "count": 1
+   }
+  ],
+  "carry_items": [],
+  "equipment": [
+   {
+    "item_id": 303001300,
+    "count": 1
+   },
+   {
+    "item_id": 406000800,
+    "count": 1
+   },
+   {
+    "item_id": 403020200,
+    "count": 1
+   },
+   {
+    "item_id": 409000300,
+    "count": 1
+   },
+   {
+    "item_id": 302000100,
+    "count": 2
+   },
+   {
+    "item_id": 404000200,
+    "count": 2
+   },
+   {
+    "item_id": 406000100,
+    "count": 2
+   },
+   {
+    "item_id": 409000100,
+    "count": 2
+   }
+  ]
+ },
+ "mailbox": [
+  {
+   "mail_id": "920000000045",
+   "title": "Weekly Summon Gift",
+   "message": "This week's summon gift: a 10+1's worth of tickets. Use them with any banner's Ticket Summon button.",
+   "icon_type": 2,
+   "attach_type": 1,
+   "receive_type": 2,
+   "daily_login": false,
+   "send_date": "2026-11-19 19:03:47",
+   "open_date": "",
+   "receive_date": "2026-11-19 19:45:06",
+   "protect_date": "",
+   "items": [
+    {
+     "item_type": 23,
+     "item_id": 50,
+     "count": 10
+    },
+    {
+     "item_type": 23,
+     "item_id": 70,
+     "count": 1
+    }
+   ]
+  },
+  {
+   "mail_id": "900000100000",
+   "title": "Adventurer Rewards",
+   "message": "",
+   "icon_type": 2,
+   "attach_type": 1,
+   "receive_type": 2,
+   "daily_login": false,
+   "send_date": "2026-11-19 19:43:41",
+   "open_date": "",
+   "receive_date": "2026-11-19 19:45:06",
+   "protect_date": "",
+   "items": [
+    {
+     "item_type": 50,
+     "item_id": 1,
+     "count": 50
+    }
+   ]
+  },
+  {
+   "mail_id": "900020261101",
+   "title": "SG_DAILY_LOGIN_TITLE",
+   "message": "1",
+   "icon_type": 0,
+   "attach_type": 1,
+   "receive_type": 2,
+   "daily_login": true,
+   "send_date": "2026-11-19 19:44:56",
+   "open_date": "",
+   "receive_date": "2026-11-19 19:45:06",
+   "protect_date": "",
+   "items": [
+    {
+     "item_type": 50,
+     "item_id": 1,
+     "count": 100
+    }
+   ]
+  }
+ ],
+ "login_bonus": {
+  "month": "2021-Jun",
+  "day": 1,
+  "last_advance": "2026-11-19",
+  "issued_rewards": {
+   "2026-11": 1
+  }
+ },
+ "catchup": {
+  "total_login_days": 0,
+  "last_advance": "",
+  "serial_days": 0,
+  "ladder_bit": 0,
+  "ladder_tier": 0,
+  "campaign_id": "",
+  "campaign_day": 0,
+  "welcome_done": false,
+  "granted": []
+ },
+ "anniversary": {
+  "last_issued": "",
+  "issued_total": 0
+ },
+ "progress": {
+  "switches": {
+   "101": [
+    0,
+    1,
+    3,
+    117
+   ],
+   "100": [
+    3,
+    4,
+    8
+   ],
+   "10": [
+    11,
+    15,
+    16,
+    22,
+    23,
+    55,
+    56,
+    59,
+    70,
+    72,
+    99,
+    291,
+    360,
+    628,
+    714,
+    715,
+    716,
+    765,
+    766,
+    797,
+    805,
+    907,
+    9295,
+    10068
+   ],
+   "800": [
+    2
+   ]
+  },
+  "cleared_missions": [
+   "1110100",
+   "1110101",
+   "1110103",
+   "1110201"
+  ],
+  "cleared_challenges": {
+   "1110101": [
+    "11101010",
+    "11101011",
+    "11101012",
+    "11101013"
+   ],
+   "1110103": [
+    "11101030",
+    "11101031",
+    "11101032",
+    "11101033"
+   ],
+   "1110201": [
+    "11102010",
+    "11102011",
+    "11102013"
+   ]
+  },
+  "paid_challenges": {
+   "1110101": [
+    "11101010",
+    "11101011",
+    "11101012",
+    "11101013"
+   ],
+   "1110103": [
+    "11101030",
+    "11101031",
+    "11101032",
+    "11101033"
+   ],
+   "1110201": [
+    "11102010",
+    "11102011",
+    "11102013"
+   ]
+  }
+ },
+ "beasts": [],
+ "beast_decks": {
+  "0": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "1": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "2": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "3": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "4": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "5": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "6": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "7": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "8": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "9": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ]
+ },
+ "gacha": {
+  "last_result": null,
+  "last_pull": {
+   "banner_id": "60001",
+   "detail_id": "600011",
+   "step": 0,
+   "count": 1,
+   "repeats": 1,
+   "ticket_id": "12",
+   "awards": [
+    {
+     "unit_id": "213000105",
+     "granted_rarity": 5,
+     "instance_id": "1795121118926",
+     "level": 1
+    }
+   ],
+   "nv_cards": [],
+   "bonus_awards": [],
+   "reward_awards": [],
+   "pattern_id": "9"
+  },
+  "user_banners": {
+   "1": {
+    "term_exe_count": 0,
+    "total_exe_count": 0
+   },
+   "9": {
+    "term_exe_count": 0,
+    "total_exe_count": 0
+   },
+   "24": {
+    "term_exe_count": 0,
+    "total_exe_count": 0
+   },
+   "33": {
+    "term_exe_count": 0,
+    "total_exe_count": 0
+   },
+   "70001": {
+    "term_exe_count": 0,
+    "total_exe_count": 0
+   },
+   "60001": {
+    "term_exe_count": 1,
+    "total_exe_count": 1
+   },
+   "45": {
+    "term_exe_count": 0,
+    "total_exe_count": 0
+   },
+   "9100018": {
+    "term_exe_count": 0,
+    "total_exe_count": 0
+   },
+   "9100019": {
+    "term_exe_count": 15,
+    "total_exe_count": 15
+   },
+   "9200026": {
+    "term_exe_count": 1,
+    "total_exe_count": 1
+   },
+   "9200030": {
+    "term_exe_count": 0,
+    "total_exe_count": 0
+   },
+   "9200108": {
+    "term_exe_count": 0,
+    "total_exe_count": 0
+   }
+  },
+  "step": {},
+  "select": {},
+  "panel": {},
+  "box": {},
+  "guaranteed_slots": []
+ },
+ "records": {},
+ "notices": {
+  "index": {
+   "880000": [
+    "2026",
+    500
+   ]
+  },
+  "read": [
+   "880000"
+  ]
+ },
+ "quest_progress": {
+  "counters": {
+   "MAX_DAMAGE_HIT": 7660,
+   "MAX_DAMAGE_TURN": 27782,
+   "MAX_LB_CRISTAL": 11,
+   "TOTAL_DAMAGE_TAKE": 234,
+   "TOTAL_DAMAGE": 32905,
+   "TOTAL_LB_CRISTAL": 66,
+   "TOTAL_MISSION_BATTLE_WIN": 10,
+   "TOTAL_GIL_GET": 3000094,
+   "TOTAL_MISSION_CLEAR": 4,
+   "spchallenge/20003/200301": 3,
+   "spchallenge/20003/200302": 4,
+   "spchallenge/20003/200303": 4,
+   "spchallenge/20003/200304": 3,
+   "spchallenge/20003/200305": 4,
+   "spchallenge/20003/200306": 4,
+   "spchallenge/20003/200307": 3,
+   "spchallenge/20003/200308": 4,
+   "spchallenge/20003/200309": 4,
+   "spchallenge/20003/200310": 3,
+   "spchallenge/20003/200311": 4,
+   "spchallenge/20003/200312": 4,
+   "spchallenge/20003/200313": 3,
+   "spchallenge/20003/200314": 4,
+   "spchallenge/20003/200315": 4,
+   "spchallenge/20003/200316": 3,
+   "spchallenge/20003/200317": 4,
+   "spchallenge/20003/200318": 4,
+   "spchallenge/20003/200319": 3,
+   "spchallenge/20003/200320": 4,
+   "spchallenge/20003/200321": 4,
+   "spchallenge/3011/301110": 3,
+   "spchallenge/3011/301120": 4,
+   "spchallenge/3011/301130": 4,
+   "spchallenge/3012/301210": 3,
+   "spchallenge/3012/301220": 4,
+   "spchallenge/3012/301230": 4,
+   "spchallenge/3013/301310": 3,
+   "spchallenge/3013/301320": 4,
+   "spchallenge/3013/301330": 4,
+   "spchallenge/3014/301410": 3,
+   "spchallenge/3014/301420": 4,
+   "spchallenge/3014/301430": 4,
+   "spchallenge/3015/301510": 3,
+   "spchallenge/3015/301520": 4,
+   "spchallenge/3015/301530": 4,
+   "spchallenge/3016/301610": 3,
+   "spchallenge/3016/301620": 4,
+   "spchallenge/3016/301630": 4,
+   "spchallenge/3017/301710": 3,
+   "spchallenge/3017/301720": 4,
+   "spchallenge/3017/301730": 4,
+   "spchallenge/3018/301810": 3,
+   "spchallenge/3018/301820": 4,
+   "spchallenge/3018/301830": 4,
+   "spchallenge/3018/301840": 4,
+   "spchallenge/3019/301910": 3,
+   "spchallenge/3019/301920": 4,
+   "spchallenge/3019/301930": 4,
+   "spchallenge/3019/301940": 4,
+   "spchallenge/3020/302010": 3,
+   "spchallenge/3020/302020": 4,
+   "spchallenge/3020/302030": 4,
+   "spchallenge/3020/302040": 4,
+   "spchallenge/3021/302110": 3,
+   "spchallenge/3021/302120": 4,
+   "spchallenge/3021/302130": 4,
+   "spchallenge/3021/302140": 4,
+   "spchallenge/3022/302210": 3,
+   "spchallenge/3022/302220": 4,
+   "spchallenge/3022/302230": 4,
+   "spchallenge/3022/302240": 4,
+   "spchallenge/3023/302310": 3,
+   "spchallenge/3023/302320": 4,
+   "spchallenge/3023/302330": 4,
+   "spchallenge/3023/302340": 4,
+   "spchallenge/3024/302410": 3,
+   "spchallenge/3024/302420": 4,
+   "spchallenge/3024/302430": 4,
+   "spchallenge/3024/302440": 4,
+   "spchallenge/5010/501001": 4,
+   "spchallenge/5010/501002": 4,
+   "spchallenge/5010/501003": 4,
+   "spchallenge/5010/501004": 4,
+   "spchallenge/5300/530014": 4,
+   "spchallenge/5300/530015": 4,
+   "spchallenge/5300/530016": 4,
+   "spchallenge/5300/530017": 4,
+   "spchallenge/5300/530018": 4,
+   "spchallenge/5300/530019": 4,
+   "spchallenge/8000/800000": 1,
+   "spchallenge/8000/800001": 4,
+   "spchallenge/8001/800100": 1,
+   "spchallenge/8001/800101": 4,
+   "spchallenge/99075/990751": 4,
+   "spchallenge/99075/990752": 4,
+   "spchallenge/990000/9900001": 4,
+   "spchallenge/990000/9900002": 4,
+   "spchallenge/990001/9900011": 4,
+   "spchallenge/990001/9900012": 4,
+   "spchallenge/990100/9900110": 4,
+   "spchallenge/990100/9900111": 4,
+   "spchallenge/990100/9900112": 4,
+   "spchallenge/99003/9900311": 4,
+   "spchallenge/99019/9901901": 4,
+   "spchallenge/99024/9901908": 4,
+   "spchallenge/99025/9902501": 4,
+   "spchallenge/99026/9902601": 4,
+   "spchallenge/99027/9902701": 4,
+   "spchallenge/99028/9902801": 4,
+   "spchallenge/99029/9902901": 4,
+   "spchallenge/99030/9903001": 4,
+   "spchallenge/99031/9903101": 4,
+   "spchallenge/99032/9903201": 4,
+   "spchallenge/99033/9903301": 4,
+   "spchallenge/99034/9903401": 4,
+   "spchallenge/99035/9903501": 4,
+   "spchallenge/99036/9903601": 4,
+   "spchallenge/99037/9903701": 4,
+   "spchallenge/99038/9903801": 4,
+   "spchallenge/99039/9903901": 4,
+   "spchallenge/99040/9904001": 4,
+   "spchallenge/99041/9904101": 4,
+   "spchallenge/99042/9904201": 4,
+   "spchallenge/99043/9904301": 4,
+   "spchallenge/99044/9904401": 4,
+   "spchallenge/99045/9904501": 4,
+   "spchallenge/99046/9904601": 4,
+   "spchallenge/99047/9904701": 4,
+   "spchallenge/99048/9904801": 4,
+   "spchallenge/99049/9904901": 4,
+   "spchallenge/99050/9905001": 4,
+   "spchallenge/99051/9905101": 4,
+   "spchallenge/99052/9905201": 4,
+   "spchallenge/99053/9905301": 4,
+   "spchallenge/99054/9905401": 4,
+   "spchallenge/99055/9905501": 4,
+   "spchallenge/99056/9905601": 4,
+   "spchallenge/99057/9905701": 4,
+   "spchallenge/99058/9905801": 4,
+   "spchallenge/99059/9905901": 4,
+   "spchallenge/99060/9906001": 4,
+   "spchallenge/99061/9906101": 4,
+   "spchallenge/99062/9906201": 4,
+   "spchallenge/99070/9907008": 4,
+   "spchallenge/99070/9907009": 4,
+   "spchallenge/99070/9907010": 4,
+   "spchallenge/99070/9907011": 4,
+   "spchallenge/99070/9907012": 4,
+   "spchallenge/99071/9907108": 4,
+   "spchallenge/99071/9907109": 4,
+   "spchallenge/99071/9907110": 4,
+   "spchallenge/99071/9907111": 4,
+   "spchallenge/99071/9907112": 4,
+   "spchallenge/99072/9907210": 4,
+   "spchallenge/99072/9907211": 4,
+   "spchallenge/99072/9907212": 4,
+   "spchallenge/99072/9907213": 4,
+   "spchallenge/99073/9907310": 4,
+   "spchallenge/99073/9907311": 4,
+   "spchallenge/99073/9907312": 4,
+   "spchallenge/99073/9907313": 4,
+   "spchallenge/99076/9907601": 4,
+   "spchallenge/99076/9907602": 4,
+   "spchallenge/99076/9907603": 4,
+   "spchallenge/99076/9907604": 4,
+   "spchallenge/99076/9907605": 4,
+   "spchallenge/99076/9907606": 4,
+   "spchallenge/99076/9907607": 4,
+   "spchallenge/99076/9907608": 4,
+   "spchallenge/99076/9907609": 4,
+   "spchallenge/99076/9907610": 4,
+   "spchallenge/99080/9908001": 4,
+   "spchallenge/99080/9908002": 4,
+   "spchallenge/99080/9908003": 4,
+   "spchallenge/99080/9908004": 4,
+   "spchallenge/99080/9908005": 4,
+   "spchallenge/99080/9908006": 4,
+   "spchallenge/99080/9908007": 4,
+   "spchallenge/99080/9908008": 4,
+   "spchallenge/99080/9908009": 4,
+   "spchallenge/99080/9908010": 4,
+   "spchallenge/99082/9908201": 4,
+   "spchallenge/99083/9908301": 4,
+   "spchallenge/99083/9908302": 4,
+   "spchallenge/99083/9908303": 4,
+   "spchallenge/99083/9908304": 4,
+   "spchallenge/99083/9908305": 4,
+   "spchallenge/99083/9908306": 4,
+   "spchallenge/99083/9908307": 4,
+   "spchallenge/99083/9908308": 4,
+   "spchallenge/99083/9908309": 4,
+   "spchallenge/99083/9908310": 4,
+   "spchallenge/99084/9908401": 4,
+   "spchallenge/99084/9908402": 4,
+   "spchallenge/99084/9908403": 4,
+   "spchallenge/99084/9908404": 4,
+   "spchallenge/99084/9908405": 4,
+   "spchallenge/99084/9908406": 4,
+   "spchallenge/99084/9908407": 4,
+   "spchallenge/99084/9908408": 4,
+   "spchallenge/99084/9908409": 4,
+   "spchallenge/99084/9908410": 4,
+   "spchallenge/99085/9908501": 4,
+   "spchallenge/99085/9908502": 4,
+   "spchallenge/99085/9908503": 4,
+   "spchallenge/99085/9908504": 4,
+   "spchallenge/99085/9908505": 4,
+   "spchallenge/99085/9908506": 4,
+   "spchallenge/99085/9908507": 4,
+   "spchallenge/99086/9908601": 4,
+   "spchallenge/99086/9908602": 4,
+   "spchallenge/99086/9908603": 4,
+   "spchallenge/99086/9908604": 4,
+   "spchallenge/99086/9908605": 4,
+   "spchallenge/99086/9908606": 4,
+   "spchallenge/99086/9908607": 4,
+   "spchallenge/99089/9908913": 4,
+   "spchallenge/99089/9908914": 4,
+   "spchallenge/99089/9908915": 4,
+   "spchallenge/99089/9908916": 4,
+   "spchallenge/99089/9908917": 4,
+   "spchallenge/99089/9908918": 4,
+   "spchallenge/9900101/99001011": 4,
+   "spchallenge/9900102/99001021": 4,
+   "spchallenge/9900103/99001031": 4,
+   "spchallenge/9900104/99001041": 4,
+   "spchallenge/9900105/99001051": 4,
+   "spchallenge/9900106/99001061": 4,
+   "spchallenge/9900107/99001071": 4,
+   "spchallenge/9900108/99001081": 4,
+   "spchallenge/9900109/99001091": 4,
+   "spchallenge/9900110/99001101": 4,
+   "spchallenge/9900111/99001111": 4,
+   "spchallenge/9900112/99001121": 4,
+   "spchallenge/9900113/99001131": 4,
+   "spchallenge/9900114/99001141": 4,
+   "panelquest/1002/10028": 4,
+   "panelquest/1004/10048": 4,
+   "panelquest/1005/10058": 4,
+   "panelquest/1006/10068": 4,
+   "panelquest/10101/1010103": 4,
+   "panelquest/10101/1010106": 4,
+   "panelquest/10102/1010203": 4,
+   "panelquest/10102/1010206": 4,
+   "panelquest/10302/1030203": 4,
+   "spchallenge/4001/400110": 400,
+   "spchallenge/4001/400111": 400,
+   "spchallenge/5010/501025": 400,
+   "spchallenge/5010/501026": 400,
+   "spchallenge/4001/400120": 15,
+   "spchallenge/4001/400121": 15,
+   "spchallenge/5010/501027": 15,
+   "spchallenge/5010/501028": 15,
+   "spchallenge/4001/400130": 30,
+   "spchallenge/4001/400131": 30,
+   "spchallenge/5010/501017": 30,
+   "spchallenge/5010/501018": 30,
+   "spchallenge/99002/9900219": 30,
+   "panelquest/10303/1030306": 30,
+   "panelquest/10303/1030308": 30,
+   "panelquest/10304/1030408": 30,
+   "spchallenge/4001/400140": 37,
+   "spchallenge/4001/400141": 37,
+   "spchallenge/5010/501021": 37,
+   "spchallenge/5010/501022": 37,
+   "spchallenge/99004/9900419": 37,
+   "panelquest/10304/1030402": 37,
+   "panelquest/10304/1030404": 37,
+   "spchallenge/4001/400150": 14,
+   "spchallenge/4001/400151": 14,
+   "spchallenge/5010/501019": 14,
+   "spchallenge/5010/501020": 14,
+   "spchallenge/99002/9900220": 14,
+   "panelquest/10303/1030307": 14,
+   "panelquest/10303/1030309": 14,
+   "panelquest/10304/1030409": 14,
+   "spchallenge/4001/400160": 12,
+   "spchallenge/4001/400161": 12,
+   "spchallenge/5010/501023": 12,
+   "spchallenge/5010/501024": 12,
+   "spchallenge/99004/9900420": 12,
+   "panelquest/10304/1030403": 12,
+   "panelquest/10304/1030406": 12,
+   "spchallenge/1101/110113": 27782,
+   "spchallenge/1101/110114": 27782,
+   "panelquest/1003/10038": 27782,
+   "panelquest/1003/10039": 27782,
+   "spchallenge/5010/501005": 27782,
+   "spchallenge/5010/501006": 27782,
+   "spchallenge/5010/501007": 27782,
+   "spchallenge/5010/501008": 27782,
+   "spchallenge/5010/501009": 27782,
+   "spchallenge/5010/501010": 27782,
+   "spchallenge/8000/800004": 27782,
+   "spchallenge/8001/800104": 27782,
+   "spchallenge/99019/9901903": 27782,
+   "spchallenge/99024/9901910": 27782,
+   "spchallenge/99025/9902503": 27782,
+   "spchallenge/99026/9902603": 27782,
+   "spchallenge/99027/9902703": 27782,
+   "spchallenge/99028/9902803": 27782,
+   "spchallenge/99029/9902903": 27782,
+   "spchallenge/99030/9903003": 27782,
+   "spchallenge/99031/9903103": 27782,
+   "spchallenge/99032/9903203": 27782,
+   "spchallenge/99033/9903303": 27782,
+   "spchallenge/99034/9903403": 27782,
+   "spchallenge/99035/9903503": 27782,
+   "spchallenge/99036/9903603": 27782,
+   "spchallenge/99037/9903703": 27782,
+   "spchallenge/99038/9903803": 27782,
+   "spchallenge/99039/9903903": 27782,
+   "spchallenge/99040/9904003": 27782,
+   "spchallenge/99041/9904103": 27782,
+   "spchallenge/99042/9904203": 27782,
+   "spchallenge/99043/9904303": 27782,
+   "spchallenge/99044/9904403": 27782,
+   "spchallenge/99045/9904503": 27782,
+   "spchallenge/99046/9904603": 27782,
+   "spchallenge/99047/9904703": 27782,
+   "spchallenge/99048/9904803": 27782,
+   "spchallenge/99049/9904903": 27782,
+   "spchallenge/99050/9905003": 27782,
+   "spchallenge/99051/9905103": 27782,
+   "spchallenge/99052/9905203": 27782,
+   "spchallenge/99053/9905303": 27782,
+   "spchallenge/99054/9905403": 27782,
+   "spchallenge/99055/9905503": 27782,
+   "spchallenge/99056/9905603": 27782,
+   "spchallenge/99057/9905703": 27782,
+   "spchallenge/99058/9905803": 27782,
+   "spchallenge/99059/9905903": 27782,
+   "spchallenge/99060/9906003": 27782,
+   "spchallenge/99061/9906103": 27782,
+   "spchallenge/99062/9906203": 27782,
+   "spchallenge/1101/110115": 31275,
+   "spchallenge/1101/110116": 31275,
+   "spchallenge/99015/9901533": 31275,
+   "spchallenge/99015/9901534": 31275,
+   "spchallenge/99015/9901535": 31275,
+   "spchallenge/99015/9901536": 31275,
+   "spchallenge/99015/9901537": 31275,
+   "MAX_CHAIN_TURN": 4,
+   "spchallenge/8000/800003": 4,
+   "spchallenge/8001/800103": 4,
+   "spchallenge/9001/900124": 1,
+   "spchallenge/9001/900142": 1,
+   "spchallenge/9001/900147": 1,
+   "spchallenge/9001/900182": 1,
+   "spchallenge/990000/9900004": 4,
+   "spchallenge/990001/9900014": 4,
+   "spchallenge/990100/9900103": 7,
+   "spchallenge/990100/9900104": 7,
+   "spchallenge/99002/9900211": 7,
+   "spchallenge/99002/9900212": 7,
+   "spchallenge/99002/9900213": 7,
+   "spchallenge/99004/9900411": 7,
+   "spchallenge/99004/9900412": 7,
+   "spchallenge/99004/9900413": 7,
+   "spchallenge/99019/9901906": 4,
+   "spchallenge/99024/9901913": 4,
+   "spchallenge/99025/9902506": 4,
+   "spchallenge/99026/9902606": 4,
+   "spchallenge/99027/9902706": 4,
+   "spchallenge/99028/9902806": 4,
+   "spchallenge/99029/9902906": 4,
+   "spchallenge/99030/9903006": 4,
+   "spchallenge/99031/9903106": 4,
+   "spchallenge/99032/9903206": 4,
+   "spchallenge/99033/9903306": 4,
+   "spchallenge/99034/9903406": 4,
+   "spchallenge/99035/9903506": 4,
+   "spchallenge/99036/9903606": 4,
+   "spchallenge/99037/9903706": 4,
+   "spchallenge/99038/9903806": 4,
+   "spchallenge/99039/9903906": 4,
+   "spchallenge/99040/9904006": 4,
+   "spchallenge/99041/9904106": 4,
+   "spchallenge/99042/9904206": 4,
+   "spchallenge/99043/9904306": 4,
+   "spchallenge/99044/9904406": 4,
+   "spchallenge/99045/9904506": 4,
+   "spchallenge/99046/9904606": 4,
+   "spchallenge/99047/9904706": 4,
+   "spchallenge/99048/9904806": 4,
+   "spchallenge/99049/9904906": 4,
+   "spchallenge/99050/9905006": 4,
+   "spchallenge/99051/9905106": 4,
+   "spchallenge/99052/9905206": 4,
+   "spchallenge/99053/9905306": 4,
+   "spchallenge/99054/9905406": 4,
+   "spchallenge/99055/9905506": 4,
+   "spchallenge/99056/9905606": 4,
+   "spchallenge/99057/9905706": 4,
+   "spchallenge/99058/9905806": 4,
+   "spchallenge/99059/9905906": 4,
+   "spchallenge/99060/9906006": 4,
+   "spchallenge/99061/9906106": 4,
+   "spchallenge/99062/9906206": 4,
+   "spchallenge/99070/9907001": 7,
+   "spchallenge/99070/9907002": 7,
+   "spchallenge/99071/9907101": 7,
+   "spchallenge/99071/9907102": 7,
+   "spchallenge/99072/9907201": 7,
+   "spchallenge/99072/9907202": 7,
+   "spchallenge/99073/9907301": 7,
+   "spchallenge/99073/9907302": 7,
+   "spchallenge/99078/9907801": 7,
+   "spchallenge/99078/9907802": 7,
+   "spchallenge/99078/9907803": 7,
+   "spchallenge/99078/9907804": 7,
+   "spchallenge/99078/9907805": 7,
+   "spchallenge/99078/9907806": 7,
+   "spchallenge/99078/9907807": 7,
+   "spchallenge/99078/9907808": 7,
+   "spchallenge/99078/9907809": 7,
+   "spchallenge/99078/9907810": 7,
+   "spchallenge/99082/9908202": 4,
+   "spchallenge/99082/9908220": 4,
+   "spchallenge/99082/9908221": 4,
+   "spchallenge/99082/9908222": 4,
+   "spchallenge/99089/9908919": 4,
+   "spchallenge/99089/9908920": 7,
+   "spchallenge/9900101/99001013": 4,
+   "spchallenge/9900102/99001023": 4,
+   "spchallenge/9900103/99001033": 4,
+   "spchallenge/9900104/99001043": 4,
+   "spchallenge/9900105/99001053": 4,
+   "spchallenge/9900106/99001063": 4,
+   "spchallenge/9900107/99001073": 4,
+   "spchallenge/9900108/99001083": 4,
+   "spchallenge/9900109/99001093": 4,
+   "spchallenge/9900110/99001103": 4,
+   "spchallenge/9900111/99001113": 4,
+   "spchallenge/9900112/99001123": 4,
+   "spchallenge/9900113/99001133": 4,
+   "spchallenge/9900114/99001143": 4,
+   "panelquest/10101/1010104": 7,
+   "panelquest/10101/1010105": 7,
+   "panelquest/10102/1010204": 7,
+   "panelquest/10102/1010205": 7,
+   "TOTAL_CRITICAL": 1,
+   "MAX_CRITICAL_TURN": 1,
+   "TOTAL_MAGIC_USE": 2,
+   "spchallenge/99011/9901101": 1,
+   "spchallenge/99063/9906301": 1,
+   "panelquest/1001/10014": 1,
+   "panelquest/10301/1030103": 2,
+   "spchallenge/99015/9901505": 1,
+   "spchallenge/99015/9901506": 1,
+   "spchallenge/99015/9901507": 1,
+   "spchallenge/99015/9901508": 1,
+   "dailyquest/2026-11-19/6900103": 2,
+   "spchallenge/99003/9900312": 10,
+   "panelquest/1002/10022": 1,
+   "panelquest/1004/10042": 10,
+   "panelquest/1005/10052": 15,
+   "panelquest/10303/1030303": 17,
+   "panelquest/10303/1030304": 17,
+   "panelquest/10304/1030401": 17,
+   "dailyquest/2026-11-19/6000505": 1,
+   "panelquest/55501/5550109": 10,
+   "TOTAL_NV_UNIT_GET_CNT": 1,
+   "spchallenge/1001/100101": 1,
+   "spchallenge/1001/100102": 1,
+   "spchallenge/1001/100103": 1,
+   "spchallenge/9001/900112": 1,
+   "spchallenge/9001/900151": 1,
+   "spchallenge/9001/900179": 1,
+   "panelquest/1001/10011": 1,
+   "panelquest/1001/10012": 1,
+   "panelquest/1001/10013": 1,
+   "panelquest/10001/1000101": 1,
+   "panelquest/10201/1020101": 1,
+   "panelquest/10301/1030101": 1,
+   "TOTAL_UNIT_MIX": 3,
+   "spchallenge/9001/900195": 1,
+   "dailyquest/2026-11-19/6900404": 3,
+   "spchallenge/9001/900101": 1,
+   "spchallenge/1001/100107": 1,
+   "spchallenge/9001/900138": 1,
+   "spchallenge/9001/900155": 1,
+   "spchallenge/9001/900191": 1,
+   "panelquest/1001/10018": 1,
+   "panelquest/10001/1000102": 1,
+   "panelquest/10201/1020102": 1,
+   "spchallenge/99015/9901501": 2,
+   "spchallenge/99015/9901502": 2,
+   "spchallenge/99015/9901503": 2,
+   "spchallenge/99015/9901504": 2,
+   "panelquest/10301/1030102": 2
+  },
+  "scopes": {},
+  "audit": [
+   {
+    "when": "2026-11-20 00:15:15",
+    "key": "panelquest/10301/1030101",
+    "delta": 1,
+    "value": 1,
+    "what": "equip -> 1030101 (panelquest/10301)"
+   },
+   {
+    "when": "2026-11-20 00:15:36",
+    "key": "TOTAL_UNIT_MIX",
+    "delta": 1,
+    "value": 1,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:15:36",
+    "key": "spchallenge/9001/900195",
+    "delta": 1,
+    "value": 1,
+    "what": "condition 31 -> 900195"
+   },
+   {
+    "when": "2026-11-20 00:15:36",
+    "key": "dailyquest/2026-11-19/6900404",
+    "delta": 1,
+    "value": 1,
+    "what": "unit_fuse -> daily quest 6900404"
+   },
+   {
+    "when": "2026-11-20 00:15:36",
+    "key": "TOTAL_UNIT_MIX",
+    "delta": 1,
+    "value": 2,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:15:36",
+    "key": "dailyquest/2026-11-19/6900404",
+    "delta": 1,
+    "value": 2,
+    "what": "unit_fuse -> daily quest 6900404"
+   },
+   {
+    "when": "2026-11-20 00:15:36",
+    "key": "TOTAL_UNIT_MIX",
+    "delta": 1,
+    "value": 3,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:15:36",
+    "key": "dailyquest/2026-11-19/6900404",
+    "delta": 1,
+    "value": 3,
+    "what": "unit_fuse -> daily quest 6900404"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "TOTAL_MAGIC_USE",
+    "delta": 1,
+    "value": 2,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "MAX_DAMAGE_HIT",
+    "delta": 7383,
+    "value": 7660,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "MAX_LB_CRISTAL",
+    "delta": 4,
+    "value": 11,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "MAX_DAMAGE_TURN",
+    "delta": 27505,
+    "value": 27782,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "TOTAL_DAMAGE",
+    "delta": 31275,
+    "value": 32905,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "TOTAL_LB_CRISTAL",
+    "delta": 28,
+    "value": 66,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "TOTAL_MISSION_BATTLE_WIN",
+    "delta": 3,
+    "value": 10,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "MAX_CHAIN_TURN",
+    "delta": 2,
+    "value": 4,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "TOTAL_GIL_GET",
+    "delta": 15,
+    "value": 3000077,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "TOTAL_MISSION_CLEAR",
+    "delta": 1,
+    "value": 4,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "TOTAL_GIL_GET",
+    "delta": 17,
+    "value": 3000094,
+    "what": "completed gameplay archive"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200302",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200302"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200303",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200303"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200305",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200305"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200306",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200306"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200308",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200308"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200309",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200309"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200311",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200311"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200312",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200312"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200314",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200314"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200315",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200315"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200317",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200317"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200318",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200318"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200320",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200320"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/20003/200321",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 200321"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3011/301120",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301120"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3011/301130",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301130"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3012/301220",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301220"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3012/301230",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301230"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3013/301320",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301320"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3013/301330",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301330"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3014/301420",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301420"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3014/301430",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301430"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3015/301520",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301520"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3015/301530",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301530"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3016/301620",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301620"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3016/301630",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301630"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3017/301720",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301720"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3017/301730",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301730"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3018/301820",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301820"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3018/301830",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301830"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3018/301840",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301840"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3019/301920",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301920"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3019/301930",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301930"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3019/301940",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 301940"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3020/302020",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302020"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3020/302030",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302030"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3020/302040",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302040"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3021/302120",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302120"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3021/302130",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302130"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3021/302140",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302140"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3022/302220",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302220"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3022/302230",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302230"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3022/302240",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302240"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3023/302320",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302320"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3023/302330",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302330"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3023/302340",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302340"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3024/302420",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302420"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3024/302430",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302430"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/3024/302440",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 302440"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5010/501001",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 501001"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5010/501002",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 501002"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5010/501003",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 501003"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5010/501004",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 501004"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5300/530014",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 530014"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5300/530015",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 530015"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5300/530016",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 530016"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5300/530017",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 530017"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5300/530018",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 530018"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5300/530019",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 530019"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/8000/800001",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 800001"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/8001/800101",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 800101"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9001/900101",
+    "delta": 1,
+    "value": 1,
+    "what": "condition 15 -> 900101"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99075/990751",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 990751"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99075/990752",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 990752"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/990000/9900001",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9900001"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/990000/9900002",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9900002"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/990001/9900011",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9900011"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/990001/9900012",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9900012"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/990100/9900110",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9900110"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/990100/9900111",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9900111"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/990100/9900112",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9900112"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99003/9900311",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9900311"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99019/9901901",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9901901"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99024/9901908",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9901908"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99025/9902501",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9902501"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99026/9902601",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9902601"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99027/9902701",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9902701"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99028/9902801",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9902801"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99029/9902901",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9902901"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99030/9903001",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9903001"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99031/9903101",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9903101"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99032/9903201",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9903201"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99033/9903301",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9903301"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99034/9903401",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9903401"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99035/9903501",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9903501"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99036/9903601",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9903601"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99037/9903701",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9903701"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99038/9903801",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9903801"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99039/9903901",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9903901"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99040/9904001",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9904001"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99041/9904101",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9904101"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99042/9904201",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9904201"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99043/9904301",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9904301"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99044/9904401",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9904401"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99045/9904501",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9904501"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99046/9904601",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9904601"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99047/9904701",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9904701"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99048/9904801",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9904801"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99049/9904901",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9904901"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99050/9905001",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9905001"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99051/9905101",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9905101"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99052/9905201",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9905201"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99053/9905301",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9905301"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99054/9905401",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9905401"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99055/9905501",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9905501"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99056/9905601",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9905601"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99057/9905701",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9905701"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99058/9905801",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9905801"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99059/9905901",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9905901"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99060/9906001",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9906001"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99061/9906101",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9906101"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99062/9906201",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9906201"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99070/9907008",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907008"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99070/9907009",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907009"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99070/9907010",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907010"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99070/9907011",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907011"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99070/9907012",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907012"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99071/9907108",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907108"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99071/9907109",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907109"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99071/9907110",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907110"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99071/9907111",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907111"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99071/9907112",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907112"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99072/9907210",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907210"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99072/9907211",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907211"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99072/9907212",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907212"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99072/9907213",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907213"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99073/9907310",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907310"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99073/9907311",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907311"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99073/9907312",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907312"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99073/9907313",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907313"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99076/9907601",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907601"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99076/9907602",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907602"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99076/9907603",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907603"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99076/9907604",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907604"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99076/9907605",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907605"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99076/9907606",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907606"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99076/9907607",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907607"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99076/9907608",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907608"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99076/9907609",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907609"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99076/9907610",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9907610"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99080/9908001",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908001"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99080/9908002",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908002"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99080/9908003",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908003"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99080/9908004",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908004"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99080/9908005",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908005"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99080/9908006",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908006"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99080/9908007",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908007"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99080/9908008",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908008"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99080/9908009",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908009"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99080/9908010",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908010"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99082/9908201",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908201"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99083/9908301",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908301"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99083/9908302",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908302"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99083/9908303",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908303"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99083/9908304",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908304"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99083/9908305",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908305"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99083/9908306",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908306"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99083/9908307",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908307"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99083/9908308",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908308"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99083/9908309",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908309"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99083/9908310",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908310"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99084/9908401",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908401"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99084/9908402",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908402"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99084/9908403",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908403"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99084/9908404",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908404"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99084/9908405",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908405"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99084/9908406",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908406"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99084/9908407",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908407"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99084/9908408",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908408"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99084/9908409",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908409"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99084/9908410",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908410"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99085/9908501",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908501"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99085/9908502",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908502"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99085/9908503",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908503"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99085/9908504",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908504"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99085/9908505",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908505"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99085/9908506",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908506"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99085/9908507",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908507"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99086/9908601",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908601"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99086/9908602",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908602"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99086/9908603",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908603"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99086/9908604",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908604"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99086/9908605",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908605"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99086/9908606",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908606"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99086/9908607",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908607"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99089/9908913",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908913"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99089/9908914",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908914"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99089/9908915",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908915"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99089/9908916",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908916"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99089/9908917",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908917"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99089/9908918",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 9908918"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900101/99001011",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001011"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900102/99001021",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001021"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900103/99001031",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001031"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900104/99001041",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001041"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900105/99001051",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001051"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900106/99001061",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001061"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900107/99001071",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001071"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900108/99001081",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001081"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900109/99001091",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001091"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900110/99001101",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001101"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900111/99001111",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001111"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900112/99001121",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001121"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900113/99001131",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001131"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900114/99001141",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 99001141"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/1002/10028",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 10028"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/1004/10048",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 10048"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/1005/10058",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 10058"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/1006/10068",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 10068"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/10101/1010103",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 1010103"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/10101/1010106",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 1010106"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/10102/1010203",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 1010203"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/10102/1010206",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 1010206"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/10302/1030203",
+    "delta": 1,
+    "value": 4,
+    "what": "condition 15 -> 1030203"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/1001/100107",
+    "delta": 1,
+    "value": 1,
+    "what": "condition 17 -> 100107"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9001/900138",
+    "delta": 1,
+    "value": 1,
+    "what": "condition 17 -> 900138"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9001/900155",
+    "delta": 1,
+    "value": 1,
+    "what": "condition 17 -> 900155"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9001/900191",
+    "delta": 1,
+    "value": 1,
+    "what": "condition 17 -> 900191"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/1001/10018",
+    "delta": 1,
+    "value": 1,
+    "what": "condition 17 -> 10018"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/10001/1000102",
+    "delta": 1,
+    "value": 1,
+    "what": "condition 17 -> 1000102"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/10201/1020102",
+    "delta": 1,
+    "value": 1,
+    "what": "condition 17 -> 1020102"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/10301/1030103",
+    "delta": 1,
+    "value": 2,
+    "what": "condition 26 -> 1030103"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99015/9901501",
+    "delta": 2,
+    "value": 2,
+    "what": "condition 20 -> 9901501"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99015/9901502",
+    "delta": 2,
+    "value": 2,
+    "what": "condition 20 -> 9901502"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99015/9901503",
+    "delta": 2,
+    "value": 2,
+    "what": "condition 20 -> 9901503"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99015/9901504",
+    "delta": 2,
+    "value": 2,
+    "what": "condition 20 -> 9901504"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/10301/1030102",
+    "delta": 2,
+    "value": 2,
+    "what": "condition 20 -> 1030102"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/1101/110113",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 39 -> 110113"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/1101/110114",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 39 -> 110114"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/1003/10038",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 39 -> 10038"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/1003/10039",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 39 -> 10039"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5010/501005",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 501005"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5010/501006",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 501006"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5010/501007",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 501007"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5010/501008",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 501008"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5010/501009",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 501009"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/5010/501010",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 501010"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/8000/800004",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 800004"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/8001/800104",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 800104"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99019/9901903",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9901903"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99024/9901910",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9901910"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99025/9902503",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9902503"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99026/9902603",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9902603"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99027/9902703",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9902703"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99028/9902803",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9902803"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99029/9902903",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9902903"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99030/9903003",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9903003"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99031/9903103",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9903103"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99032/9903203",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9903203"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99033/9903303",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9903303"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99034/9903403",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9903403"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99035/9903503",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9903503"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99036/9903603",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9903603"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99037/9903703",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9903703"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99038/9903803",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9903803"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99039/9903903",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9903903"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99040/9904003",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9904003"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99041/9904103",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9904103"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99042/9904203",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9904203"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99043/9904303",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9904303"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99044/9904403",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9904403"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99045/9904503",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9904503"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99046/9904603",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9904603"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99047/9904703",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9904703"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99048/9904803",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9904803"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99049/9904903",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9904903"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99050/9905003",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9905003"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99051/9905103",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9905103"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99052/9905203",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9905203"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99053/9905303",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9905303"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99054/9905403",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9905403"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99055/9905503",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9905503"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99056/9905603",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9905603"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99057/9905703",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9905703"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99058/9905803",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9905803"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99059/9905903",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9905903"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99060/9906003",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9906003"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99061/9906103",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9906103"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99062/9906203",
+    "delta": 27505,
+    "value": 27782,
+    "what": "condition 50 -> 9906203"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/1101/110115",
+    "delta": 30300,
+    "value": 31275,
+    "what": "condition 40 -> 110115"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/1101/110116",
+    "delta": 30300,
+    "value": 31275,
+    "what": "condition 40 -> 110116"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99015/9901533",
+    "delta": 30300,
+    "value": 31275,
+    "what": "condition 40 -> 9901533"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99015/9901534",
+    "delta": 30300,
+    "value": 31275,
+    "what": "condition 40 -> 9901534"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99015/9901535",
+    "delta": 30300,
+    "value": 31275,
+    "what": "condition 40 -> 9901535"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99015/9901536",
+    "delta": 30300,
+    "value": 31275,
+    "what": "condition 40 -> 9901536"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99015/9901537",
+    "delta": 30300,
+    "value": 31275,
+    "what": "condition 40 -> 9901537"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/8000/800003",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 800003"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/8001/800103",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 800103"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/990000/9900004",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9900004"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/990001/9900014",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9900014"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/990100/9900103",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9900103"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/990100/9900104",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9900104"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99002/9900211",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9900211"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99002/9900212",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9900212"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99002/9900213",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9900213"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99004/9900411",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9900411"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99004/9900412",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9900412"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99004/9900413",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9900413"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99019/9901906",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9901906"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99024/9901913",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9901913"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99025/9902506",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9902506"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99026/9902606",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9902606"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99027/9902706",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9902706"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99028/9902806",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9902806"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99029/9902906",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9902906"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99030/9903006",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9903006"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99031/9903106",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9903106"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99032/9903206",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9903206"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99033/9903306",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9903306"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99034/9903406",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9903406"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99035/9903506",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9903506"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99036/9903606",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9903606"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99037/9903706",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9903706"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99038/9903806",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9903806"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99039/9903906",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9903906"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99040/9904006",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9904006"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99041/9904106",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9904106"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99042/9904206",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9904206"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99043/9904306",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9904306"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99044/9904406",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9904406"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99045/9904506",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9904506"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99046/9904606",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9904606"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99047/9904706",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9904706"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99048/9904806",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9904806"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99049/9904906",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9904906"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99050/9905006",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9905006"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99051/9905106",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9905106"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99052/9905206",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9905206"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99053/9905306",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9905306"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99054/9905406",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9905406"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99055/9905506",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9905506"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99056/9905606",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9905606"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99057/9905706",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9905706"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99058/9905806",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9905806"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99059/9905906",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9905906"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99060/9906006",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9906006"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99061/9906106",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9906106"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99062/9906206",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9906206"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99070/9907001",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907001"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99070/9907002",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907002"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99071/9907101",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907101"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99071/9907102",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907102"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99072/9907201",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907201"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99072/9907202",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907202"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99073/9907301",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907301"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99073/9907302",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907302"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99078/9907801",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907801"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99078/9907802",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907802"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99078/9907803",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907803"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99078/9907804",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907804"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99078/9907805",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907805"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99078/9907806",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907806"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99078/9907807",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907807"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99078/9907808",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907808"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99078/9907809",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907809"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99078/9907810",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9907810"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99082/9908202",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9908202"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99082/9908220",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9908220"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99082/9908221",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9908221"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99082/9908222",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9908222"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99089/9908919",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 9908919"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/99089/9908920",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 9908920"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900101/99001013",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001013"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900102/99001023",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001023"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900103/99001033",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001033"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900104/99001043",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001043"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900105/99001053",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001053"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900106/99001063",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001063"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900107/99001073",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001073"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900108/99001083",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001083"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900109/99001093",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001093"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900110/99001103",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001103"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900111/99001113",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001113"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900112/99001123",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001123"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900113/99001133",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001133"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "spchallenge/9900114/99001143",
+    "delta": 2,
+    "value": 4,
+    "what": "chain -> 99001143"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/10101/1010104",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 1010104"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/10101/1010105",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 1010105"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/10102/1010204",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 1010204"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "panelquest/10102/1010205",
+    "delta": 4,
+    "value": 7,
+    "what": "chain -> 1010205"
+   },
+   {
+    "when": "2026-11-20 00:19:12",
+    "key": "dailyquest/2026-11-19/6900103",
+    "delta": 1,
+    "value": 2,
+    "what": "mission_clear -> daily quest 6900103"
+   }
+  ]
+ },
+ "daily_quest": {
+  "day": "2026-11-19",
+  "set": [
+   "6900103",
+   "6900202",
+   "6900404",
+   "6000505",
+   "6900503"
+  ],
+  "pools": [
+   "custom_story",
+   "custom_vortex",
+   "custom_battle",
+   "custom_growth",
+   "custom_social",
+   "vortex_gil_summon",
+   "gifter",
+   "explorer"
+  ],
+  "resets": 1
+ },
+ "exvius_resource_recovery": {
+  "legacy_signature_detected": false,
+  "restored_scene_switches": [],
+  "complete": true
+ },
+ "guide": {
+  "units": [
+   "100000102",
+   "100000202",
+   "900020401",
+   "201000104",
+   "212000603",
+   "100004303",
+   "100004604",
+   "209000503",
+   "204000503",
+   "213000504",
+   "100002103",
+   "100002403",
+   "253000603",
+   "205000403",
+   "100031607",
+   "213000105"
+  ],
+  "items": [
+   "202001700",
+   "290010000",
+   "290020700",
+   "290020800",
+   "290050100",
+   "202000400",
+   "290020100",
+   "290050200",
+   "202000100",
+   "203000100",
+   "290020400",
+   "1209001319",
+   "106213030",
+   "202000300",
+   "290020500",
+   "290020600"
+  ],
+  "equipment": [
+   "302000100",
+   "404000200",
+   "406000100",
+   "409000100",
+   "303001300",
+   "403020200",
+   "406000800",
+   "409000300"
+  ],
+  "materia": [],
+  "vision_cards": [
+   "100000201"
+  ],
+  "libra": [],
+  "monsters": {
+   "1020010": 5,
+   "1010010": 4,
+   "2010010": 1,
+   "1010110": 1,
+   "2090010": 1,
+   "1090010": 2,
+   "1110010": 1
+  },
+  "last_battle": [
+   "1110201",
+   4
+  ]
+ },
+ "exvius_friends": {
+  "players_added": [
+   910000016,
+   910000017,
+   910000022,
+   910000065,
+   910000067,
+   910000068,
+   910000092,
+   910000093,
+   910000102,
+   910000107,
+   910000110,
+   910000136,
+   910000150,
+   910000151,
+   910000181
+  ]
+ },
+ "weekly_gift": {
+  "last_week": 45
+ },
+ "first_clear": {
+  "baseline": [],
+  "paid": [
+   "1110103"
+  ],
+  "backpaid": true,
+  "last": {
+   "mid": "1110103",
+   "sequence": 3,
+   "shown": "50:0:500,60:903000010:1,20:203000100:3"
+  }
+ },
+ "shift_form_repair": {
+  "done": true,
+  "swapped": []
+ },
+ "quest_switch_repair": {
+  "done": true,
+  "set": []
+ },
+ "clear_switch_repair": {
+  "done": true,
+  "set": []
+ },
+ "chest_backpay": {
+  "checked": true,
+  "paid": {}
+ },
+ "exvius_field_treasures": [
+  "1101013"
+ ],
+ "replay_mails": [],
+ "exvius_repeat": {
+  "attempt": {
+   "mid": "1110201",
+   "sequence": 4,
+   "status": "completed",
+   "guide_monsters": {
+    "101011000": "1010110",
+    "103001000": "1030010",
+    "109001000": "1090010",
+    "111001000": "1110010",
+    "111011000": "1110110",
+    "209001000": "2090010"
+   },
+   "normal_rewards_recorded": true,
+   "cleared": true,
+   "paid": [
+    {
+     "id": "11102010",
+     "rewards": [
+      {
+       "kind": 50,
+       "id": 1,
+       "count": 20
+      }
+     ]
+    },
+    {
+     "id": "11102011",
+     "rewards": [
+      {
+       "kind": 50,
+       "id": 1,
+       "count": 10
+      }
+     ]
+    },
+    {
+     "id": "11102013",
+     "rewards": [
+      {
+       "kind": 50,
+       "id": 1,
+       "count": 10
+      }
+     ]
+    }
+   ],
+   "blocked": [],
+   "quest_progress_recorded": true
+  },
+  "non_lapis_claims": {
+   "1110101": {
+    "11101010": {
+     "legacy_completed_unknown_receipt": false,
+     "entries": []
+    },
+    "11101011": {
+     "legacy_completed_unknown_receipt": false,
+     "entries": []
+    },
+    "11101012": {
+     "legacy_completed_unknown_receipt": false,
+     "entries": []
+    },
+    "11101013": {
+     "legacy_completed_unknown_receipt": false,
+     "entries": []
+    }
+   },
+   "1110103": {
+    "11101030": {
+     "legacy_completed_unknown_receipt": false,
+     "entries": []
+    },
+    "11101031": {
+     "legacy_completed_unknown_receipt": false,
+     "entries": []
+    },
+    "11101032": {
+     "legacy_completed_unknown_receipt": false,
+     "entries": []
+    },
+    "11101033": {
+     "legacy_completed_unknown_receipt": false,
+     "entries": []
+    }
+   },
+   "1110201": {
+    "11102010": {
+     "legacy_completed_unknown_receipt": false,
+     "entries": []
+    },
+    "11102011": {
+     "legacy_completed_unknown_receipt": false,
+     "entries": []
+    },
+    "11102013": {
+     "legacy_completed_unknown_receipt": false,
+     "entries": []
+    }
+   }
+  }
+ },
+ "early_function_table": {
+  "27ED5165-2364-491E-87B3-6001117B05AE": "200044"
+ },
+ "exvius_mission_gil": {
+  "last": [
+   "1110201",
+   4
+  ]
+ },
+ "exvius_craft": {
+  "books": {
+   "903000010": true
+  },
+  "slots": {
+   "20:1": {
+    "recipe": 0,
+    "start": 0,
+    "end": 0,
+    "join_reason": 0
+   },
+   "20:2": {
+    "recipe": 0,
+    "start": 0,
+    "end": 0,
+    "join_reason": 0
+   },
+   "20:3": {
+    "recipe": 0,
+    "start": 0,
+    "end": 0,
+    "join_reason": 0
+   },
+   "20:4": {
+    "recipe": 0,
+    "start": 0,
+    "end": 0,
+    "join_reason": 0
+   },
+   "21:1": {
+    "recipe": 0,
+    "start": 0,
+    "end": 0,
+    "join_reason": 0
+   },
+   "21:2": {
+    "recipe": 0,
+    "start": 0,
+    "end": 0,
+    "join_reason": 0
+   },
+   "21:3": {
+    "recipe": 0,
+    "start": 0,
+    "end": 0,
+    "join_reason": 0
+   },
+   "21:4": {
+    "recipe": 0,
+    "start": 0,
+    "end": 0,
+    "join_reason": 0
+   },
+   "22:1": {
+    "recipe": 0,
+    "start": 0,
+    "end": 0,
+    "join_reason": 0
+   },
+   "22:2": {
+    "recipe": 0,
+    "start": 0,
+    "end": 0,
+    "join_reason": 0
+   },
+   "22:3": {
+    "recipe": 0,
+    "start": 0,
+    "end": 0,
+    "join_reason": 0
+   },
+   "22:4": {
+    "recipe": 0,
+    "start": 0,
+    "end": 0,
+    "join_reason": 0
+   }
+  }
+ },
+ "story_recipes": {
+  "paid": [
+   "1110103"
+  ]
+ },
+ "bundle_purchases": {
+  "990000101": {
+   "count": 1,
+   "last_day": "2026-11-19"
+  },
+  "990000103": {
+   "count": 1,
+   "last_day": "2026-11-19"
+  },
+  "990000109": {
+   "count": 1,
+   "last_day": "2026-11-19"
+  }
+ },
+ "exvius_unit_points": {
+  "banks": {
+   "0": {
+    "XeRVw3s2": 3500000
+   }
+  }
+ }
+}
