@@ -32,7 +32,7 @@ if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 
 import player_state  # noqa: E402  (needs PYTHONPATH=/app/server inside the image)
-from agent import ops_basic, ops_cards, ops_items, ops_units  # noqa: E402
+from agent import ops_abilities, ops_basic, ops_cards, ops_items, ops_units  # noqa: E402
 
 USAGE = """usage:
   agent.py summary  <save>
@@ -320,6 +320,19 @@ def apply_units(ps, value):
     return {"units": built}
 
 
+def apply_abilities(ps, value):
+    if not isinstance(value, list):
+        raise ValueError("abilities: expected a list of {instance_id, recipe_id}")
+    done = []
+    for row in value:
+        if not isinstance(row, dict) or "instance_id" not in row or "recipe_id" not in row:
+            raise ValueError(f"abilities: every row needs instance_id and recipe_id, got {row!r}")
+        done.append(ops_abilities.apply_ability(ps, row["instance_id"], row["recipe_id"],
+                                                grant_materials=bool(row.get("grant_materials")),
+                                                force_exbonus=bool(row.get("force_exbonus"))))
+    return {"abilities": done}
+
+
 def apply_progress(ps, value):
     """Opaque here: the questline project owns `progress` and plugs into this table."""
     return {"ignored": True, "reason": "owned by the questline project"}
@@ -333,6 +346,7 @@ APPLIERS = {
     "cards": apply_cards,
     "card_levels": apply_card_levels,
     "units": apply_units,
+    "abilities": apply_abilities,
     "progress": apply_progress,
 }
 
