@@ -32,7 +32,7 @@ if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 
 import player_state  # noqa: E402  (needs PYTHONPATH=/app/server inside the image)
-from agent import ops_basic  # noqa: E402
+from agent import ops_basic, ops_items  # noqa: E402
 
 USAGE = """usage:
   agent.py summary  <save>
@@ -284,6 +284,14 @@ def apply_tickets(ps, value):
     return ops_basic.apply_tickets(ps, value)
 
 
+def apply_points(ps, value):
+    return ops_items.apply_points(ps, value)
+
+
+def apply_materials(ps, value):
+    return ops_items.apply_materials(ps, value)
+
+
 def apply_progress(ps, value):
     """Opaque here: the questline project owns `progress` and plugs into this table."""
     return {"ignored": True, "reason": "owned by the questline project"}
@@ -292,6 +300,8 @@ def apply_progress(ps, value):
 APPLIERS = {
     "currencies": apply_currencies,
     "tickets": apply_tickets,
+    "points": apply_points,
+    "materials": apply_materials,
     "progress": apply_progress,
 }
 
