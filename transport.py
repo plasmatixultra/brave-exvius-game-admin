@@ -81,12 +81,16 @@ def status(container, timeout=60):
     return done.stdout.strip()
 
 
-def run_in_image(image, mounts, command, timeout=900, env=None, stdin_closed=True):
+def run_in_image(image, mounts, command, timeout=900, env=None, entrypoint=None):
     """Run ``command`` in a throwaway container of ``image``.
 
-    ``mounts`` is a list of ``(host_path, container_path, "ro"|"rw")``.
+    ``mounts`` is a list of ``(host_path, container_path, "ro"|"rw")``. The game
+    image has its own entrypoint, so anything that is not a normal server start
+    must replace it: pass ``entrypoint``.
     """
     args = ["run", "--rm"]
+    if entrypoint:
+        args += ["--entrypoint", entrypoint]
     for host_path, container_path, mode in mounts:
         args += ["-v", "%s:%s:%s" % (host_path, container_path, mode)]
     for name, value in (env or {}).items():

@@ -51,7 +51,11 @@ def _columns(path):
 
 
 def check(engine_dir, data_dir, path=None):
-    """Return ``{"ok": bool, "missing": [str]}``; names say what to update."""
+    """Return ``{"ok": bool, "missing": [str]}``; names say what to update.
+
+    ``data_dir`` is the game's data root (the one holding ``static/``), which is
+    what ``Settings.data_dir`` names.
+    """
     wanted = manifest(path)
     missing = []
     for name, attributes in (wanted.get("modules") or {}).items():
@@ -63,6 +67,8 @@ def check(engine_dir, data_dir, path=None):
             if not hasattr(module, attribute):
                 missing.append("%s.%s" % (name, attribute))
     mst = os.path.join(data_dir, "mst_decoded")
+    if not os.path.isdir(mst):
+        mst = os.path.join(data_dir, "static", "mst_decoded")
     for table, columns in (wanted.get("columns") or {}).items():
         found = _columns(os.path.join(mst, table + ".ndjson"))
         if found is None:

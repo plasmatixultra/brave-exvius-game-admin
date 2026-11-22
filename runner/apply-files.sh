@@ -2,7 +2,7 @@
 # File worker. Runs INSIDE the game image, as whatever user the image runs as
 # (root), with the game's server directory and a work directory mounted in.
 #
-#   apply-files.sh <verb> <server_root> <workdir>
+#   apply-files.sh <verb> <server_root> <workdir> [backup_path]
 #
 # Verbs, in the order the host orchestrator calls them:
 #   backup    copy the live save to <server_root>/state/backups/campaign-<UTC>.json,
@@ -33,6 +33,7 @@ die() { echo "apply-files: $*" >&2; exit "${2:-1}"; }
 VERB="${1:-}"
 SERVER="${2:-}"
 WORKDIR="${3:-}"
+BACKUP_ARG="${4:-}"
 [ -n "$VERB" ] && [ -n "$SERVER" ] && [ -n "$WORKDIR" ] || usage
 
 SAVE="$SERVER/$SAVE_REL"
@@ -105,10 +106,12 @@ do_write() {
 }
 
 do_restore() {
-    local backup
-    # Accept the bare path our own backup wrote, and the `restore: <path>` form
-    # earlier workdirs used.
-    backup="$(sed -n '1{s/^restore: //;p}' "$WORKDIR/backup" 2>/dev/null)"
+    local backup="$BACKUP_ARG"
+    if [ -z "$backup" ]; then
+        # Accept the bare path our own backup wrote, and the `restore: <path>` form
+        # earlier workdirs used.
+        backup="$(sed -n '1{s/^restore: //;p}' "$WORKDIR/backup" 2>/dev/null)"
+    fi
     [ -n "$backup" ] || die "no backup recorded in $WORKDIR/backup"
     [ -f "$backup" ] || die "the recorded backup does not exist: $backup"
     replace "$backup"

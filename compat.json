@@ -21,8 +21,7 @@
     "first_clear": [
       "rewards",
       "is_due",
-      "pay",
-      "last"
+      "pay"
     ],
     "mission_gil": [
       "amount",

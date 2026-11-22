@@ -103,6 +103,15 @@ class CompatTest(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertIn("F_STORY_SUB_MST.juA0Z4m7", result["missing"])
 
+    def test_the_games_data_root_is_accepted(self):
+        """Settings.data_dir is the root holding static/, not static/mst_decoded."""
+        root = os.path.join(self.tmp, "data-root")
+        os.makedirs(os.path.join(root, "static"))
+        os.rename(os.path.join(self.data, "mst_decoded"),
+                  os.path.join(root, "static", "mst_decoded"))
+        result = compat.check(self.engine, root)
+        self.assertTrue(result["ok"], result["missing"])
+
     def test_a_missing_table_is_named(self):
         os.remove(os.path.join(self.data, "mst_decoded", "F_BEAST_MST.ndjson"))
         result = compat.check(self.engine, self.data)

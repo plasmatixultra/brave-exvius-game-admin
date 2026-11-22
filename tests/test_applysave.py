@@ -74,6 +74,20 @@ class ApplyTest(unittest.TestCase):
         self.assertIn("restore", " ".join(result["log"]))
         self.assertFalse(os.path.exists(applysave.marker_path()))
 
+    def test_rollback_hands_the_backup_path_to_the_container(self):
+        """The workdir is owned by the image's user after the backup; the host must not
+        write into it, so the path travels as an argument."""
+        expected = os.path.join(self.settings.backups, "campaign-20261122T201500Z.json")
+        os.environ["FAKE_BACKUP"] = expected
+        os.environ["FAKE_AGENT_FAILS"] = "1"
+        with FakeDocker() as fake:
+            result = applysave.apply_edits(self.settings, {}, app_dir=self.app)
+        self.assertFalse(result["ok"])
+        restores = [c for c in fake.argv() if "apply-files.sh restore" in c]
+        self.assertEqual(len(restores), 1, fake.argv())
+        self.assertIn(expected, restores[0])
+        self.assertNotIn("ROLLBACK FAILED", " ".join(result["log"]))
+
     def test_a_refusal_never_reports_success(self):
         with FakeDocker():
             os.environ["FAKE_AGENT_FAILS"] = "1"
@@ -119,6 +133,21 @@ class ApplyTest(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertEqual(result["code"], applysave.EXIT_STATUS_TIMEOUT)
         self.assertIn("restore", " ".join(result["log"]))
+
+    def test_a_server_that_is_still_booting_is_polled_not_failed(self):
+        """The game answers only once it has loaded the save; an early refusal is not a failure."""
+        os.environ["FAKE_STATUS_FAILURES"] = "2"
+        with FakeDocker():
+            result = applysave.apply_edits(self.settings, {}, app_dir=self.app, status_timeout=10)
+        self.assertTrue(result["ok"], result)
+        self.assertNotIn("restore", " ".join(result["log"]))
+
+    def test_a_rollback_is_logged_once(self):
+        os.environ["FAKE_AGENT_FAILS"] = "1"
+        with FakeDocker():
+            result = applysave.apply_edits(self.settings, {}, app_dir=self.app)
+        restores = [line for line in result["log"] if "save restored" in line]
+        self.assertEqual(len(restores), 1, result["log"])
 
     def test_recover_restores_a_dead_apply(self):
         workdir = os.path.join(self.cache, "apply-dead")

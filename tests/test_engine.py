@@ -42,7 +42,7 @@ class EngineTest(unittest.TestCase):
             first = engine.ensure(self.settings, self.cache)
             stamp = os.path.getmtime(os.path.join(first, "player_state.py"))
             engine.ensure(self.settings, self.cache)
-            exports = [c for c in fake.argv() if "cp -a /app/server/." in c]
+            exports = [c for c in fake.argv() if "-a /app/server/." in c]
         self.assertEqual(len(exports), 1)
         self.assertEqual(os.path.getmtime(os.path.join(first, "player_state.py")), stamp)
 

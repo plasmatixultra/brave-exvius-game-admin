@@ -56,6 +56,13 @@ class ProductSurfaceTest(unittest.TestCase):
         for phrase in ("python3 app.py", "127.0.0.1:8750", "campaign.json"):
             self.assertIn(phrase, readme)
 
+    def test_every_image_the_readme_shows_exists(self):
+        with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as handle:
+            readme = handle.read()
+        for match in re.finditer(r"\]\((docs/screenshots/[^)]+)\)", readme):
+            self.assertTrue(os.path.isfile(os.path.join(ROOT, match.group(1))),
+                            "%s is referenced but missing" % match.group(1))
+
     def test_the_readme_warns_that_it_edits_the_save(self):
         with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as handle:
             readme = handle.read().lower()

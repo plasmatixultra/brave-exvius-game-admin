@@ -10,6 +10,15 @@ case "$1" in
     cat "${FAKE_INSPECT_JSON:-$(dirname "$0")/docker_inspect_standard.json}"
     ;;
   exec)
+    COUNTER="${CALLS_FILE:-/dev/null}.status"
+    if [ -n "${FAKE_STATUS_FAILURES:-}" ]; then
+      n=$(( $(cat "$COUNTER" 2>/dev/null || echo 0) + 1 ))
+      echo "$n" > "$COUNTER"
+      if [ "$n" -le "$FAKE_STATUS_FAILURES" ]; then
+        echo "the server is not answering (connection refused)" >&2
+        exit 1
+      fi
+    fi
     case "$*" in
       *" cat "*)
         [ -n "${FAKE_CAT:-}" ] || FAKE_CAT='{}'
@@ -33,17 +42,30 @@ case "$1" in
     echo "$2"
     ;;
   run)
-    # `cp -a /app/server/.` exports the engine source into whatever is mounted at /export.
+    # The engine export runs `sh -c` with the cache mounted at /cache: do what it
+    # says, so the host sees the tree the real container would have written.
     case "$*" in
-      *"cp -a /app/server/."*)
+      *"--entrypoint sh"*|*"cp -a /app/server/. /cache/engine.new/"*)
         if [ -n "${FAKE_NO_SERVER:-}" ]; then
-          echo "cp: cannot stat '/app/server'" >&2
+          echo "cp: cannot stat '/app/server': No such file or directory" >&2
           exit 1
         fi
-        EXPORT_HOST="$(printf '%s\n' "$*" | sed -n 's|.*[[:space:]]-v \([^ ]*\):/export:rw.*|\1|p')"
-        for name in player_state.py ffbe_state.py ffbe_battle.py first_clear.py; do
-          printf '# exported stub\n' > "$EXPORT_HOST/$name"
+        CACHE_HOST="$(printf '%s\n' "$*" | sed -n 's|.*[[:space:]]-v \([^ ]*\):/cache:rw.*|\1|p')"
+        ID="$(printf '%s\n' "$*" | sed -n 's|.*IMAGE_ID=\([^ ]*\).*|\1|p')"
+        if [ -z "$CACHE_HOST" ]; then
+          echo "fake docker: no cache mount in: $*" >&2
+          exit 1
+        fi
+        mkdir -p "$CACHE_HOST/engine.new"
+        for name in player_state.py ffbe_state.py ffbe_battle.py first_clear.py mission_gil.py story_units.py; do
+          printf '# exported stub\n' > "$CACHE_HOST/engine.new/$name"
         done
+        printf '%s' "$ID" > "$CACHE_HOST/engine.new/.image-id"
+        if [ -d "$CACHE_HOST/engine" ]; then
+          find "$CACHE_HOST/engine" -mindepth 1 -delete
+          rmdir "$CACHE_HOST/engine"
+        fi
+        mv "$CACHE_HOST/engine.new" "$CACHE_HOST/engine"
         exit 0 ;;
     esac
     # Behave like the image would: whatever host dir is mounted at /work gets the

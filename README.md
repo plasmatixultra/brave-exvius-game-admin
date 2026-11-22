@@ -8,7 +8,11 @@ It runs on the machine that already runs the game's Docker container, and finds 
 container, its save and its backups by itself. Python 3.11+ and Docker are the only
 prerequisites; nothing else is installed.
 
-*(screenshots after the acceptance run)*
+![Progress: story checkpoints and side content](docs/screenshots/progress.png)
+
+| | |
+|---|---|
+| ![Quick Grants](docs/screenshots/grants.png) | ![Unit Builder](docs/screenshots/units.png) |
 
 ## Quick start
 

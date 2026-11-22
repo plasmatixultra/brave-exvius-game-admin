@@ -46,12 +46,13 @@ class TransportTest(unittest.TestCase):
             transport.run_in_image(
                 "ffbe-ios-server:local",
                 [("/a", "/srv/ffbe/server-root", "rw"), ("/b", "/work", "rw")],
-                ["bash", "/admin/runner/apply-files.sh", "backup"])
+                ["/admin/runner/apply-files.sh", "backup"], entrypoint="bash")
             call = fake.argv()[-1]
         self.assertTrue(call.startswith("run --rm"), call)
         self.assertIn("-v /a:/srv/ffbe/server-root", call)
         self.assertIn("-v /b:/work", call)
-        self.assertIn("ffbe-ios-server:local bash /admin/runner/apply-files.sh backup", call)
+        self.assertIn("--entrypoint bash", call)
+        self.assertIn("ffbe-ios-server:local /admin/runner/apply-files.sh backup", call)
 
     def test_missing_docker_is_reported(self):
         saved = os.environ["PATH"]

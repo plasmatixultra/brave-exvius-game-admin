@@ -111,6 +111,17 @@ run restore "$T/server" "$T/work" > /dev/null; code=$?
     && ok "restore puts the original bytes back" || no "restore puts the original bytes back"
 [ ! -e "$T/server/state/campaign.json.tmp" ] && ok "restore leaves no temp file" || no "restore leaves no temp file"
 
+# --- the host passes the backup path, not a file it wrote ---------------------
+run backup "$T/server" "$T/work" > /dev/null
+saved_backup="$(cat "$T/work/backup")"
+: > "$T/work/backup"                     # as if the host could not write it
+run write "$T/server" "$T/work" > /dev/null
+run restore "$T/server" "$T/work" "$saved_backup" > /dev/null; code=$?
+[ "$code" -eq 0 ] && ok "restore takes the backup path as an argument" || no "restore takes a path argument (got $code)"
+[ "$(md5sum < "$T/server/state/campaign.json")" = "$before" ] \
+    && ok "the argument restored the original bytes" || no "the argument restored the original bytes"
+setup
+
 # --- refusals ----------------------------------------------------------------------------------
 run backup "$T/server" "$T/work" > /dev/null
 printf 'restore: %s\n' "$T/server/state/backups/absent.json" > "$T/work/backup"

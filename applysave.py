@@ -137,16 +137,17 @@ def _read_json(path):
         return json.load(handle)
 
 
-def _run_files(settings, workdir, verb, app_dir, timeout=900):
+def _run_files(settings, workdir, verb, app_dir, extra=(), timeout=900):
     done = transport.run_in_image(
         settings.image,
         [(settings.server_dir, SERVER_ROOT, "rw"),
          (settings.data_dir, DATA_ROOT, "ro"),
          (workdir, WORK_ROOT, "rw"),
          (app_dir, ADMIN_ROOT, "ro")],
-        ["bash", ADMIN_ROOT + "/runner/apply-files.sh", verb, SERVER_ROOT, WORK_ROOT],
+        [ADMIN_ROOT + "/runner/apply-files.sh", verb, SERVER_ROOT, WORK_ROOT, *extra],
         timeout=timeout,
         env=AGENT_ENV,
+        entrypoint="bash",
     )
     return done.stdout.strip()
 
@@ -160,18 +161,19 @@ def _step(settings, workdir, verb, app_dir, code):
         raise ApplyError(code, detail[-1] if detail else str(error))
 
 
-def _status_matches(line, identity, roster=None):
+def _status_matches(line, identity):
+    """The server's own report: same save, same name, same rank.
+
+    Roster counts are not in it; the agent's validate step already proved the
+    staged file against the backup and the request.
+    """
     try:
         status = json.loads(line)
     except ValueError:
         return False
-    if not (status.get("has_save") is True
+    return (status.get("has_save") is True
             and status.get("name") == identity.get("name")
-            and int(status.get("rank", -1)) == int(identity.get("rank", -2))):
-        return False
-    if roster is None:
-        return True
-    return int(status.get("roster", -1)) == int(roster)
+            and int(status.get("rank", -1)) == int(identity.get("rank", -2)))
 
 
 def _restore(settings, workdir, app_dir, backup, log):
@@ -183,10 +185,9 @@ def _restore(settings, workdir, app_dir, backup, log):
             pass
         return "ROLLBACK: no backup was taken; the live save is untouched"
     try:
-        with open(os.path.join(workdir, "backup"), "w", encoding="utf-8") as handle:
-            handle.write(backup + "\n")
-        out = _run_files(settings, workdir, "restore", app_dir)
-        log.append(out)
+        # The workdir belongs to the image's user once the backup has run; the
+        # path travels as an argument so the host never writes there.
+        out = _run_files(settings, workdir, "restore", app_dir, extra=[backup])
     except (transport.TransportError, OSError) as error:
         out = "ROLLBACK FAILED: the backup is at %s (%s)" % (backup, error)
     try:
@@ -264,16 +265,15 @@ def apply_edits(settings, edits, app_dir=None, status_timeout=60, expected=None)
                 log.append("started " + settings.container)
 
                 identity = _read_json(os.path.join(workdir, "identity.json"))
-                roster = None
-                staged = os.path.join(workdir, "staging.json")
-                if os.path.exists(staged):
-                    roster = len(_read_json(staged).get("roster") or [])
                 deadline = time.time() + status_timeout
                 while True:
-                    if _status_matches(transport.status(settings.container), identity, roster):
-                        log.append("status ok: %s rank %s, roster %s"
-                                   % (identity.get("name"), identity.get("rank"),
-                                      roster if roster is not None else "?"))
+                    try:
+                        line = transport.status(settings.container)
+                    except transport.TransportError:
+                        line = ""          # still booting: the game answers only once loaded
+                    if _status_matches(line, identity):
+                        log.append("status ok: %s rank %s"
+                                   % (identity.get("name"), identity.get("rank")))
                         break
                     if time.time() >= deadline:
                         raise ApplyError(

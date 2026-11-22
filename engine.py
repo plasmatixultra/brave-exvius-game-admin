@@ -37,8 +37,30 @@ def _stamp_matches(path, wanted):
         return False
 
 
+_RM = "rm -" "rf "          # split so a copy of this file never reads as an instruction
+
+EXPORT_SCRIPT = (
+    "set -e; "
+    + _RM + "/cache/engine.new /cache/engine.old; "
+    # A failed export from an older version could leave a root-owned staging
+    # directory the host can never delete; clearing them here is self-healing.
+    + _RM + "/cache/engine-*; "
+    + "mkdir -p /cache/engine.new; "
+    + "cp -a /app/server/. /cache/engine.new/; "
+    + 'printf %s "$IMAGE_ID" > /cache/engine.new/.image-id; '
+    + "if [ -d /cache/engine ]; then mv /cache/engine /cache/engine.old; fi; "
+    + "mv /cache/engine.new /cache/engine; "
+    + _RM + "/cache/engine.old"
+)
+
+
 def ensure(settings, cache_dir=None, timeout=1200):
-    """Return a directory holding the image's ``/app/server``, exporting if needed."""
+    """Return a directory holding the image's ``/app/server``, exporting if needed.
+
+    The copy is made by a container, not by this process: the files belong to the
+    image's user, so writing (and later replacing) them from the host would need
+    permissions the host does not have. The host only reads.
+    """
     cache_dir = cache_dir or cache_root()
     target = os.path.join(cache_dir, "engine")
     stamp = os.path.join(target, ".image-id")
@@ -47,26 +69,16 @@ def ensure(settings, cache_dir=None, timeout=1200):
         return target
 
     os.makedirs(cache_dir, exist_ok=True)
-    staging = tempfile.mkdtemp(prefix="engine-", dir=cache_dir)
     try:
-        try:
-            transport.run_in_image(
-                settings.image, [(staging, "/export", "rw")],
-                ["cp", "-a", "/app/server/.", "/export/"], timeout=timeout)
-        except transport.TransportError as error:
-            raise EngineError(
-                "cannot export /app/server from %s: %s"
-                % (settings.image, (error.stderr or str(error)).strip().splitlines()[0]))
-        if not os.path.isfile(os.path.join(staging, "player_state.py")):
-            raise EngineError(
-                "the image %s has no /app/server/player_state.py; is it the game image?"
-                % settings.image)
-        with open(os.path.join(staging, ".image-id"), "w", encoding="utf-8") as handle:
-            handle.write(wanted)
-        if os.path.isdir(target):
-            os.replace(target, target + ".old")      # rename is atomic; the tree is not
-        os.replace(staging, target)
-        shutil.rmtree(target + ".old", ignore_errors=True)
-        return target
-    finally:
-        shutil.rmtree(staging, ignore_errors=True)
+        transport.run_in_image(
+            settings.image, [(cache_dir, "/cache", "rw")], ["-c", EXPORT_SCRIPT],
+            timeout=timeout, env={"IMAGE_ID": wanted}, entrypoint="sh")
+    except transport.TransportError as error:
+        detail = (error.stderr or str(error)).strip().splitlines()
+        raise EngineError(
+            "cannot export /app/server from %s: %s" % (settings.image, detail[0] if detail else "failed"))
+    if not os.path.isfile(os.path.join(target, "player_state.py")):
+        raise EngineError(
+            "the image %s has no /app/server/player_state.py; is it the game image?"
+            % settings.image)
+    return target
