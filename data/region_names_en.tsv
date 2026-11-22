@@ -1,9 +1,19 @@
-# region_id	global name — Season 1/3/4 region titles from the walkthrough; the rest fall
-# back to the game's own text table. Season 4 chapters 2, 3 and 6 are unlabeled on the world map.
+# region_id	global name — Season 2 chapter regions from the walkthrough; the rest fall
+# back to the game's own text table. Season 4 chapters 2, 3 and 6 are unlabeled.
 5	Olderion
 7	Mysidia
 8	Gronoa
 9	Kingdom of Pharm
+10	Aldore & Georl
+11	Gungan
+12	Crystallis
+13	Visectrum
+14	Visectrum & Town of Desolation
+15	Town of Desolation & Magistellus
+16	Rubiena & The Six Realms
+17	Rubiena
+18	Aldore Tower & Grandore
+19	Grandore & Vlad
 20	Wohlstok
 21	Kingdom of Illumia
 22	Kingdom of Couleur
