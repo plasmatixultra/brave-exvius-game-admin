@@ -478,6 +478,10 @@ def op_questline(save, _edits, flags):
     """The Progress view's reads: regions, a region's areas, a checkpoint preview, a world's side content."""
     from agent import questline, story
     book = story.load_story(os.environ["MST_DIR"], os.environ.get("TEXT_DIR"))
+    if str(flags.get("world")) == "all":
+        return {"worlds": [{"world_id": w["world_id"], "quests": w["quests"],
+                            "dungeons": w["dungeons"]}
+                           for w in book.worlds() if w["quests"] or w["dungeons"]]}, []
     if flags.get("world") is not None:
         return {"world": flags["world"],
                 "content": book.side_content(flags["world"])}, []

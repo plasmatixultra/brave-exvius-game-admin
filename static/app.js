@@ -40,6 +40,7 @@
     $$('.view').forEach(function (v) { v.classList.toggle('on', v.dataset.view === id); });
     if (location.hash.slice(1) !== id) history.replaceState(null, '', '#' + id);
     syncUnitPickers(id);
+    if (id === 'progress') loadProgress();
   }
 
   // The kit and the ability view work on ONE unit: keep them on the one being built.
@@ -72,6 +73,7 @@
       if (id && $('.view[data-view="' + id + '"]')) showView(id);
     });
     $('#to-grants').addEventListener('click', function () { showView('grants'); });
+    wireProgress();
   }
 
   /* ------------------------------------------------------------------------ the cart */
@@ -401,6 +403,149 @@
   function selectedRow() {
     if (!S.summary || !S.selected) return null;
     return S.summary.roster.filter(function (u) { return u.instance_id === S.selected.instance_id; })[0] || null;
+  }
+
+  /* ------------------------------------------------------------------------ progress view */
+  var progressCache = { regions: null, plan: null, side: {} };
+
+  function loadProgress() {
+    if ($('#region-list').options.length) return;
+    api('/api/questline/regions').then(function (data) {
+      progressCache.regions = data.regions;
+      var select = $('#region-list');
+      select.innerHTML = '';
+      (data.regions || []).forEach(function (region) {
+        var option = document.createElement('option');
+        option.value = region.region_id;
+        option.textContent = region.name + ' · ' + region.arc + ' · ' + region.dungeon_count + ' areas';
+        select.appendChild(option);
+      });
+      select.value = '22';
+      loadAreas();
+    }).catch(function (error) { $('#plan-summary').textContent = error.message; });
+    loadSideWorlds();
+  }
+
+  function loadAreas() {
+    var region = $('#region-list').value || '1';
+    api('/api/questline?region=' + encodeURIComponent(region)).then(function (data) {
+      var select = $('#area-list');
+      select.innerHTML = '';
+      (data.areas || []).forEach(function (area) {
+        var option = document.createElement('option');
+        option.value = area.area_id;
+        option.textContent = area.name + ' · ' + area.missions.length + ' missions'
+          + (area.shares_with ? ' · shares missions with ' + area.shares_with : '');
+        select.appendChild(option);
+      });
+      loadPlan();
+    });
+  }
+
+  function loadPlan() {
+    var region = $('#region-list').value;
+    var area = $('#area-list').value;
+    if (!region || !area) return;
+    $('#plan-summary').textContent = 'previewing…';
+    api('/api/questline?region=' + encodeURIComponent(region) + '&area=' + encodeURIComponent(area))
+      .then(function (data) {
+        progressCache.plan = { region: region, area: area, expected: data.expected };
+        var plan = data.plan || {};
+        var excluded = {};
+        (plan.excluded || []).forEach(function (row) {
+          excluded[row.reason] = (excluded[row.reason] || 0) + 1;
+        });
+        var lines = (plan.missions || []).length + ' missions · ' + (plan.gates || []).length
+          + ' gates · ' + (plan.espers || []).length + ' esper(s)';
+        Object.keys(excluded).forEach(function (reason) {
+          lines += ' · ' + excluded[reason] + ' excluded (' + reason + ')';
+        });
+        $('#plan-summary').textContent = lines;
+        var expected = data.expected || {};
+        $('#plan-rewards').textContent = 'Lapis +' + fmt((expected.currencies || {}).lapis_free)
+          + ' · gil +' + fmt((expected.currencies || {}).gil)
+          + ' · roster +' + fmt(expected.roster_added)
+          + ' · cleared +' + fmt((expected.extra || {}).cleared);
+        $('#checkpoint-apply').disabled = false;
+      }).catch(function (error) {
+        $('#plan-summary').textContent = error.message;
+        $('#checkpoint-apply').disabled = true;
+      });
+  }
+
+  function loadSideWorlds() {
+    api('/api/questline?world=all').then(function (data) {
+      (data.worlds || []).forEach(function (world) { renderSideHost(world.world_id, world); });
+    }).catch(function (error) { $('#sum-side').textContent = error.message; });
+  }
+
+  function renderSideHost(world, content) {
+    progressCache.side[world] = content;
+    var row = document.createElement('div');
+    row.className = 'side-world';
+    row.dataset.world = world;
+    var title = document.createElement('div');
+    title.className = 'blkhead';
+    title.textContent = 'World ' + world + ' · ' + (content.quests || []).length + ' quests · '
+      + (content.dungeons || []).length + ' dungeons';
+    row.appendChild(title);
+    (content.quests || []).forEach(function (quest) {
+      var line = document.createElement('label');
+      line.className = 'side-row';
+      line.innerHTML = '<input type="checkbox" data-quest="' + esc(quest.quest_id) + '" data-world="'
+        + world + '"><span class="nm">' + esc(quest.place) + ' · ' + esc(quest.quest_id) + '</span>'
+        + (quest.delivery ? '<span class="tag">delivery</span>' : '');
+      row.appendChild(line);
+    });
+    (content.dungeons || []).forEach(function (dungeon) {
+      var line = document.createElement('label');
+      line.className = 'side-row';
+      line.innerHTML = '<input type="checkbox" data-dungeon="' + esc(dungeon.dungeon_key)
+        + '" data-world="' + world + '"><span class="nm">' + esc(dungeon.name) + ' · '
+        + esc(dungeon.esper_name || '') + '</span>'
+        + (dungeon.grantable ? '<input type="checkbox" checked data-grant="'
+          + esc(dungeon.dungeon_key) + '" data-world="' + world + '"><span class="tag">grant</span>'
+          : '<span class="tag">not grantable</span>');
+      row.appendChild(line);
+    });
+    $('#side-list').appendChild(row);
+    $('#side-apply').disabled = false;
+    $('#sum-side').textContent = Object.keys(progressCache.side).length + ' worlds listed';
+  }
+
+  function sideSelection() {
+    var side = {};
+    $$('#side-list input[data-quest]:checked').forEach(function (box) {
+      var world = box.dataset.world;
+      side[world] = side[world] || { quests: [], dungeons: [] };
+      side[world].quests.push(box.dataset.quest);
+    });
+    $$('#side-list input[data-dungeon]:checked').forEach(function (box) {
+      var world = box.dataset.world;
+      side[world] = side[world] || { quests: [], dungeons: [] };
+      var grant = $('input[data-grant="' + box.dataset.dungeon + '"]');
+      side[world].dungeons.push({ dungeon_key: box.dataset.dungeon,
+                                  grant_esper: !!(grant && grant.checked) });
+    });
+    return side;
+  }
+
+  function wireProgress() {
+    $('#region-list').addEventListener('change', loadAreas);
+    $('#area-list').addEventListener('change', loadPlan);
+    $('#checkpoint-apply').addEventListener('click', function () {
+      var plan = progressCache.plan;
+      if (!plan) return;
+      addEdit('Progress · checkpoint ' + plan.area, { progress: {
+        checkpoint: { region: parseInt(plan.region, 10), area: plan.area }, side: null },
+        expected: plan.expected });
+    });
+    $('#side-apply').addEventListener('click', function () {
+      var side = sideSelection();
+      if (!Object.keys(side).length) return;
+      addEdit('Progress · side ' + Object.keys(side).map(function (w) { return 'W' + w; }).join('+'),
+              { progress: { checkpoint: null, side: side } });
+    });
   }
 
   function selectUnit(instanceId) {

@@ -117,9 +117,9 @@ class AppTest(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertIn("text/html", content_type)
         text = body.decode("utf-8")
-        for view in ("grants", "units", "kit", "ability", "vision", "log"):
+        for view in ("grants", "units", "kit", "ability", "vision", "progress", "log"):
             self.assertIn('data-view="%s"' % view, text)
-        self.assertEqual(text.count('<section class="view'), 6)
+        self.assertEqual(text.count('<section class="view'), 7)
         self.assertIn('id="cart"', text)
         self.assertIn('id="apply"', text)
 
@@ -202,6 +202,27 @@ class AppTest(unittest.TestCase):
                                        "Origin": "http://10.129.1.124:8751"})
         self.assertEqual(status, 200)
         self.assertEqual(len(self.calls), 1)
+
+    def test_index_has_progress_view(self):
+        status, _, body = self.get("/")
+        self.assertEqual(status, 200)
+        self.assertIn(b'data-view="progress"', body)
+
+    def test_progress_ids_present(self):
+        status, _, body = self.get("/")
+        text = body.decode()
+        for element_id in ("region-list", "area-list", "side-list", "plan-summary",
+                           "plan-rewards", "checkpoint-apply", "side-apply", "sum-side"):
+            self.assertIn('id="%s"' % element_id, text)
+
+    def test_rail_has_progress_entry(self):
+        status, _, body = self.get("/")
+        self.assertIn(b'<a data-view="progress">', body)
+
+    def test_view_count_is_seven(self):
+        status, _, body = self.get("/")
+        sections = body.decode().count('<section class="view')
+        self.assertEqual(sections, 7, "six from project one plus the Progress view")
 
     def test_questline_regions(self):
         status, _, body = self.get("/api/questline/regions")

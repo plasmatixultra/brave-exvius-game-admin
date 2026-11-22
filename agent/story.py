@@ -368,8 +368,20 @@ class Story:
                 "side_effects": {"claim": "quest completion rewrites the quest audit ring"}}
 
 
+_CACHE = {}
+
+
 def load_story(mst_dir, text_dir=None, helpers=None):
-    """Parse the shipped tables once. `helpers` are reward callables: lapis/gil/items/units."""
+    """The parsed catalog, cached per table directory.
+
+    Parsing the full tables takes seconds; the app asks for regions, areas, a plan and each world's
+    side content on ONE view load, so an uncached parse made that view unusable.
+    """
+    key = (os.path.abspath(mst_dir), os.path.abspath(text_dir) if text_dir else None)
+    book = _CACHE.get(key)
+    if book is not None:
+        book.helpers = helpers or {}
+        return book
     missions = _rows(mst_dir, "F_MISSION_MST")
     sub = _rows(mst_dir, "F_STORY_SUB_MST")
     beasts = _rows(mst_dir, "F_BEAST_MST")
@@ -388,4 +400,5 @@ def load_story(mst_dir, text_dir=None, helpers=None):
         explorations = set()
     book = Story(missions, sub, beasts, quests, towns, dungeons, switches, texts, helpers, explorations)
     book.quest_steps_rows = steps
+    _CACHE[key] = book
     return book

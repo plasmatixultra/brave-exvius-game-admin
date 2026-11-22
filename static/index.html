@@ -37,6 +37,7 @@
       <a data-view="kit"><span class="mk"></span>Awakening Kit</a>
       <a data-view="ability"><span class="mk"></span>Ability Awakening</a>
       <a data-view="vision"><span class="mk"></span>Vision Cards</a>
+      <a data-view="progress"><span class="mk"></span>Progress</a>
       <a data-view="log"><span class="mk"></span>Log <span class="count" id="log-count">0</span></a>
 
       <div class="glance">
@@ -396,6 +397,39 @@
       </section>
 
       <!-- ==================== 5. VISION CARDS ==================== -->
+      <section class="view" data-view="progress">
+        <div class="pagehead">
+          <h1>Progress</h1>
+          <div class="rule"></div>
+          <span class="sub">advance the story to a checkpoint, or finish a world's side content</span>
+        </div>
+        <div class="pane" id="pane-story">
+          <div class="row" style="grid-template-columns:90px 1fr;margin-bottom:10px">
+            <span class="lbl">Region</span>
+            <select class="sel" id="region-list"></select>
+          </div>
+          <div class="row" style="grid-template-columns:90px 1fr;margin-bottom:10px">
+            <span class="lbl">Checkpoint</span>
+            <select class="sel" id="area-list"></select>
+          </div>
+          <div id="plan-summary" class="note">pick a region and a checkpoint</div>
+          <div id="plan-rewards" class="note"></div>
+          <div class="row" style="grid-template-columns:1fr auto;margin-top:12px">
+            <span></span>
+            <button class="btn" id="checkpoint-apply" disabled>Add checkpoint to cart</button>
+          </div>
+        </div>
+        <div class="pane" id="pane-side" style="margin-top:22px">
+          <h2>Side Quests</h2>
+          <div id="side-list"></div>
+          <div id="sum-side" class="note"></div>
+          <div class="row" style="grid-template-columns:1fr auto;margin-top:12px">
+            <span></span>
+            <button class="btn" id="side-apply" disabled>Add side selection to cart</button>
+          </div>
+        </div>
+      </section>
+
       <section class="view" data-view="vision">
         <div class="pagehead">
           <h1>Vision Cards</h1>

@@ -399,6 +399,33 @@ async function main() {
     !!failedStatus && /apply failed/.test(failedStatus.shown) && failedStatus.afterClick === '',
     JSON.stringify(failedStatus));
 
+  // the Progress view: every region, side rows per world, and a checkpoint that previews
+  const progress = await evaluate(`(async function () {
+    document.querySelector('.rail a[data-view="progress"]').click();
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    for (let i = 0; i < 60 && !document.querySelectorAll('#side-list .side-world').length; i += 1) {
+      await sleep(500);
+    }
+    for (let i = 0; i < 40 && !/missions/.test(document.querySelector('#plan-summary').textContent); i += 1) {
+      await sleep(500);
+    }
+    return { regions: document.querySelectorAll('#region-list option').length,
+             areas: document.querySelectorAll('#area-list option').length,
+             worlds: [...document.querySelectorAll('#side-list .side-world')].map((n) => n.dataset.world),
+             rows: document.querySelectorAll('#side-list .side-row').length,
+             summary: document.querySelector('#plan-summary').textContent,
+             rewards: document.querySelector('#plan-rewards').textContent,
+             sections: document.querySelectorAll('section.view').length };
+  })()`);
+  check('the progress view lists all 42 regions', progress && progress.regions === 42,
+    JSON.stringify(progress && progress.regions));
+  check('side quests are grouped per world', !!progress && (progress.worlds || []).join() === '1,2,3,5',
+    JSON.stringify(progress && progress.worlds));
+  check('a checkpoint previews its plan and rewards', !!progress && /missions/.test(progress.summary || '')
+    && /Lapis/.test(progress.rewards || ''), JSON.stringify(progress && [progress.summary, progress.rewards]));
+  check('the page has seven views', !!progress && progress.sections === 7,
+    JSON.stringify(progress && progress.sections));
+
   // the awakening kit must speak stars, grey out impossible forms, and chain the steps.
   // Data-driven: which unit can still awaken depends on the LIVE save, so pick the roster row with
   // the longest remaining chain and derive every expectation from the catalog.
