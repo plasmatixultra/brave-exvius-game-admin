@@ -51,6 +51,26 @@ def _texts(text_dir, table, prefix):
     return out
 
 
+def _global_names(root):
+    """`data/area_names_en.tsv`: the game's GLOBAL name per story area, from the wiki's translation table.
+
+    The server's own text tables carry no English for story areas (verified: neither F_TEXT_STORY_SUB
+    nor F_TEXT_DUNGEON_NAME is keyed by an area id), so the overlay is a data file the app ships.
+    """
+    path = os.path.join(root, "data", "area_names_en.tsv")
+    out = {}
+    if not os.path.exists(path):
+        return out
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            if not line.strip() or line.startswith("#"):
+                continue
+            area_id, _, name = line.rstrip("\n").partition("\t")
+            if area_id and name:
+                out[area_id] = name
+    return out
+
+
 def _ids(value):
     return [token.strip() for token in str(value or "").split(",") if token.strip() not in ("", "0")]
 
@@ -75,6 +95,7 @@ class Story:
         self.dungeons = {str(row.get("U9iHsau3")): row for row in dungeons}
         self.switch_type = {str(key): str(value) for key, value in switches.items()}
         self.explorations = set(map(str, explorations))
+        self.global_names = _global_names(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
         self.dungeon_areas = [row for row in sub if str(row.get("Lxj5u3WB")) == DUNGEON_KIND]
         self.area_rows = {str(row["6a9TDRcj"]): row for row in self.dungeon_areas}
@@ -187,7 +208,8 @@ class Story:
             if row_region != region_id:
                 continue
             out.append({"area_id": area_id, "region_id": row_region,
-                        "name": self.texts.get("area", {}).get(area_id) or str(row.get("G4L0YIB2") or ""),
+                        "name": self.global_names.get(area_id)
+                        or self.texts.get("area", {}).get(area_id) or str(row.get("G4L0YIB2") or ""),
                         "missions": missions, "shares_with": shares})
         return out
 
@@ -197,7 +219,8 @@ class Story:
             return None
         area_id = str(area_id)
         return {"area_id": area_id, "region_id": int(row["0J2VIT8w"]),
-                "name": self.texts.get("area", {}).get(area_id) or str(row.get("G4L0YIB2") or ""),
+                "name": self.global_names.get(area_id)
+                        or self.texts.get("area", {}).get(area_id) or str(row.get("G4L0YIB2") or ""),
                 "missions": self.missions_of(area_id),
                 "shares_with": None}
 
