@@ -151,6 +151,18 @@ class UnitBuilderTest(unittest.TestCase):
         self.assertFalse(preview["super_trust_enabled"])
         self.assertEqual(preview["awaken_chain"], ["213000106", "213000107", "213000117"])
 
+    def test_preview_returns_the_units_pot_and_door_caps(self):
+        """Each unit carries its own caps in F_UNIT_MST (descriptor fields 3 and 4 per stat)."""
+        preview = ops_units.preview_unit({"master_id": LIGHTNING, "level": 1})
+        self.assertEqual(len(preview["stat_caps"]), 6)
+        self.assertEqual(preview["stat_caps"][0], [900, 450])      # Lightning 5★ HP: pot 900, door 450
+        nv = ops_units.preview_unit({"master_id": LIGHTNING_NV, "level": 1})
+        self.assertEqual(nv["max_level"], 120)
+        self.assertEqual(nv["lb_cap"], 30)
+        rydia = ops_units.preview_unit({"master_id": "204003007", "level": 1})
+        self.assertEqual(rydia["max_level"], 120)
+        self.assertEqual(rydia["lb_cap"], 40)                      # a real NV row, not Lightning's 30
+
     def test_preview_reflects_pots(self):
         plain = ops_units.preview_unit({"master_id": LIGHTNING, "level": 5})
         pimped = ops_units.preview_unit({"master_id": LIGHTNING, "level": 5,

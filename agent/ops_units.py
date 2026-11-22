@@ -234,6 +234,7 @@ def preview_unit(spec):
         "super_trust_cap": descriptor_required(master, 1) or 0,
         "super_trust_enabled": int(master.get("9fW0TePj") or 0) >= 7 or master_id.startswith("906"),
         "awaken_chain": awaken_chain(master_id),
+        "stat_caps": [list(pair) for pair in stat_caps(master)],
         "rarity": int(master.get("9fW0TePj") or 0),
         "name": master_id,
     }

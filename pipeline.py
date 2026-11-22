@@ -36,6 +36,11 @@ def preflight(edits):
 
 
 QUERY_DIR = "exvius-admin-tests/query"
+CONTAINER_AGENT = "/tmp/ffbe-admin/agent"
+CONTAINER_SAVE = "/tmp/ffbe-admin/save.json"
+CONTAINER_EDITS = "/tmp/ffbe-admin/edits.json"
+MUTATING_OPS = ("apply",)
+_SEEDED = False
 
 
 class AgentError(RuntimeError):
@@ -43,15 +48,19 @@ class AgentError(RuntimeError):
 
 
 def query(op, edits=None, flags=None):
-    """Run one read-only agent op on a COPY of the live save and return its `result`.
+    """Run one READ-ONLY agent op on a copy of the live save and return its `result`.
 
-    Reuses one remote directory: rsync --delete keeps it honest and nothing accumulates.
+    Fast path: `docker exec` into the running container, which is ~5x quicker than `docker run`
+    (no container to create). The agent tree is copied into the container once per session
+    (`_SEEDED`) and re-seeded automatically if the container was recreated.
     """
+    global _SEEDED
+    if op in MUTATING_OPS:
+        raise AgentError(f"{op} is not a query op; use pipeline.apply")
     work = f"~/{QUERY_DIR}"
     remote.run(f"mkdir -p {work}")
     remote.put_tree(AGENT_DIR, f"{work}/agent")
-    remote.run(f"cp {config.SAVE_HOST} {work}/save.json")
-    args = [op, "/work/save.json"]
+    args = [op, CONTAINER_SAVE]
     if edits is not None:
         local = tempfile.mkdtemp(prefix="ffbe-query-")
         try:
@@ -61,22 +70,24 @@ def query(op, edits=None, flags=None):
             remote.put(path, f"{work}/edits.json")
         finally:
             shutil.rmtree(local, ignore_errors=True)
-        args.append("/work/edits.json")
-    extra = ""
+        args.append(CONTAINER_EDITS)
     for name, value in (flags or {}).items():
-        extra += f" --{name} {value}"
-    command = (
-        "docker run --rm --entrypoint python3 "
-        "-e PYTHONPATH=/app/server "
-        "-e MST_DIR=/srv/ffbe/data/static/mst_decoded "
-        "-e TEXT_DIR=/srv/ffbe/data/static/text_decoded "
-        f"-e FFBE_DATA=/work/scratch -v {config.DATA_HOST}:/srv/ffbe/data:ro -v {work}:/work "
-        f"{config.IMAGE} /work/agent/agent.py {' '.join(args)}{extra}"
-    )
+        args.append(f"--{name}")
+        args.append(str(value))
+    command = _exec_script(work, args, seed=not _SEEDED)
     try:
         result = remote.run(command, timeout=120)
     except RemoteError as exc:
-        raise AgentError((exc.stderr or str(exc)).strip()) from exc
+        text = exc.stderr or str(exc)
+        if "can't open file" in text or "Could not find the file /tmp/ffbe-admin" in text:
+            _SEEDED = False
+            try:
+                result = remote.run(_exec_script(work, args, seed=True), timeout=120)
+            except RemoteError as retry_exc:
+                raise AgentError((retry_exc.stderr or str(retry_exc)).strip()) from retry_exc
+        else:
+            raise AgentError((exc.stderr or str(exc)).strip()) from exc
+    _SEEDED = True
     try:
         payload = json.loads(result.stdout)
     except ValueError as exc:
@@ -84,6 +95,33 @@ def query(op, edits=None, flags=None):
     if not payload.get("ok"):
         raise AgentError(payload.get("error") or "the agent refused")
     return payload["result"]
+
+
+def _exec_script(work, args, seed):
+    """One ssh invocation: stage the save, run the agent in the live container.
+
+    The seed (mkdir + the agent tree) comes FIRST: every other copy targets /tmp/ffbe-admin.
+    """
+    lines = []
+    if seed:
+        lines += [f"docker exec {config.CONTAINER} mkdir -p /tmp/ffbe-admin",
+                  f"docker cp {work}/agent {config.CONTAINER}:{CONTAINER_AGENT}"]
+    lines += [f"cp {config.SAVE_HOST} {work}/save.json",
+              f"docker cp {work}/save.json {config.CONTAINER}:{CONTAINER_SAVE}"]
+    if edits_path_in_args(args):
+        lines.insert(len(lines) - 1,
+                     f"docker cp {work}/edits.json {config.CONTAINER}:{CONTAINER_EDITS}")
+    lines.append(
+        f"docker exec -e PYTHONPATH=/app/server "
+        f"-e MST_DIR=/srv/ffbe/data/static/mst_decoded "
+        f"-e TEXT_DIR=/srv/ffbe/data/static/text_decoded "
+        f"-e FFBE_DATA=/tmp/scratch {config.CONTAINER} "
+        f"python3 {CONTAINER_AGENT}/agent.py " + " ".join(args))
+    return " && ".join(lines)
+
+
+def edits_path_in_args(args):
+    return any(str(arg).endswith("edits.json") for arg in args)
 
 
 def _remote_workdir():

@@ -1,5 +1,6 @@
 """ssh/scp transport to the game host. Every other module goes through here."""
 
+import os
 import subprocess
 
 import config
@@ -79,6 +80,26 @@ def put_tree(local_dir, remote_dir):
         result = subprocess.run(argv, capture_output=True, text=True, timeout=120)
     except subprocess.TimeoutExpired as exc:
         raise RemoteError(124, " ".join(argv), "timed out after 120s") from exc
+    if result.returncode != 0:
+        raise RemoteError(result.returncode, " ".join(argv), result.stderr)
+
+
+def put_tree_dirs(pairs, timeout=180):
+    """Mirror (remote_dir, local_dir) pairs, one rsync each (rsync takes one destination)."""
+    for remote_dir, local_dir in pairs:
+        put_tree(f"{remote_dir}", local_dir) if False else _pull_tree(remote_dir, local_dir, timeout)
+    return None
+
+
+def _pull_tree(remote_dir, local_dir, timeout=180):
+    os.makedirs(local_dir, exist_ok=True)
+    ssh = "ssh " + " ".join(SSH_OPTS)
+    argv = ["rsync", "-a", "--delete", "-e", ssh,
+            f"{TARGET}:{remote_dir.rstrip('/')}/", local_dir.rstrip("/") + "/"]
+    try:
+        result = subprocess.run(argv, capture_output=True, text=True, timeout=timeout)
+    except subprocess.TimeoutExpired as exc:
+        raise RemoteError(124, " ".join(argv), f"timed out after {timeout}s") from exc
     if result.returncode != 0:
         raise RemoteError(result.returncode, " ".join(argv), result.stderr)
 

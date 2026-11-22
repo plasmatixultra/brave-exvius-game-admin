@@ -218,6 +218,11 @@
   }
   window.SILHOUETTE = SILHOUETTE;
 
+  function formInfo(masterId) {
+    if (!S.catalog) return null;
+    return S.catalog.units.filter(function (u) { return u.master_id === masterId; })[0] || null;
+  }
+
   function formChain(masterId) {
     if (!S.catalog) return [masterId];
     var group = masterId;
@@ -405,23 +410,40 @@
         S.form = masterId;
         renderPortrait();
         renderChain();
+        paintLimits();      // the caps belong to the FORM and come from the cached catalog
+        previewStats();     // the stat NUMBERS still come from the server code (debounced)
       });
       root.appendChild(form);
     });
   }
 
-  function paintSpec() {
-    var row = selectedRow();
-    if (!row) return;
-    var spec = { level: row.level, lb: row.lb_level, ex: S.ex };
-    $('#spec-level').value = spec.level;
+  function paintLimits() {
+    var info = formInfo(S.form) || {};
+    S.maxLevel = info.max_level;
+    S.lbCap = info.lb_cap;
+    S.trustCap = info.trust_cap;
+    S.superCap = info.super_trust_cap;
+    var level = $('#spec-level');
+    var lb = $('#spec-lb');
+    level.max = S.maxLevel || 1;
+    lb.max = S.lbCap || 1;
+    if (S.maxLevel && Number(level.value) > S.maxLevel) level.value = S.maxLevel;
+    if (S.lbCap && Number(lb.value) > S.lbCap) lb.value = S.lbCap;
     $('#spec-level-cap').textContent = '/ ' + (S.maxLevel || '—');
-    $('#spec-lb').value = spec.lb;
     $('#spec-lb-cap').textContent = '/ ' + (S.lbCap || '—');
     $$('[data-ex]').forEach(function (chip) {
       chip.classList.toggle('on', Number(chip.dataset.ex) === S.ex);
     });
+    paintCaps((info.stat_caps || []));
     paintTrust();
+  }
+
+  function paintSpec() {
+    var row = selectedRow();
+    if (!row) return;
+    $('#spec-level').value = row.level;
+    $('#spec-lb').value = row.lb_level;
+    paintLimits();
   }
 
   function paintTrust() {
@@ -443,14 +465,44 @@
   function bindSliders() {
     $$('[data-trust]').forEach(function (slider) {
       var channel = Number(slider.dataset.trust);
-      slider.querySelector('.track2').addEventListener('click', function (event) {
+      var track = slider.querySelector('.track2');
+
+      function valueAt(clientX) {
         var cap = channel === 0 ? (S.trustCap || 0) : (S.superCap || 0);
-        if (!cap) return;
-        var rect = slider.querySelector('.track2').getBoundingClientRect();
-        var ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
-        var value = Math.round(ratio * cap);
+        if (!cap) return null;
+        var rect = track.getBoundingClientRect();
+        var ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+        if (ratio >= 0.995) return cap;      // dragging to the end must be able to reach 100 %
+        if (ratio <= 0.005) return 0;
+        return Math.round(ratio * cap);
+      }
+      function set(value) {
+        if (value === null) return;
         if (channel === 0) S.trust = value; else S.superTrust = value;
         paintTrust();
+      }
+
+      // Drag: the value follows the pointer while the button is held (a click is a 1-point drag).
+      track.addEventListener('pointerdown', function (event) {
+        if (event.button !== undefined && event.button !== 0) return;
+        var value = valueAt(event.clientX);
+        if (value === null) return;
+        event.preventDefault();
+        try { track.setPointerCapture(event.pointerId); } catch (error) { /* synthetic pointer */ }
+        set(value);
+        var move = function (moveEvent) { set(valueAt(moveEvent.clientX)); };
+        var up = function (upEvent) {
+          track.removeEventListener('pointermove', move);
+          track.removeEventListener('pointerup', up);
+          track.removeEventListener('pointercancel', up);
+          try {
+            if (track.hasPointerCapture(upEvent.pointerId)) track.releasePointerCapture(upEvent.pointerId);
+          } catch (error) { /* synthetic pointer */ }
+          set(valueAt(upEvent.clientX));
+        };
+        track.addEventListener('pointermove', move);
+        track.addEventListener('pointerup', up);
+        track.addEventListener('pointercancel', up);
       });
     });
   }
@@ -465,6 +517,7 @@
       chip.addEventListener('click', function () {
         S.ex = Number(chip.dataset.ex);
         $$('[data-ex]').forEach(function (c) { c.classList.toggle('on', c === chip); });
+        previewStats();
       });
     });
     $$('[data-flag]').forEach(function (chip) {
@@ -501,22 +554,61 @@
     };
   }
 
+  function previewKey(spec) {
+    return [spec.master_id, spec.level, spec.nv_ex_level,
+            (spec.stat_pots || []).join(','), (spec.stat_doors || []).join(',')].join('|');
+  }
+
   function previewStats() {
     var spec = currentSpec();
     if (!spec) return;
-    api('/api/preview', { spec: spec }).then(function (payload) {
-      var unit = payload.unit || {};
+    var key = previewKey(spec);
+    if (S.previews && S.previews[key]) {
+      paintPreview(S.previews[key]);
+      return;
+    }
+    clearTimeout(S.previewTimer);
+    S.previewTimer = setTimeout(function () {
+      api('/api/preview', { spec: spec }).then(function (payload) {
+        var unit = payload.unit || {};
+        S.previews = S.previews || {};
+        S.previews[key] = unit;
+        paintPreview(unit);
+      }).catch(function (error) {
+        setStatus('preview: ' + error.message, true);
+      });
+    }, 250);
+  }
+
+  function paintPreview(unit) {
+    if (unit.max_level) {
       S.maxLevel = unit.max_level;
       S.lbCap = unit.lb_cap;
-      S.trustCap = unit.trust_cap;
-      S.superCap = unit.super_trust_cap;
       $('#spec-level-cap').textContent = '/ ' + unit.max_level;
       $('#spec-lb-cap').textContent = '/ ' + (unit.lb_cap || '—');
-      paintTrust();
-      renderAttrs(unit.stats || []);
-      renderBars(unit.stats || []);
-    }).catch(function (error) {
-      setStatus('preview: ' + error.message, true);
+    }
+    if (unit.trust_cap !== undefined) {
+      S.trustCap = unit.trust_cap;
+      S.superCap = unit.super_trust_cap;
+    }
+    paintTrust();
+    if (unit.stat_caps) paintCaps(unit.stat_caps);
+    renderAttrs(unit.stats || []);
+    renderBars(unit.stats || []);
+  }
+
+  function paintCaps(caps) {
+    [0, 1, 2, 3, 4, 5].forEach(function (index) {
+      var pair = caps[index] || [0, 0];
+      [['pot', pair[0]], ['door', pair[1]]].forEach(function (entry) {
+        var input = $('[data-spec="' + entry[0] + index + '"]');
+        if (!input) return;
+        input.max = entry[1];
+        var host = input.parentElement;
+        var tag = host.querySelector('i');
+        if (!tag) { tag = document.createElement('i'); host.appendChild(tag); }
+        tag.textContent = entry[1];
+      });
     });
   }
 

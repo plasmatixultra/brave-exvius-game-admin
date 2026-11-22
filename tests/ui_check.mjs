@@ -173,6 +173,60 @@ async function main() {
     !!applied && applied.edits.currencies.gil === 1000 && applied.edits.points.EXP === 5000,
     JSON.stringify(applied));
 
+  // the level cap belongs to the FORM: clicking a later form must move it
+  const caps = await evaluate(`(function () {
+    const forms = [...document.querySelectorAll('#chain .form')];
+    if (forms.length < 2) return null;
+    const before = document.querySelector('#spec-level-cap').textContent;
+    forms[forms.length - 1].click();
+    const immediate = document.querySelector('#spec-level-cap').textContent;
+    return new Promise((resolve) => setTimeout(function () {
+      resolve({ before, after: document.querySelector('#spec-level-cap').textContent,
+                synchronous: immediate !== before,
+                dbs: [...document.querySelectorAll('.pot i')].length });
+    }, 3000));
+  })()`);
+  check('clicking a form updates the level cap', caps && caps.before !== caps.after,
+    JSON.stringify(caps));
+  check('the form cap is instant (from the catalog, no request)',
+    !!caps && caps.synchronous === true, JSON.stringify(caps || {}));
+  check('every stat input shows its unit cap', caps && caps.dbs === 12, JSON.stringify(caps || {}));
+
+  // the roster must scroll in place, not push the page down
+  const rosterScroll = await evaluate(`(function () {
+    const roster = document.querySelector('#roster');
+    const style = getComputedStyle(roster);
+    return { overflowY: style.overflowY, maxHeight: style.maxHeight,
+             scrolls: roster.scrollHeight > roster.clientHeight };
+  })()`);
+  check('the roster scrolls instead of growing the page',
+    rosterScroll.overflowY === 'auto' && rosterScroll.scrolls, JSON.stringify(rosterScroll));
+
+  // dragging the Trust slider to the far right must reach 100% (Lightning has a 1000 cap)
+  const drag = await evaluate(`(function () {
+    const row = [...document.querySelectorAll('#roster .urow')]
+      .find((r) => r.textContent.indexOf('Lightning') >= 0);
+    if (!row) return null;
+    row.click();
+    return new Promise(function (resolve) {
+      setTimeout(function () {
+        const slider = document.querySelector('[data-trust="0"]');
+        const track = slider.querySelector('.track2');
+        const rect = track.getBoundingClientRect();
+        const opts = { bubbles: true, pointerId: 1, pointerType: 'mouse', button: 0, clientY: rect.top + 5 };
+        track.dispatchEvent(new PointerEvent('pointerdown', { ...opts, clientX: rect.left + 10 }));
+        track.dispatchEvent(new PointerEvent('pointermove', { ...opts, clientX: rect.left + rect.width / 2 }));
+        track.dispatchEvent(new PointerEvent('pointerup', { ...opts, clientX: rect.right - 1 }));
+        setTimeout(function () {
+          resolve({ readout: document.querySelector('#trust-readout').textContent,
+                    label: document.querySelector('#trust-label').textContent });
+        }, 300);
+      }, 3500);
+    });
+  })()`);
+  check('dragging the Trust slider reaches 100%',
+    !!drag && drag.readout.trim() === '100.0 %', JSON.stringify(drag));
+
   const silhouette = await evaluate(`(function () {
     const img = document.createElement('img');
     return new Promise((resolve) => {

@@ -13,6 +13,7 @@ import sys
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+import localdata
 import pipeline
 import remote
 
@@ -40,8 +41,12 @@ _CATALOG = {"at": 0.0, "value": None}
 
 
 def agent(op, edits=None, flags=None):
-    """Run one agent op on athena and return its result (raises pipeline.AgentError)."""
-    return pipeline.query(op, edits, flags)
+    """Run one agent op against the CACHED save (localdata) and return its result.
+
+    Reads never touch docker: the save and the shipped tables live in `scratch/cache`
+    (see localdata.py). Only `pipeline_apply` talks to athena, and only to write.
+    """
+    return localdata.agent(op, edits, flags)
 
 
 def pipeline_apply(edits):
@@ -103,6 +108,8 @@ class Handler(BaseHTTPRequestHandler):
             if path.startswith("/static/"):
                 return self._static_file(path[len("/static/"):])
             if path == "/api/summary":
+                if "refresh=1" in (self.path.split("?", 1) + [""])[1]:
+                    localdata.refresh_save(force=True)
                 return self._json(agent("summary"))
             if path == "/api/catalog":
                 return self._json(catalog())
@@ -183,6 +190,8 @@ class Handler(BaseHTTPRequestHandler):
                 if not isinstance(edits, dict):
                     return self._error("apply needs an edits object", 400)
                 result = pipeline_apply(edits)
+                if result.get("ok"):
+                    localdata.refresh_save(force=True)   # the live file just changed
                 return self._json({"ok": bool(result.get("ok")), "log": result.get("log") or [],
                                    "backup": result.get("backup"), "error": result.get("error"),
                                    "status": "ok" if result.get("ok") else "failed"})

@@ -202,7 +202,7 @@ body::after{
 }
 .cap2 b{color:var(--muted);font-weight:600;letter-spacing:.12em}
 
-.roster{display:flex;flex-direction:column;border:1px solid rgba(140,190,215,.16);border-radius:2px;background:rgba(3,8,16,.5);overflow:hidden}
+.roster{display:flex;flex-direction:column;border:1px solid rgba(140,190,215,.16);border-radius:2px;background:rgba(3,8,16,.5);overflow:hidden;max-height:clamp(300px,44vh,520px);overflow-y:auto;overflow-x:hidden;scrollbar-gutter:stable}
 .urow{
   display:grid;grid-template-columns:34px 1fr auto;gap:8px;align-items:center;
   height:54px;flex:0 0 54px;padding:0 10px;border-bottom:1px solid rgba(140,190,215,.1);cursor:pointer;
@@ -576,3 +576,16 @@ html,body{height:100%}
 /* port additions: the matrix's empty cells stay dim, and chips never break mid-label */
 .chips .chip{white-space:nowrap}
 .mx-row input.zero{color:var(--dim)}
+
+/* native dropdowns follow the panel, not the OS (a white popup hid the white option text) */
+:root{color-scheme:dark}
+select option{background:#0a1220;color:var(--txt)}
+/* per-unit pot / door caps, shown under each stat input */
+.pot i{font-size:13.5px;color:var(--dim);font-style:normal;letter-spacing:.06em}
+
+/* the roster scrolls in place, so the portrait and config stay visible while you pick a unit */
+.roster::-webkit-scrollbar{width:8px}
+.roster::-webkit-scrollbar-thumb{background:rgba(140,190,215,.28);border-radius:4px}
+.roster::-webkit-scrollbar-track{background:transparent}
+/* the trust sliders are dragged, so the pointer must not be taken by a scroll */
+.slider .track2{touch-action:none;cursor:pointer}

@@ -183,8 +183,42 @@ def build_tickets(mst_dir, text_dir, server_dir):
     return tickets
 
 
+def _lb_caps(mst_dir):
+    """{LB id: highest level in F_LIMITBURST_LV_MST} — read once for the whole catalog."""
+    caps = {}
+    for row in _rows(mst_dir, "F_LIMITBURST_LV_MST"):
+        lb_id = str(row.get("PR2HIc71") or "")
+        level = _int(row.get("7wV3QZ80"))
+        if lb_id and level > caps.get(lb_id, 0):
+            caps[lb_id] = level
+    return caps
+
+
+def _trust_cap(row, column):
+    parts = str(row.get(column) or "").split(":")
+    return _int(parts[3]) if len(parts) > 3 else 0
+
+
+def _stat_caps(row):
+    """[[pot_cap, door_cap]] in HP/MP/ATK/DEF/MAG/SPR order (descriptor fields 3 and 4)."""
+    out = []
+    for token in ("em5hx4FX", "L0MX7edB", "o7Ynu1XP", "6tyb58Kc", "Y9H6TWnv", "sa8Ewx3H"):
+        values = []
+        for part in str(row.get(token) or "").split(","):
+            try:
+                values.append(int(part))
+            except ValueError:
+                break
+        values += [0] * (4 - len(values))
+        out.append([values[2], values[3]])
+    return out
+
+
 def build_units(mst_dir, text_dir):
+    """Every named form, with the numbers a builder needs before it can ask the server anything:
+    level cap, LB cap, trust caps and per-stat pot/door caps."""
     names = _texts(text_dir, "F_TEXT_UNITS_NAME", "MST_UNIT_NAME_")
+    lb_caps = _lb_caps(mst_dir)
     units = []
     for row in _rows(mst_dir, "F_UNIT_MST"):
         master_id = str(row.get("3HriTp6B") or "")
@@ -194,12 +228,20 @@ def build_units(mst_dir, text_dir):
         if not name:
             # A granted unit with no MST_UNIT_NAME_ row SIGSEGVs the client's award screen (SW-78).
             continue
+        lb_id = str(row.get("PR2HIc71") or "") or master_id
+        hard = max(1, _int(row.get("ENwn42DV"), 1))
+        levels = lb_caps.get(lb_id)
         units.append({
             "master_id": master_id,
             "name": name,
             "rarity": _int(row.get("9fW0TePj"), 1),
             "nv_group": str(row.get("woghJa61") or master_id),
             "nv": str(row.get("JPW8Vs40") or "0") == master_id,
+            "max_level": _int(row.get("aU3o2D4t"), 1),
+            "lb_cap": (min(levels, hard) if levels else hard) if lb_id else 0,
+            "trust_cap": _trust_cap(row, "9mu4boy7"),
+            "super_trust_cap": _trust_cap(row, "C74EmZ1I"),
+            "stat_caps": _stat_caps(row),
         })
     units.sort(key=lambda row: row["master_id"])
     return units
