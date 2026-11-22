@@ -180,12 +180,14 @@ class Story:
             if not missions:
                 key = str(row["6uIYE15X"])
                 group = sorted(self.key_areas.get(key, ()), key=int)
-                owner = next((a for a in group if a != area_id and self.missions_of(a)), None)
-                shares = owner
+                owner = next((a for a in group if a != area_id
+                              and str((self.area_rows.get(a) or {}).get("0J2VIT8w")) == str(row_region)
+                              and self.missions_of(a)), None)
+                shares = owner or next((a for a in group if a != area_id and self.missions_of(a)), None)
             if row_region != region_id:
                 continue
             out.append({"area_id": area_id, "region_id": row_region,
-                        "name": str(row.get("G4L0YIB2") or ""),
+                        "name": self.texts.get("area", {}).get(area_id) or str(row.get("G4L0YIB2") or ""),
                         "missions": missions, "shares_with": shares})
         return out
 
@@ -195,7 +197,8 @@ class Story:
             return None
         area_id = str(area_id)
         return {"area_id": area_id, "region_id": int(row["0J2VIT8w"]),
-                "name": str(row.get("G4L0YIB2") or ""), "missions": self.missions_of(area_id),
+                "name": self.texts.get("area", {}).get(area_id) or str(row.get("G4L0YIB2") or ""),
+                "missions": self.missions_of(area_id),
                 "shares_with": None}
 
     def area_for_mission(self, mission_id):
@@ -230,7 +233,8 @@ class Story:
                            for step in self.quest_steps(str(quest_id)))
             place = town_names.get(place_id, place_id) if kind == "town" else \
                 str((self.missions.get(place_id) or {}).get("G4L0YIB2") or place_id)
-            quests_by_world[world].append({"quest_id": str(quest_id), "name": "",
+            quests_by_world[world].append({"quest_id": str(quest_id),
+                                           "name": self.texts.get("quest", {}).get(str(quest_id), ""),
                                            "place": place, "node_kind": kind,
                                            "delivery": delivery,
                                            "reward": str(row.get("dX6cor8j") or "")})
@@ -243,7 +247,8 @@ class Story:
             gate = (_ids(row.get("juA0Z4m7")) or [""])[0]
             dungeons_by_world[str(self.missions[mission_id].get("9Pb24aSy") or "")].append({
                 "dungeon_key": dungeon_key, "world_id": int(self.missions[mission_id].get("9Pb24aSy") or 0),
-                "name": str(row.get("G4L0YIB2") or dungeon_key),
+                "name": self.texts.get("dungeon", {}).get(dungeon_key)
+                        or str(row.get("G4L0YIB2") or dungeon_key),
                 "esper_id": beast, "esper_name": beast_names.get(str(beast), ""),
                 "beat_mission": str(mission_id),
                 "missions": sorted([m for m in self.missions if self.area_of_key(m) == dungeon_key],
@@ -391,6 +396,9 @@ def load_story(mst_dir, text_dir=None, helpers=None):
     dungeons = _rows(mst_dir, "F_DUNGEON_MST")
     switches = {str(row.get("8vAYn3IX")): row.get("5opcUT9t") for row in _rows(mst_dir, "F_SWITCH_MST")}
     texts = {"story": _texts(text_dir, "F_TEXT_STORY_NAME", "MST_STORY_NAME_"),
+             "area": _texts(text_dir, "F_TEXT_STORY_SUB", "MST_STORYSUB_NAME_"),
+             "quest": _texts(text_dir, "F_TEXT_QUEST", "MST_QUEST_NAME_"),
+             "dungeon": _texts(text_dir, "F_TEXT_DUNGEON_NAME", "MST_DUNGEONS_NAME_"),
              "town": _texts(text_dir, "F_TEXT_TOWN_NAME", "MST_TOWN_NAME_"),
              "beast": _texts(text_dir, "F_TEXT_BEAST_NAME", "MST_BEAST_NAME_")}
     try:

@@ -399,34 +399,50 @@
       <!-- ==================== 5. VISION CARDS ==================== -->
       <section class="view" data-view="progress">
         <div class="pagehead">
-          <h1>Progress</h1>
+          <h1>Questline Progress</h1>
           <div class="rule"></div>
-          <span class="sub">advance the story to a checkpoint, or finish a world's side content</span>
+          <span class="sub">stop mid-season 2 · everything before the checkpoint clears</span>
         </div>
-        <div class="pane" id="pane-story">
-          <div class="row" style="grid-template-columns:90px 1fr;margin-bottom:10px">
-            <span class="lbl">Region</span>
-            <select class="sel" id="region-list"></select>
-          </div>
-          <div class="row" style="grid-template-columns:90px 1fr;margin-bottom:10px">
-            <span class="lbl">Checkpoint</span>
-            <select class="sel" id="area-list"></select>
-          </div>
-          <div id="plan-summary" class="note">pick a region and a checkpoint</div>
-          <div id="plan-rewards" class="note"></div>
-          <div class="row" style="grid-template-columns:1fr auto;margin-top:12px">
-            <span></span>
-            <button class="btn" id="checkpoint-apply" disabled>Add checkpoint to cart</button>
-          </div>
-        </div>
-        <div class="pane" id="pane-side" style="margin-top:22px">
-          <h2>Side Quests</h2>
-          <div id="side-list"></div>
-          <div id="sum-side" class="note"></div>
-          <div class="row" style="grid-template-columns:1fr auto;margin-top:12px">
-            <span></span>
-            <button class="btn" id="side-apply" disabled>Add side selection to cart</button>
-          </div>
+
+        <div class="panes">
+          <section class="panel pane">
+            <div class="ph">Regions <span class="tag" id="region-count">…</span>
+              <span class="tag" id="side-link" style="cursor:pointer">⌁ Side Quests</span></div>
+            <div class="scrolly" id="region-list"></div>
+          </section>
+
+          <section class="panel pane">
+            <div class="ph" id="mid-ph">Dungeons <span class="tag" id="mid-tag"></span></div>
+            <div id="pane-story">
+              <div class="cap2" style="padding:10px 12px 6px" id="area-count"></div>
+              <div class="scrolly" style="max-height:calc(100vh - 352px)" id="area-list"></div>
+            </div>
+            <div id="pane-side" style="display:none">
+              <div class="cap2" style="padding:10px 12px 6px" id="side-tag"></div>
+              <div class="scrolly" style="max-height:calc(100vh - 352px)" id="side-list"></div>
+            </div>
+          </section>
+
+          <section class="panel pane hero">
+            <div class="ph gold" id="sum-ph">Checkpoint <span class="tag" id="sum-tag"></span></div>
+            <div id="sum-story">
+              <div class="pb">
+                <div class="sum" id="plan-summary"></div>
+                <div class="note" id="plan-rewards"></div>
+                <div class="row" style="grid-template-columns:1fr auto;margin-top:12px">
+                  <span></span>
+                  <button class="btn" id="checkpoint-apply" disabled>Add checkpoint to cart</button>
+                </div>
+              </div>
+            </div>
+            <div id="sum-side" class="pb" style="display:none">
+              <div class="sum" id="side-summary"></div>
+              <div class="row" style="grid-template-columns:1fr auto;margin-top:12px">
+                <span></span>
+                <button class="btn" id="side-apply" disabled>Add side selection to cart</button>
+              </div>
+            </div>
+          </section>
         </div>
       </section>
 

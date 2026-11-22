@@ -406,66 +406,114 @@
   }
 
   /* ------------------------------------------------------------------------ progress view */
-  var progressCache = { regions: null, plan: null, side: {} };
+  var progressCache = { regions: [], areas: [], plan: null, side: {}, world: null, region: null };
 
   function loadProgress() {
-    if ($('#region-list').options.length) return;
+    if (progressCache.regions.length) return;
     api('/api/questline/regions').then(function (data) {
-      progressCache.regions = data.regions;
-      var select = $('#region-list');
-      select.innerHTML = '';
-      (data.regions || []).forEach(function (region) {
-        var option = document.createElement('option');
-        option.value = region.region_id;
-        option.textContent = region.name + ' · ' + region.arc + ' · ' + region.dungeon_count + ' areas';
-        select.appendChild(option);
-      });
-      select.value = '22';
-      loadAreas();
+      progressCache.regions = data.regions || [];
+      $('#region-count').textContent = progressCache.regions.length + ' · 4 arcs';
+      renderRegions();
+      selectRegion('22');
     }).catch(function (error) { $('#plan-summary').textContent = error.message; });
-    loadSideWorlds();
   }
 
-  function loadAreas() {
-    var region = $('#region-list').value || '1';
-    api('/api/questline?region=' + encodeURIComponent(region)).then(function (data) {
-      var select = $('#area-list');
-      select.innerHTML = '';
-      (data.areas || []).forEach(function (area) {
-        var option = document.createElement('option');
-        option.value = area.area_id;
-        option.textContent = area.name + ' · ' + area.missions.length + ' missions'
-          + (area.shares_with ? ' · shares missions with ' + area.shares_with : '');
-        select.appendChild(option);
-      });
-      loadPlan();
+  function renderRegions() {
+    var host = $('#region-list');
+    host.innerHTML = '';
+    var arc = null;
+    progressCache.regions.forEach(function (region) {
+      if (region.arc !== arc) {
+        arc = region.arc;
+        var head = document.createElement('div');
+        head.className = 'arc';
+        head.innerHTML = esc(arc) + '<span>' + progressCache.regions.filter(function (r) {
+          return r.arc === arc;
+        }).length + ' chapters</span>';
+        host.appendChild(head);
+      }
+      var row = document.createElement('div');
+      row.className = 'reg' + (String(region.region_id) === String(progressCache.region) ? ' on' : '');
+      row.dataset.region = region.region_id;
+      row.innerHTML = '<span>' + esc(region.name) + '</span><span class="frac">'
+        + region.dungeon_count + '</span>';
+      row.addEventListener('click', function () { selectRegion(String(region.region_id)); });
+      host.appendChild(row);
     });
   }
 
-  function loadPlan() {
-    var region = $('#region-list').value;
-    var area = $('#area-list').value;
-    if (!region || !area) return;
-    $('#plan-summary').textContent = 'previewing…';
-    api('/api/questline?region=' + encodeURIComponent(region) + '&area=' + encodeURIComponent(area))
+  function selectRegion(regionId) {
+    progressCache.region = regionId;
+    $$('#region-list .reg').forEach(function (row) {
+      row.classList.toggle('on', row.dataset.region === String(regionId));
+    });
+    sideMode(false);
+    api('/api/questline?region=' + encodeURIComponent(regionId)).then(function (data) {
+      progressCache.areas = data.areas || [];
+      renderAreas();
+      $('#mid-ph').innerHTML = 'Dungeons <span class="tag">' + esc(area_of_region_name(regionId)) + '</span>';
+      if (progressCache.areas.length) selectArea(progressCache.areas[0].area_id);
+    });
+  }
+
+  function area_of_region_name(regionId) {
+    var region = progressCache.regions.filter(function (r) { return String(r.region_id) === String(regionId); })[0];
+    return region ? region.name : '';
+  }
+
+  function renderAreas() {
+    var host = $('#area-list');
+    host.innerHTML = '';
+    var cleared = 0;
+    progressCache.areas.forEach(function (area, index) {
+      var row = document.createElement('div');
+      row.className = 'darea' + (String(area.area_id) === String(progressCache.plan && progressCache.plan.area) ? ' ckpt' : '');
+      row.dataset.area = area.area_id;
+      row.innerHTML = '<span class="n">' + (index + 1) + '</span><span>' + esc(area.name)
+        + (area.shares_with ? ' <span class="gk">shares ' + esc(area.shares_with) + '</span>' : '')
+        + '</span><span class="mc">' + area.missions.length + ' missions</span>';
+      row.addEventListener('click', function () { selectArea(area.area_id); });
+      host.appendChild(row);
+    });
+    $('#area-count').innerHTML = '<b>' + progressCache.areas.length + ' areas</b> · '
+      + progressCache.areas.reduce(function (n, a) { return n + a.missions.length; }, 0) + ' missions';
+  }
+
+  function selectArea(areaId) {
+    $$('#area-list .darea').forEach(function (row) {
+      row.classList.toggle('ckpt', row.dataset.area === String(areaId));
+    });
+    var region = progressCache.region;
+    $('#plan-summary').innerHTML = '<div class="sum-row"><span class="sum-k">Previewing</span>'
+      + '<span class="sum-v small">' + esc(areaId) + '</span></div>';
+    api('/api/questline?region=' + encodeURIComponent(region) + '&area=' + encodeURIComponent(areaId))
       .then(function (data) {
-        progressCache.plan = { region: region, area: area, expected: data.expected };
+        progressCache.plan = { region: region, area: areaId, expected: data.expected };
         var plan = data.plan || {};
         var excluded = {};
-        (plan.excluded || []).forEach(function (row) {
-          excluded[row.reason] = (excluded[row.reason] || 0) + 1;
-        });
-        var lines = (plan.missions || []).length + ' missions · ' + (plan.gates || []).length
-          + ' gates · ' + (plan.espers || []).length + ' esper(s)';
-        Object.keys(excluded).forEach(function (reason) {
-          lines += ' · ' + excluded[reason] + ' excluded (' + reason + ')';
-        });
-        $('#plan-summary').textContent = lines;
+        (plan.excluded || []).forEach(function (row) { excluded[row.reason] = (excluded[row.reason] || 0) + 1; });
         var expected = data.expected || {};
-        $('#plan-rewards').textContent = 'Lapis +' + fmt((expected.currencies || {}).lapis_free)
-          + ' · gil +' + fmt((expected.currencies || {}).gil)
-          + ' · roster +' + fmt(expected.roster_added)
-          + ' · cleared +' + fmt((expected.extra || {}).cleared);
+        var extra = expected.extra || {};
+        var missions = (plan.missions || []).length;
+        var rows = [
+          ['Missions in the span', missions],
+          ['Already cleared', Math.max(0, missions - (extra.cleared || 0))],
+          ['<b>To clear now</b>', '<b class="g">' + (extra.cleared || 0) + '</b>'],
+          ['Lapis paid <span class="mult">× 5</span>', fmt((expected.currencies || {}).lapis_free)],
+          ['Gil paid', fmt((expected.currencies || {}).gil)],
+          ['Gates opened', fmt((plan.gates || []).length)],
+          ['Story units', fmt(expected.roster_added)],
+          ['Espers', fmt((plan.espers || []).length)]
+        ];
+        $('#plan-summary').innerHTML = rows.map(function (pair) {
+          return '<div class="sum-row"><span class="sum-k">' + pair[0] + '</span><span class="sum-v">'
+            + pair[1] + '</span></div>';
+        }).join('');
+        var excludedText = Object.keys(excluded).map(function (reason) {
+          return excluded[reason] + ' excluded (' + reason + ')';
+        }).join(' · ');
+        $('#plan-rewards').textContent = excludedText;
+        $('#sum-tag').textContent = areaId;
         $('#checkpoint-apply').disabled = false;
       }).catch(function (error) {
         $('#plan-summary').textContent = error.message;
@@ -473,66 +521,83 @@
       });
   }
 
-  function loadSideWorlds() {
-    api('/api/questline?world=all').then(function (data) {
-      (data.worlds || []).forEach(function (world) { renderSideHost(world.world_id, world); });
-    }).catch(function (error) { $('#sum-side').textContent = error.message; });
+  function sideMode(on) {
+    $('#pane-story').style.display = on ? 'none' : '';
+    $('#pane-side').style.display = on ? '' : 'none';
+    $('#sum-story').style.display = on ? 'none' : '';
+    $('#sum-side').style.display = on ? '' : 'none';
+    $('#mid-ph').innerHTML = on ? 'Side content <span class="tag">quests and esper dungeons</span>'
+      : 'Dungeons <span class="tag">' + esc(area_of_region_name(progressCache.region)) + '</span>';
+    if (on) { loadSideWorlds(); $('#sum-ph').innerHTML = 'Side selection <span class="tag">worlds</span>'; }
+    else { $('#sum-ph').innerHTML = 'Checkpoint <span class="tag" id="sum-tag"></span>'; }
   }
 
-  function renderSideHost(world, content) {
+  function loadSideWorlds() {
+    if (Object.keys(progressCache.side).length) return;
+    api('/api/questline?world=all').then(function (data) {
+      (data.worlds || []).forEach(function (world) { renderSideWorld(world.world_id, world); });
+      $('#side-tag').innerHTML = '<b>' + (data.worlds || []).length + ' worlds</b> · side quests and esper dungeons';
+      $('#side-apply').disabled = false;
+    }).catch(function (error) { $('#side-list').textContent = error.message; });
+  }
+
+  function renderSideWorld(world, content) {
     progressCache.side[world] = content;
-    var row = document.createElement('div');
-    row.className = 'side-world';
-    row.dataset.world = world;
-    var title = document.createElement('div');
-    title.className = 'blkhead';
-    title.textContent = 'World ' + world + ' · ' + (content.quests || []).length + ' quests · '
-      + (content.dungeons || []).length + ' dungeons';
-    row.appendChild(title);
+    var host = $('#side-list');
+    var head = document.createElement('div');
+    head.className = 'sidehead';
+    head.innerHTML = 'World ' + world + ' <span>' + (content.quests || []).length + ' quests · '
+      + (content.dungeons || []).length + ' dungeons</span>';
+    host.appendChild(head);
     (content.quests || []).forEach(function (quest) {
-      var line = document.createElement('label');
-      line.className = 'side-row';
-      line.innerHTML = '<input type="checkbox" data-quest="' + esc(quest.quest_id) + '" data-world="'
-        + world + '"><span class="nm">' + esc(quest.place) + ' · ' + esc(quest.quest_id) + '</span>'
-        + (quest.delivery ? '<span class="tag">delivery</span>' : '');
-      row.appendChild(line);
+      var row = document.createElement('div');
+      row.className = 'qrow';
+      row.innerHTML = '<span class="cb" data-quest="' + esc(quest.quest_id) + '" data-world="' + world
+        + '">✓</span><span class="qwrap"><span class="qname">' + esc(quest.name || quest.quest_id)
+        + '</span><span class="loc"><span class="pin">◆</span>' + esc(quest.place)
+        + (quest.delivery ? ' · delivery' : '') + '</span></span><span class="rw">'
+        + esc(quest.reward || '') + '</span>';
+      row.querySelector('.cb').addEventListener('click', function (ev) {
+        ev.currentTarget.classList.toggle('on');
+      });
+      host.appendChild(row);
     });
     (content.dungeons || []).forEach(function (dungeon) {
-      var line = document.createElement('label');
-      line.className = 'side-row';
-      line.innerHTML = '<input type="checkbox" data-dungeon="' + esc(dungeon.dungeon_key)
-        + '" data-world="' + world + '"><span class="nm">' + esc(dungeon.name) + ' · '
+      var row = document.createElement('div');
+      row.className = 'qrow';
+      row.innerHTML = '<span class="cb" data-dungeon="' + esc(dungeon.dungeon_key) + '" data-world="'
+        + world + '">✓</span><span>' + esc(dungeon.name) + '<br><span class="esp">'
         + esc(dungeon.esper_name || '') + '</span>'
-        + (dungeon.grantable ? '<input type="checkbox" checked data-grant="'
-          + esc(dungeon.dungeon_key) + '" data-world="' + world + '"><span class="tag">grant</span>'
-          : '<span class="tag">not grantable</span>');
-      row.appendChild(line);
+        + (dungeon.grantable ? '<span class="grantbox on" data-grant="' + esc(dungeon.dungeon_key)
+          + '">grant</span>' : '<span class="grantbox">no grant</span>')
+        + '</span><span class="rw">' + dungeon.missions.length + ' missions</span>';
+      row.querySelector('.cb').addEventListener('click', function (ev) {
+        ev.currentTarget.classList.toggle('on');
+      });
+      var box = row.querySelector('.grantbox[data-grant]');
+      if (box) box.addEventListener('click', function (ev) { ev.currentTarget.classList.toggle('on'); });
+      host.appendChild(row);
     });
-    $('#side-list').appendChild(row);
-    $('#side-apply').disabled = false;
-    $('#sum-side').textContent = Object.keys(progressCache.side).length + ' worlds listed';
   }
 
   function sideSelection() {
     var side = {};
-    $$('#side-list input[data-quest]:checked').forEach(function (box) {
-      var world = box.dataset.world;
+    $$('#side-list .cb[data-quest].on').forEach(function (cb) {
+      var world = cb.dataset.world;
       side[world] = side[world] || { quests: [], dungeons: [] };
-      side[world].quests.push(box.dataset.quest);
+      side[world].quests.push(cb.dataset.quest);
     });
-    $$('#side-list input[data-dungeon]:checked').forEach(function (box) {
-      var world = box.dataset.world;
+    $$('#side-list .cb[data-dungeon].on').forEach(function (cb) {
+      var world = cb.dataset.world;
       side[world] = side[world] || { quests: [], dungeons: [] };
-      var grant = $('input[data-grant="' + box.dataset.dungeon + '"]');
-      side[world].dungeons.push({ dungeon_key: box.dataset.dungeon,
-                                  grant_esper: !!(grant && grant.checked) });
+      var box = $('.grantbox[data-grant="' + cb.dataset.dungeon + '"]');
+      side[world].dungeons.push({ dungeon_key: cb.dataset.dungeon,
+                                  grant_esper: !!(box && box.classList.contains('on')) });
     });
     return side;
   }
 
   function wireProgress() {
-    $('#region-list').addEventListener('change', loadAreas);
-    $('#area-list').addEventListener('change', loadPlan);
     $('#checkpoint-apply').addEventListener('click', function () {
       var plan = progressCache.plan;
       if (!plan) return;
@@ -542,10 +607,13 @@
     });
     $('#side-apply').addEventListener('click', function () {
       var side = sideSelection();
-      if (!Object.keys(side).length) return;
-      addEdit('Progress · side ' + Object.keys(side).map(function (w) { return 'W' + w; }).join('+'),
+      var worlds = Object.keys(side);
+      if (!worlds.length) return;
+      addEdit('Progress · side ' + worlds.map(function (w) { return 'W' + w; }).join('+'),
               { progress: { checkpoint: null, side: side } });
     });
+    var sideLink = $('#side-link');
+    if (sideLink) sideLink.addEventListener('click', function () { sideMode(true); });
   }
 
   function selectUnit(instanceId) {
