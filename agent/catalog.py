@@ -219,11 +219,17 @@ def build_units(mst_dir, text_dir):
     level cap, LB cap, trust caps and per-stat pot/door caps."""
     names = _texts(text_dir, "F_TEXT_UNITS_NAME", "MST_UNIT_NAME_")
     lb_caps = _lb_caps(mst_dir)
+    rows = [row for row in _rows(mst_dir, "F_UNIT_MST") if str(row.get("3HriTp6B") or "")]
+    # The EX-awakening table is keyed by the NV form's own id (`JPW8Vs40`), which is NOT always the
+    # series root (Lightning: root 213000105, NV form 213000117).
+    nv_by_group = {}
+    for row in rows:
+        master_id = str(row.get("3HriTp6B"))
+        if str(row.get("JPW8Vs40") or "0") == master_id:
+            nv_by_group.setdefault(str(row.get("woghJa61") or master_id), master_id)
     units = []
-    for row in _rows(mst_dir, "F_UNIT_MST"):
+    for row in rows:
         master_id = str(row.get("3HriTp6B") or "")
-        if not master_id:
-            continue
         name = names.get(master_id)
         if not name:
             # A granted unit with no MST_UNIT_NAME_ row SIGSEGVs the client's award screen (SW-78).
@@ -238,6 +244,7 @@ def build_units(mst_dir, text_dir):
             "rarity": _int(row.get("9fW0TePj"), 1),
             "nv_group": str(row.get("woghJa61") or master_id),
             "nv": str(row.get("JPW8Vs40") or "0") == master_id,
+            "nv_id": nv_by_group.get(str(row.get("woghJa61") or master_id), ""),
             "max_level": _int(row.get("aU3o2D4t"), 1),
             "lb_cap": (min(levels, hard) if levels else hard) if lb_id else 0,
             "trust_cap": _trust_cap(row, "9mu4boy7"),

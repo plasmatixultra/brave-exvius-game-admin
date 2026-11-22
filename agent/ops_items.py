@@ -126,6 +126,56 @@ def recipe_kit(table, row_id):
             "table": table}
 
 
+def _class_up_chain(from_master, target_master):
+    """[(source, target)] from `from_master` up to `target_master`, or a refusal."""
+    table = player_state._load_ndjson("F_UNIT_CLASS_UP_MST.ndjson")
+    forward = {}
+    for row in table.get("__rows__", []):
+        source = str(row.get("3HriTp6B") or "")
+        target = str(row.get("t74crqAL") or "")
+        if source and target and target != "0":
+            forward[source] = target
+    from_master, target_master = str(from_master), str(target_master)
+    steps, current, seen = [], from_master, {from_master}
+    while current != target_master:
+        nxt = forward.get(current)
+        if not nxt or nxt in seen:
+            raise ValueError(f"{target_master} is not reachable from {from_master} "
+                             f"(stopped at {current})")
+        steps.append((current, nxt))
+        seen.add(nxt)
+        current = nxt
+    if not steps:
+        raise ValueError(f"{target_master} is the current form; nothing to awaken")
+    return steps
+
+
+def awaken_plan(from_master, target_master):
+    """Every class-up recipe from one form to another, with the materials summed.
+
+    A jump like 4★ -> 6★ needs BOTH steps' materials: the game charges one awakening at a time,
+    so a kit for the destination has to grant the union (and both gils).
+    """
+    steps = []
+    total, gil = {}, 0
+    for source, target in _class_up_chain(from_master, target_master):
+        kit = recipe_kit("unit_class_up", source)
+        steps.append({"from": source, "to": target, "materials": kit["materials"], "gil": kit["gil"]})
+        for material in kit["materials"]:
+            total[material["item_id"]] = total.get(material["item_id"], 0) + material["count"]
+        gil += kit["gil"]
+    return {
+        "from": str(from_master),
+        "to": str(target_master),
+        "steps": steps,
+        "materials": [{"item_id": item_id, "count": count} for item_id, count in sorted(total.items())],
+        "gil": gil,
+        "table": "unit_class_up",
+        "row_id": f"{from_master}->{target_master}",
+        "level": None,
+    }
+
+
 def wiki_materials_path():
     """`data/wiki_materials.txt` beside the package (used by the catalog, kept here for callers)."""
     return os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),

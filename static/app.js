@@ -731,11 +731,13 @@
     S.summary.roster.forEach(function (unit) {
       var option = document.createElement('option');
       option.value = unit.instance_id;
-      option.textContent = unit.name + ' · ' + unit.master_id + ' · Lv ' + unit.level;
+      option.textContent = unit.name + ' · ' + (formInfo(unit.master_id) ? formLabel(unit.master_id) : '?')
+        + ' · Lv ' + unit.level;
       select.appendChild(option);
     });
     select.addEventListener('change', loadKit);
     $('#kit-ex-level').addEventListener('change', loadKit);
+    $('#kit-target').addEventListener('change', loadKit);
     $$('[data-kit-type]').forEach(function (chip) {
       chip.addEventListener('click', function () {
         S.kitType = chip.dataset.kitType;
@@ -753,38 +755,131 @@
     loadKit();
   }
 
-  function kitRecipe() {
+  function formLabel(masterId) {
+    var info = formInfo(masterId);
+    if (!info) return String(masterId);
+    return info.nv ? 'NV' : (info.rarity || '?') + '★';
+  }
+
+  // every form this one can still awaken into, in order (4★ -> 5★ -> 6★ ...)
+  function formsAfter(masterId) {
+    var info = formInfo(masterId);
+    if (!info || !S.catalog) return [];
+    var chain = S.catalog.awaken_chain[info.nv_group] || [];
+    var all = [info.nv_group].concat(chain);
+    var index = all.indexOf(masterId);
+    return index >= 0 ? all.slice(index + 1) : chain.slice();
+  }
+
+  function kitUnit() {
     var select = $('#kit-unit');
-    if (!select || !select.selectedOptions[0] || !S.catalog) return null;
+    if (!select || !select.selectedOptions[0] || !S.summary) return null;
     var instance = select.selectedOptions[0].value;
-    var unit = S.summary.roster.filter(function (u) { return u.instance_id === instance; })[0];
+    return S.summary.roster.filter(function (u) { return u.instance_id === instance; })[0] || null;
+  }
+
+  function kitRecipe() {
+    var unit = kitUnit();
     if (!unit) return null;
-    var group = unit.master_id;
-    var catalogRow = S.catalog.units.filter(function (u) { return u.master_id === unit.master_id; })[0];
-    if (catalogRow) group = catalogRow.nv_group;
-    if (S.kitType === 'unit_class_up') return { table: 'unit_class_up', id: unit.master_id };
+    var info = formInfo(unit.master_id) || {};
+    var group = info.nv_group || unit.master_id;
+    if (S.kitType === 'unit_class_up') {
+      var target = $('#kit-target').value;
+      if (!target) return null;
+      return { awaken: true, from: unit.master_id, to: target };
+    }
     if (S.kitType === 'ex_class_up') {
+      if (!info.nv || !info.nv_id) return null;   // EX only exists on an NV row
       var level = $('#kit-ex-level').value || '1';
-      return { table: 'ex_class_up', id: group + ':' + level };
+      return { table: 'ex_class_up', id: info.nv_id + ':' + level };
     }
     return null;
   }
 
+  // a type the unit cannot use is greyed out, not silently unproductive
+  function paintKitTypes() {
+    var unit = kitUnit();
+    var info = unit ? (formInfo(unit.master_id) || {}) : {};
+    var canStar = !!(unit && formsAfter(unit.master_id).length);
+    var canEx = !!info.nv;
+    $$('[data-kit-type]').forEach(function (chip) {
+      var kind = chip.dataset.kitType;
+      var available = kind === 'sublimation' ? true
+        : (kind === 'unit_class_up' ? canStar : canEx);
+      chip.classList.toggle('off', !available);
+      chip.title = available ? '' : (kind === 'unit_class_up'
+        ? 'this unit is already at its top form'
+        : 'EX awakening only exists on a Neo Vision form');
+      chip.style.opacity = available ? '' : '.4';
+      chip.style.pointerEvents = available ? '' : 'none';
+    });
+    if (!canStar && S.kitType === 'unit_class_up') S.kitType = canEx ? 'ex_class_up' : 'sublimation';
+    if (!canEx && S.kitType === 'ex_class_up') S.kitType = canStar ? 'unit_class_up' : 'sublimation';
+    $$('[data-kit-type]').forEach(function (chip) {
+      chip.classList.toggle('on', chip.dataset.kitType === S.kitType);
+    });
+  }
+
+  function paintKitTargets() {
+    var unit = kitUnit();
+    var select = $('#kit-target');
+    if (!select) return;
+    var previous = select.value;
+    select.innerHTML = '';
+    var options = unit ? formsAfter(unit.master_id) : [];
+    options.forEach(function (masterId) {
+      var option = document.createElement('option');
+      option.value = masterId;
+      option.textContent = formLabel(masterId);
+      select.appendChild(option);
+    });
+    // keep the chosen target across a re-render (otherwise any reload snaps back to the next form)
+    if (previous && options.indexOf(previous) >= 0) select.value = previous;
+    $('#kit-target-row').style.display = (S.kitType === 'unit_class_up' && options.length) ? '' : 'none';
+    if (!options.length && S.kitType === 'unit_class_up') {
+      select.innerHTML = '<option value="">already at the top form</option>';
+    }
+  }
+
   function loadKit() {
     var root = $('#kit-mats');
+    paintKitTypes();
+    paintKitTargets();
     $('#kit-ex-row').style.display = S.kitType === 'ex_class_up' ? '' : 'none';
     var recipe = kitRecipe();
-    $('#kit-recipe').textContent = recipe ? (recipe.table + ' ' + recipe.id) : 'no recipe for this type';
-    if (!recipe) { root.innerHTML = '<p class="note">Ability kits are granted from the Ability Awakening view.</p>'; return; }
-    api('/api/recipe?table=' + encodeURIComponent(recipe.table) + '&id=' + encodeURIComponent(recipe.id))
-      .then(function (kit) {
-        S.kit = kit;
-        renderKit(kit);
-      })
-      .catch(function (error) {
-        root.innerHTML = '<p class="note">' + esc(error.message) + '</p>';
-        S.kit = null;
-      });
+    var unit = kitUnit();
+    if (S.kitType === 'sublimation') {
+      $('#kit-recipe').textContent = 'ability recipes live in the Ability Awakening view';
+      root.innerHTML = '<p class="note">Ability awakening kits are granted from the Ability Awakening view.</p>';
+      S.kit = null;
+      return;
+    }
+    if (!recipe) {
+      $('#kit-recipe').textContent = 'nothing to awaken';
+      root.innerHTML = '<p class="note">' + esc(unit ? formLabel(unit.master_id) + ' has no further form to awaken into.'
+        : 'pick a unit') + '</p>';
+      S.kit = null;
+      return;
+    }
+    var url = recipe.awaken
+      ? '/api/awaken?from=' + encodeURIComponent(recipe.from) + '&to=' + encodeURIComponent(recipe.to)
+      : '/api/recipe?table=' + encodeURIComponent(recipe.table) + '&id=' + encodeURIComponent(recipe.id);
+    api(url).then(function (kit) {
+      S.kit = kit;
+      if (recipe.awaken && unit) {
+        var path = [formLabel(unit.master_id)].concat((kit.steps || []).map(function (step) {
+          return formLabel(step.to);
+        }));
+        $('#kit-recipe').textContent = path.join(' → ') + ' · ' + (kit.steps || []).length + ' step(s)';
+      } else {
+        $('#kit-recipe').textContent = (kit.table || '') + ' ' + (kit.row_id || '');
+      }
+      renderKit(kit);
+    }).catch(function (error) {
+      $('#kit-recipe').textContent = 'no recipe';
+      root.innerHTML = '<p class="note">' + esc(error.message) + '</p>';
+      S.kit = null;
+    });
   }
 
   function materialName(itemId) {

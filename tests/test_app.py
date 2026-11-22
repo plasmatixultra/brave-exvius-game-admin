@@ -75,6 +75,8 @@ class AppTest(unittest.TestCase):
             return {"materials": [], "gil": 0, "table": "sublimation", "row_id": "1"}
         if op == "abilities":
             return {"recipes": []}
+        if op == "awaken":
+            return {"from": "100004604", "to": "100004606", "steps": [], "materials": [], "gil": 0}
         raise AssertionError("unexpected op " + op)
 
     def fake_apply(self, edits):
@@ -175,6 +177,17 @@ class AppTest(unittest.TestCase):
 
     def test_static_traversal_404(self):
         self.assertEqual(self.get("/static/../app.py")[0], 404)
+
+    def test_recipe_route_decodes_encoded_ids(self):
+        """`?id=213000117%3A1` must reach the agent as `213000117:1` (a colon, not %3A)."""
+        status, _, _ = self.get("/api/recipe?table=ex_class_up&id=213000117%3A1")
+        self.assertEqual(status, 200)
+        self.assertEqual(self.calls[-1][2], {"table": "ex_class_up", "id": "213000117:1"})
+
+    def test_awaken_route(self):
+        status, _, body = self.get("/api/awaken?from=100004604&to=100004606")
+        self.assertEqual(status, 200)
+        self.assertEqual(self.calls[-1][0], "awaken")
 
     def test_recipe_and_abilities_routes(self):
         status, _, body = self.get("/api/recipe?table=sublimation&id=1")

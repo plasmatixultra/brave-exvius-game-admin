@@ -124,6 +124,27 @@ class ItemsTest(unittest.TestCase):
         self.assertEqual(kit["level"], 2)
         self.assertEqual(kit["gil"], 500000)
 
+    def test_awaken_plan_sums_every_step(self):
+        """4★ Chizuru -> 6★ needs BOTH awakenings' materials and gil."""
+        plan = ops_items.awaken_plan("100004604", "100004606")
+        self.assertEqual([step["from"] for step in plan["steps"]], ["100004604", "100004605"])
+        self.assertEqual(len(plan["steps"]), 2)
+        self.assertEqual(plan["gil"], 2500 + 4000)
+        by_id = {row["item_id"]: row["count"] for row in plan["materials"]}
+        self.assertEqual(by_id["290020200"], 25)    # step 1 only
+        self.assertEqual(by_id["290060200"], 20)    # step 2 only
+
+    def test_awaken_plan_one_step(self):
+        plan = ops_items.awaken_plan("100004604", "100004605")
+        self.assertEqual(len(plan["steps"]), 1)
+        self.assertEqual(plan["gil"], 2500)
+
+    def test_awaken_plan_refuses_an_unreachable_target(self):
+        with self.assertRaises(ValueError):
+            ops_items.awaken_plan("100004604", "213000117")
+        with self.assertRaises(ValueError):
+            ops_items.awaken_plan("100004606", "100004606")
+
     def test_recipe_kit_unknown_recipe_rejected(self):
         with self.assertRaises(ValueError):
             ops_items.recipe_kit("sublimation", "does-not-exist")

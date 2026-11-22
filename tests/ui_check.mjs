@@ -238,11 +238,16 @@ async function main() {
     select.value = '3';
     select.dispatchEvent(new Event('change'));
     return new Promise((resolve) => setTimeout(function () {
-      resolve({ visible, recipes: document.querySelector('#kit-recipe').textContent });
+      resolve({ visible, recipes: document.querySelector('#kit-recipe').textContent,
+                unit: document.querySelector('#kit-unit').selectedOptions[0]?.textContent,
+                exOff: ex.classList.contains('off'),
+                levels: [...document.querySelectorAll('#kit-ex-level option')].map((o) => o.value),
+                mats: document.querySelector('#kit-mats').textContent.slice(0, 60) });
     }, 2500));
   })()`);
   check('the kit offers EX +1/+2/+3', !!exKit && exKit.visible
-    && /:3$/.test((exKit.recipes || '').trim()), JSON.stringify(exKit));
+    && /^ex_class_up/.test((exKit.recipes || '').trim())
+    && (exKit.levels || []).join() === '1,2,3', JSON.stringify(exKit));
 
   // the picker must find a unit by the number the game shows
   const byNumber = await evaluate(`(function () {
@@ -393,6 +398,44 @@ async function main() {
   check('a failed apply shows a dismissible reason',
     !!failedStatus && /apply failed/.test(failedStatus.shown) && failedStatus.afterClick === '',
     JSON.stringify(failedStatus));
+
+  // the awakening kit must speak stars, grey out impossible forms, and chain the steps
+  const kit = await evaluate(`(function () {
+    document.querySelector('.rail a[data-view="kit"]').click();
+    const unit = document.querySelector('#kit-unit');
+    const chizuru = [...unit.options].find((o) => /Chizuru/.test(o.textContent));
+    if (!chizuru) return { error: 'Chizuru not in the kit list' };
+    unit.value = chizuru.value;
+    unit.dispatchEvent(new Event('change'));
+    return new Promise(function (resolve) {
+      setTimeout(function () {
+        const ex = [...document.querySelectorAll('[data-kit-type]')]
+          .find((c) => c.dataset.kitType === 'ex_class_up');
+        const target = document.querySelector('#kit-target');
+        const stars = [...target.options].map((o) => o.textContent);
+        const six = [...target.options].find((o) => o.textContent === '6★');
+        if (six) {
+          target.value = six.value;
+          target.dispatchEvent(new Event('change'));
+        }
+        setTimeout(function () {
+          const recipe = document.querySelector('#kit-recipe').textContent;
+          document.querySelector('[data-add="kit"]').click();
+          const pill = [...document.querySelectorAll('#cart .pill')].map((p) => p.textContent.trim()).pop();
+          resolve({ label: chizuru.textContent, exGreyed: ex.classList.contains('off'),
+                    stars, recipe, pill });
+        }, 2000);
+      }, 1500);
+    });
+  })()`);
+  check('the kit shows the current stars', !!kit && /4★/.test(kit.label || ''), JSON.stringify(kit && kit.label));
+  check('EX is greyed out for a unit with no NV form', !!kit && kit.exGreyed === true, JSON.stringify(kit && kit.exGreyed));
+  check('the kit offers every later star form', !!kit
+    && (kit.stars || []).join() === '5★,6★', JSON.stringify(kit && kit.stars));
+  check('choosing 6★ chains both awakenings', !!kit
+    && /7500|6,500|2 step/.test(kit.recipe || ''), JSON.stringify(kit && kit.recipe));
+  check('the chained kit reaches the cart', !!kit && /Kit \u00b7 unit_class_up/.test(kit.pill || ''),
+    JSON.stringify(kit && kit.pill));
 
   const silhouette = await evaluate(`(function () {
     const img = document.createElement('img');

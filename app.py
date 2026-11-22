@@ -11,6 +11,7 @@ import json
 import os
 import sys
 import time
+import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import localdata
@@ -115,6 +116,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(catalog())
             if path == "/api/recipe":
                 return self._recipe()
+            if path == "/api/awaken":
+                return self._awaken()
             if path == "/api/abilities":
                 return self._abilities()
             if path.startswith("/api/unit-art/"):
@@ -132,6 +135,13 @@ class Handler(BaseHTTPRequestHandler):
             return self._error("recipe needs table and id", 400)
         return self._json(agent("recipe", flags={"table": table, "id": row_id}))
 
+    def _awaken(self):
+        params = self._query()
+        source, target = params.get("from"), params.get("to")
+        if not source or not target:
+            return self._error("awaken needs from and to", 400)
+        return self._json(agent("awaken", flags={"from": source, "to": target}))
+
     def _abilities(self):
         params = self._query()
         master = params.get("master")
@@ -140,8 +150,9 @@ class Handler(BaseHTTPRequestHandler):
         return self._json(agent("abilities", flags={"master": master}))
 
     def _query(self):
-        query = self.path.split("?", 1)[1] if "?" in self.path else ""
-        return dict(part.split("=", 1) for part in query.split("&") if "=" in part)
+        """Percent-decoded query params. `parse_qs` matters: `id=213000117%3A1` is a colon in a value."""
+        return {key: values[0] for key, values in
+                urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query).items()}
 
     def _static_file(self, name):
         path = os.path.normpath(os.path.join(STATIC, name))

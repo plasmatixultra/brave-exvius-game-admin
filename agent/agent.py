@@ -45,8 +45,8 @@ USAGE = """usage:
 GROUP_ORDER = ("currencies", "tickets", "points", "materials", "cards",
                "card_levels", "units", "abilities", "progress")
 
-OPS = ("summary", "catalog", "preview", "apply", "validate", "recipe", "abilities")
-FLAG_NAMES = ("out", "workdir", "baseline", "expected", "table", "id", "master")
+OPS = ("summary", "catalog", "preview", "apply", "validate", "recipe", "abilities", "awaken")
+FLAG_NAMES = ("out", "workdir", "baseline", "expected", "table", "id", "master", "from", "to")
 
 
 # --------------------------------------------------------------------------- loading
@@ -465,6 +465,12 @@ def op_summary(save, _edits, _flags):
     }, []
 
 
+def op_awaken(_save, _edits, flags):
+    if not flags.get("from") or not flags.get("to"):
+        raise ValueError("awaken needs --from and --to (unit master ids)")
+    return ops_items.awaken_plan(flags["from"], flags["to"]), []
+
+
 def op_abilities(_save, _edits, flags):
     master_id = flags.get("master")
     if not master_id:
@@ -564,6 +570,7 @@ DISPATCH = {
     "validate": op_validate,
     "recipe": op_recipe,
     "abilities": op_abilities,
+    "awaken": op_awaken,
 }
 
 
