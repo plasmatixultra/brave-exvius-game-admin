@@ -513,7 +513,7 @@
           return excluded[reason] + ' excluded (' + reason + ')';
         }).join(' · ');
         $('#plan-rewards').textContent = excludedText;
-        $('#sum-tag').textContent = areaId;
+        if ($('#sum-tag')) $('#sum-tag').textContent = areaId;   // the pane may have switched to side
         $('#checkpoint-apply').disabled = false;
       }).catch(function (error) {
         $('#plan-summary').textContent = error.message;
@@ -622,23 +622,46 @@
   }
 
   var sideExpected = null;
+  var sideExpectedKey = null;      // which selection the cached promise belongs to
   var sidePreviewTimer = null;
+
+  function selectionKey(selection) { return JSON.stringify(selection); }
 
   // A side selection pays quest rewards, so the cart has to declare them: the agent refuses an apply
   // whose actual currency deltas differ from what was promised. The preview is the promise.
   function requestSidePreview() {
     var selection = sideSelection();
+    var key = selectionKey(selection);
     if (!Object.keys(selection).length) {
       sideExpected = null;
+      sideExpectedKey = null;
       renderSideSummary();
-      return;
+      return Promise.resolve(null);
     }
-    api('/api/progress/preview', { progress: { checkpoint: null, side: selection } })
+    return api('/api/progress/preview', { progress: { checkpoint: null, side: selection } })
       .then(function (data) {
         sideExpected = data.expected || null;
+        sideExpectedKey = key;
         renderSideSummary();
+        return sideExpected;
       })
-      .catch(function (error) { console.error('side preview failed', error); sideExpected = null; });
+      .catch(function (error) {
+        console.error('side preview failed', error);
+        sideExpected = null;
+        sideExpectedKey = null;
+        return null;
+      });
+  }
+
+  // The promise must belong to the selection being added: a checkbox flipped inside the debounce
+  // window would otherwise send the previous selection's figures and be refused.
+  function expectedFor(selection) {
+    var key = selectionKey(selection);
+    if (sideExpected && sideExpectedKey === key) return Promise.resolve(sideExpected);
+    clearTimeout(sidePreviewTimer);
+    return requestSidePreview().then(function () {
+      return sideExpectedKey === key ? sideExpected : null;
+    });
   }
 
   function queueSidePreview() {
@@ -705,9 +728,20 @@
       var side = sideSelection();
       var worlds = Object.keys(side);
       if (!worlds.length) return;
-      var edit = { progress: { checkpoint: null, side: side } };
-      if (sideExpected) edit.expected = sideExpected;
-      addEdit('Progress · side ' + worlds.map(function (w) { return 'W' + w; }).join('+'), edit);
+      var label = 'Progress · side ' + worlds.map(function (w) { return 'W' + w; }).join('+');
+      var button = this;
+      if (button.dataset.busy === '1') return;
+      button.dataset.busy = '1';                 // one add per click, however the preview is timed
+      expectedFor(side).then(function (expected) {
+        if (!expected) {
+          $('#side-summary').insertAdjacentHTML('beforeend',
+            '<div class="sum-row"><span class="sum-k">Preview failed</span>'
+            + '<span class="sum-v small">nothing added</span></div>');
+          return;
+        }
+        addEdit(label, { progress: { checkpoint: null, side: side }, expected: expected });
+      }).then(function () { button.dataset.busy = ''; },
+              function () { button.dataset.busy = ''; });
     });
     var sideLink = $('#side-link');
     if (sideLink) sideLink.addEventListener('click', function () { sideMode(true); });

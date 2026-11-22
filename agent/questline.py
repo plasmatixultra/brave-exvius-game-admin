@@ -240,6 +240,18 @@ def _delivery_items(book, quest_id, ps):
     return granted
 
 
+QUEST_STEP_DONE = ("2", "3")   # `exvius_map.quests[step].4kcAD9fW` once the step is turned in
+
+
+def _quest_complete(ps, book, quest_id):
+    """Already turned in? A step row at 2 (or 3) is done; the run must not "refuse" it as if it failed."""
+    rows = (ps.data.get("exvius_map") or {}).get("quests") or {}
+    steps = [str(step.get("7Svg2kdT")) for step in book.quest_steps(quest_id)]
+    if not steps:
+        return False
+    return all(str((rows.get(step) or {}).get("4kcAD9fW")) in QUEST_STEP_DONE for step in steps)
+
+
 def _run_quests(ps, book, quest_ids, warnings):
     from exvius_actions_expedition import mission_update
 
@@ -248,6 +260,10 @@ def _run_quests(ps, book, quest_ids, warnings):
         quest = book.quests.get(str(quest_id))
         if quest is None:
             raise QuestlineError(f"quest {quest_id!r} is not in F_QUEST_MST")
+        if _quest_complete(ps, book, quest_id):
+            done.append(str(quest_id))          # idempotent: an already-finished quest is not a refusal
+            warnings.append(f"quest {quest_id}: already complete")
+            continue
         kind = "town" if str(quest.get("Lxj5u3WB")) == "2" else "mission"
         place = str(quest.get("6uIYE15X") or "")
         node = ({"JcxS6A8N": [{"Gh92V3Tx": place}]} if kind == "town"
@@ -275,7 +291,9 @@ def _grant_esper(ps, beast_id):
         return False
     if any(str(row.get("esper_id")) == str(beast_id) for row in ps.data.get("beasts") or []):
         return False
-    ps.grant_beast(beast_id) if hasattr(ps, "grant_beast") else None
+    if not hasattr(ps, "grant_beast"):
+        return False
+    ps.grant_beast(beast_id)
     return True
 
 
@@ -296,6 +314,8 @@ def preview(ps, mst_dir, progress_edit):
         _clear_missions(scratch, book, plan["missions"], warnings)
         _write_gates(scratch, book, plan)
         done, refused = _run_quests(scratch, book, plan.get("quests") or [], warnings)
+        for esper in plan.get("espers") or []:
+            _grant_esper(scratch, esper["esper_id"])
         _restore(scratch, saved)
     finally:
         ffbe_state.State.player = real

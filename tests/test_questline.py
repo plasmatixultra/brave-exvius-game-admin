@@ -65,6 +65,24 @@ class QuestlineTest(unittest.TestCase):
             agent_cli.op_apply(self.path, edits, {})
         self.assertIn("expected", str(caught.exception))
 
+    def test_a_finished_quest_is_not_a_refusal(self):
+        """The second run of the same selection must not die on 'quests refused'."""
+        progress = {"checkpoint": None, "side": {"1": {"quests": ["1001001", "1001002"], "dungeons": []}}}
+        first = questline.apply(self.ps, MST, progress)
+        self.assertEqual(first["quests"], 2)
+        second = questline.apply(self.ps, MST, progress)
+        self.assertEqual(second["quests"], 2)
+        self.assertTrue(all("already complete" in w for w in second["warnings"]))
+
+    def test_preview_promises_the_beast_it_will_grant(self):
+        """The preview skipped the esper step, so its `beasts` figure was always 0 while the run added 1."""
+        progress = {"checkpoint": None, "side": {"1": {"quests": [], "dungeons": [
+            {"dungeon_key": "11151", "grant_esper": True}]}}}
+        promise = questline.preview(self.ps, MST, progress)
+        self.assertEqual(promise["expected"]["extra"]["beasts"], 1)
+        report = questline.apply(self.ps, MST, progress)
+        self.assertEqual(report["espers_granted"], 1)
+
     def test_apply_works_with_no_global_player(self):
         """The agent process never sets `ffbe_state.State.player`; the payers need it anyway."""
         import ffbe_state

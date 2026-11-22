@@ -122,21 +122,36 @@ def env():
     }
 
 
+_AGENT_LOCK = threading.Lock()   # two previews in flight must not share the work dir
+
+
 def agent(op, edits=None, flags=None):
     """Run one READ-ONLY agent op locally against the cached save; returns its `result`."""
     if op in MUTATING_OPS:
         raise RuntimeError(f"{op} is not a read op; applies go through pipeline.apply")
+    with _AGENT_LOCK:
+        return _agent_locked(op, edits, flags)
+
+
+def _agent_locked(op, edits, flags):
     sync_data()
     refresh_save()
     argv = [sys.executable, AGENT, op, SAVE]
+    edits_path = None
     if edits is not None:
-        edits_path = os.path.join(CACHE, "edits.json")
-        with open(edits_path, "w", encoding="utf-8") as fh:
+        # One file per call: two previews can be in flight at once (the side pane's debounce and the
+        # cart's click), and a shared `edits.json` let one process read the other's payload.
+        handle, edits_path = tempfile.mkstemp(prefix="edits-", suffix=".json", dir=CACHE)
+        with os.fdopen(handle, "w", encoding="utf-8") as fh:
             json.dump(edits, fh)
         argv.append(edits_path)
     for name, value in (flags or {}).items():
         argv.extend([f"--{name}", str(value)])
-    proc = subprocess.run(argv, capture_output=True, text=True, env=env(), timeout=120)
+    try:
+        proc = subprocess.run(argv, capture_output=True, text=True, env=env(), timeout=120)
+    finally:
+        if edits_path and os.path.exists(edits_path):
+            os.unlink(edits_path)
     try:
         payload = json.loads(proc.stdout)
     except ValueError:

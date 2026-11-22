@@ -411,7 +411,6 @@ async function main() {
       .map((n) => n.dataset.world))].sort();
     const sideRows = document.querySelectorAll('#side-list .qrow').length;
     document.querySelector('.rail a[data-view="progress"]').click();
-    document.querySelector('#side-link').click();
     for (let i = 0; i < 40 && !/Missions in the span/.test(document.querySelector('#plan-summary').textContent); i += 1) {
       await sleep(500);
     }
