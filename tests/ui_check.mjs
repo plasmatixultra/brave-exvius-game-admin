@@ -227,6 +227,23 @@ async function main() {
   check('dragging the Trust slider reaches 100%',
     !!drag && drag.readout.trim() === '100.0 %', JSON.stringify(drag));
 
+  // the Awakening Kit offers all three EX levels, and only for the EX type
+  const exKit = await evaluate(`(function () {
+    document.querySelector('.rail a[data-view="kit"]').click();
+    const chips = [...document.querySelectorAll('[data-kit-type]')];
+    const ex = chips.find((c) => c.dataset.kitType === 'ex_class_up');
+    ex.click();
+    const visible = document.querySelector('#kit-ex-row').style.display !== 'none';
+    const select = document.querySelector('#kit-ex-level');
+    select.value = '3';
+    select.dispatchEvent(new Event('change'));
+    return new Promise((resolve) => setTimeout(function () {
+      resolve({ visible, recipes: document.querySelector('#kit-recipe').textContent });
+    }, 2500));
+  })()`);
+  check('the kit offers EX +1/+2/+3', !!exKit && exKit.visible
+    && /:3$/.test((exKit.recipes || '').trim()), JSON.stringify(exKit));
+
   const silhouette = await evaluate(`(function () {
     const img = document.createElement('img');
     return new Promise((resolve) => {

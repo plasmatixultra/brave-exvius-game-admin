@@ -652,6 +652,7 @@
       select.appendChild(option);
     });
     select.addEventListener('change', loadKit);
+    $('#kit-ex-level').addEventListener('change', loadKit);
     $$('[data-kit-type]').forEach(function (chip) {
       chip.addEventListener('click', function () {
         S.kitType = chip.dataset.kitType;
@@ -679,12 +680,16 @@
     var catalogRow = S.catalog.units.filter(function (u) { return u.master_id === unit.master_id; })[0];
     if (catalogRow) group = catalogRow.nv_group;
     if (S.kitType === 'unit_class_up') return { table: 'unit_class_up', id: unit.master_id };
-    if (S.kitType === 'ex_class_up') return { table: 'ex_class_up', id: group + ':1' };
+    if (S.kitType === 'ex_class_up') {
+      var level = $('#kit-ex-level').value || '1';
+      return { table: 'ex_class_up', id: group + ':' + level };
+    }
     return null;
   }
 
   function loadKit() {
     var root = $('#kit-mats');
+    $('#kit-ex-row').style.display = S.kitType === 'ex_class_up' ? '' : 'none';
     var recipe = kitRecipe();
     $('#kit-recipe').textContent = recipe ? (recipe.table + ' ' + recipe.id) : 'no recipe for this type';
     if (!recipe) { root.innerHTML = '<p class="note">Ability kits are granted from the Ability Awakening view.</p>'; return; }
