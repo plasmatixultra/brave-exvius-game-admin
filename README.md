@@ -38,6 +38,32 @@ not reachable from the page — copy `admin.toml.example` to `admin.toml` and se
 `container = "<its name>"`; the two directories are only needed when Docker cannot be asked
 at all.
 
+### If the game runs on another machine
+
+The app drives **that machine's** Docker daemon and mounts its paths, so it is installed and
+started there — on the NAS, the server, the mini-PC — not on your laptop. Your laptop then opens
+it over the network:
+
+```bash
+# on the box with the game:
+ADMIN_BIND=192.168.1.20 python3 app.py     # its address, not 0.0.0.0
+# on your laptop:
+http://192.168.1.20:8750
+```
+
+There is **no password**. Bind it to an address only your own devices can reach — a VPN or
+tailnet address is the right choice, plain `0.0.0.0` on shared wifi is not. The page says so
+when it starts exposed, and `127.0.0.1` (the default) is what you want if you only ever open it
+from that machine.
+
+Running the app on your laptop with the game elsewhere is not supported yet: two of the
+containers it starts mount *local* directories, so the daemon has to be the local one. An ssh
+tunnel is the closest you can get today:
+
+```bash
+ssh -L 8750:127.0.0.1:8750 you@the-game-box     # then http://127.0.0.1:8750
+```
+
 ## What it can do
 
 | View | What it changes |

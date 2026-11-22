@@ -1556,13 +1556,20 @@
     var apply = $('#apply');
     if (apply) apply.disabled = !ok;
     if (!strip) return;
-    if (ok) { strip.hidden = true; return; }
+    var showWarn = !!(health && health.exposed);
+    if (ok && !showWarn) { strip.hidden = true; return; }
     strip.hidden = false;
-    strip.className = 'setup';
-    $('#setup-head').textContent = health && health.error
-      ? 'The app cannot reach the game yet' : 'Checking what this app can see…';
-    $('#setup-msg').textContent = (health && health.error) ||
-      'Set container, server_dir and data_dir in admin.toml, or start the game container.';
+    strip.className = ok ? 'setup ok' : 'setup';
+    if (ok) {
+      // Healthy, but anyone who can reach the port can apply: say so, once.
+      $('#setup-head').textContent = 'This page is reachable from other machines';
+      $('#setup-msg').textContent = health.exposure || '';
+    } else {
+      $('#setup-head').textContent = health && health.error
+        ? 'The app cannot reach the game yet' : 'Checking what this app can see…';
+      $('#setup-msg').textContent = (health && health.error) ||
+        'Set container, server_dir and data_dir in admin.toml, or start the game container.';
+    }
     $('#setup-container').textContent = (health && health.container) || '—';
     $('#setup-save').textContent = (health && health.save) || '—';
     $('#setup-backups').textContent = (health && health.backups) || '—';

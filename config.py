@@ -186,6 +186,21 @@ def _read_toml(path):
     return {key: section[key] for key in TOML_KEYS if key in section}
 
 
+def bind_port(env=None):
+    """The address to listen on, from the environment alone.
+
+    Detection may fail (no docker, no game) and the page still has to be
+    reachable where the user asked for it.
+    """
+    env = dict(os.environ if env is None else env)
+    bind = env.get(ENV_KEYS["bind"]) or DEFAULT_BIND
+    try:
+        port = int(env.get(ENV_KEYS["port"]) or DEFAULT_PORT)
+    except (TypeError, ValueError):
+        raise SettingsError("port must be a number, not %r" % env.get(ENV_KEYS["port"]))
+    return bind, port
+
+
 def load(env=None, container=None):
     """detect() < admin.toml < environment. Detection is optional if both
     directories are configured by hand, which is what a stopped container

@@ -70,22 +70,39 @@ def fetch_unit_art(master_id):
         return None
 
 
+def _is_loopback(bind):
+    return bind in ("127.0.0.1", "localhost", "::1") or bind.startswith("127.")
+
+
 def health(settings=None):
     """What the app found, in the words a stranger needs to fix it.
 
     Called by the page before anything is offered, so a wrong path or a stale
     image shows up as a sentence rather than as a failed apply.
     """
+    try:
+        bind, port = config.bind_port()
+    except config.SettingsError:
+        bind, port = config.DEFAULT_BIND, config.DEFAULT_PORT
     answer = {"ok": False, "container": None, "image": None, "image_id": None,
               "save": None, "backups": None, "data_dir": None,
+              "bind": bind, "port": port,
+              "exposed": not _is_loopback(bind), "exposure": None,
               "engine_ok": False, "missing": [], "error": None}
+    answer["exposure"] = (None if _is_loopback(bind) else
+                          "this page has no password: anyone who can reach %s:%s can apply changes"
+                          % (bind, port))
     try:
         settings = settings or config.load()
     except config.SettingsError as error:
         answer["error"] = str(error)
         return answer
     answer.update(container=settings.container, image=settings.image,
-                  save=settings.save, backups=settings.backups, data_dir=settings.data_dir)
+                  save=settings.save, backups=settings.backups, data_dir=settings.data_dir,
+                  bind=settings.bind, port=settings.port, exposed=not _is_loopback(settings.bind),
+                  exposure=(None if _is_loopback(settings.bind) else
+                            "this page has no password: anyone who can reach %s:%s can apply changes"
+                            % (settings.bind, settings.port)))
     try:
         answer["image_id"] = engine._image_id(settings)
         engine_dir = engine.ensure(settings, localdata.CACHE)
@@ -336,10 +353,15 @@ def main(argv=None):
         settings = config.load()
     except config.SettingsError:
         pass                      # the page still starts and says what is wrong
-    port = int(argv[1]) if len(argv) > 1 and argv[0] == "--port" else PORT
-    bind = HOST
+    try:
+        bind, port = config.bind_port()
+    except config.SettingsError as error:
+        print("cannot start: %s" % error, flush=True)
+        return 2
     if settings is not None:
         port, bind = settings.port, settings.bind
+    if len(argv) > 1 and argv[0] == "--port":
+        port = int(argv[1])
     if settings is not None:
         try:
             if applysave.recover(settings):

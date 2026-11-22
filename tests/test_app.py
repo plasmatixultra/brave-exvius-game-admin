@@ -212,6 +212,15 @@ class AppTest(unittest.TestCase):
             app.main([])
         made.assert_called_once_with(9999, "127.0.0.2")
 
+    def test_start_honours_bind_and_port_even_when_detection_fails(self):
+        with mock.patch.object(app.config, "load",
+                               side_effect=config.SettingsError("container ffbe was not found")), \
+                mock.patch.dict(os.environ, {"ADMIN_BIND": "0.0.0.0", "ADMIN_PORT": "9100"}), \
+                mock.patch.object(app.applysave, "recover", return_value=False), \
+                mock.patch.object(app, "create_server", return_value=mock.MagicMock()) as made:
+            app.main([])
+        made.assert_called_once_with(9100, "0.0.0.0")
+
     def test_health_reports_what_it_found(self):
         settings = self.settings
         with mock.patch.object(app.config, "load", return_value=settings), \
@@ -246,6 +255,35 @@ class AppTest(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertEqual(payload["backup"],
                          os.path.join(self.settings.backups, "campaign-1.json"))
+
+    def test_health_says_when_the_page_is_reachable_from_elsewhere(self):
+        settings = config.from_inspect([{
+            "Name": "/ffbe",
+            "Config": {"Image": "ffbe-ios-server:local"},
+            "Mounts": [{"Destination": config.CONTAINER_SERVER_ROOT, "Source": self.server_dir},
+                       {"Destination": config.CONTAINER_DATA, "Source": self.data_dir}]}],
+            {"ADMIN_BIND": "0.0.0.0"})
+        with mock.patch.object(app.config, "load", return_value=settings), \
+                mock.patch.object(app.localdata, "cache_ready", return_value=True), \
+                mock.patch.object(app.engine, "ensure", return_value="/cache/engine"), \
+                mock.patch.object(app.compat, "check", return_value={"ok": True, "missing": []}), \
+                mock.patch.object(app.engine, "_image_id", return_value="sha256:abc"):
+            status, _type, body = self.get("/api/health")
+        payload = json.loads(body)
+        self.assertEqual(status, 200)
+        self.assertEqual(payload["bind"], "0.0.0.0")
+        self.assertTrue(payload["exposed"])
+        self.assertIn("anyone", payload["exposure"])
+
+    def test_a_loopback_bind_is_not_exposed(self):
+        with mock.patch.object(app.config, "load", return_value=self.settings), \
+                mock.patch.object(app.localdata, "cache_ready", return_value=True), \
+                mock.patch.object(app.engine, "ensure", return_value="/cache/engine"), \
+                mock.patch.object(app.compat, "check", return_value={"ok": True, "missing": []}):
+            _status, _type, body = self.get("/api/health")
+        payload = json.loads(body)
+        self.assertFalse(payload["exposed"])
+        self.assertEqual(payload["exposure"], None)
 
     def test_health_names_a_drifted_engine(self):
         with mock.patch.object(app.config, "load", return_value=self.settings), \

@@ -59,6 +59,13 @@ class ProductSurfaceTest(unittest.TestCase):
             self.assertTrue(os.path.isfile(os.path.join(ROOT, match.group(1))),
                             "%s is referenced but missing" % match.group(1))
 
+    def test_the_readme_says_how_to_open_it_from_another_machine(self):
+        with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as handle:
+            readme = handle.read()
+        self.assertIn("ADMIN_BIND", readme)
+        self.assertIn("no password", readme.lower())
+        self.assertIn("ssh -L", readme)
+
     def test_the_readme_warns_that_it_edits_the_save(self):
         with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as handle:
             readme = handle.read().lower()
