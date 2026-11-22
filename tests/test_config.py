@@ -64,6 +64,7 @@ class DetectTest(unittest.TestCase):
             with self.assertRaises(config.SettingsError) as caught:
                 config.detect("nosuch")
         self.assertIn("nosuch", str(caught.exception))
+        self.assertNotIn("error:", str(caught.exception))
 
     def test_detect_reads_the_container(self):
         with FakeDocker() as fake:

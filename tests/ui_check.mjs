@@ -29,6 +29,21 @@ function check(name, ok, detail) {
 }
 
 async function main() {
+  // The checks assert real rows, so a backend with no game gives five minutes of waiting and a
+  // meaningless failure. Say what is wrong in one line instead.
+  try {
+    const health = await (await fetch(`${BASE}/api/health`, { cache: 'no-store' })).json();
+    if (!health.ok) {
+      check('the app can reach a game', false, health.error || 'engine not ready');
+      console.log('\nRun this against a machine with the game (or through a tunnel): ' +
+        `ssh -L 8750:127.0.0.1:8750 <user>@<game-host>, then node tests/ui_check.mjs`);
+      process.exit(1);
+    }
+  } catch (error) {
+    check('the app answers', false, error.message);
+    process.exit(1);
+  }
+
   const chrome = spawn(CHROME, [
     '--headless', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
     `--remote-debugging-port=${PORT}`, '--window-size=1280,1400', 'about:blank',

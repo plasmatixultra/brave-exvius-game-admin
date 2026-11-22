@@ -138,8 +138,12 @@ def detect(container=DEFAULT_CONTAINER, timeout=20):
         payload = transport.inspect(container, timeout=timeout)
     except transport.TransportError as error:
         detail = error.stderr.strip().splitlines()
-        raise SettingsError("container %s not found%s" % (
-            container, (": " + detail[0]) if detail else ""))
+        first = detail[0] if detail else ""
+        if "no such object" in first.lower() or "no such container" in first.lower():
+            raise SettingsError(
+                "container %s was not found. Is the game running, and is %s the right name?"
+                % (container, container))
+        raise SettingsError("cannot read container %s: %s" % (container, first or "docker failed"))
     return from_inspect(payload).as_dict()
 
 
@@ -176,7 +180,7 @@ def load(env=None, container=None):
         merged.update(from_env)
         if "server_dir" not in merged or "data_dir" not in merged:
             raise SettingsError(
-                "%s; set %s and %s in %s to run without docker detection"
+                "%s To run without detection, set %s and %s in %s."
                 % (error, ENV_KEYS["server_dir"], ENV_KEYS["data_dir"], path))
         base = {"container": merged.get("container", DEFAULT_CONTAINER),
                 "image": merged.get("image", DEFAULT_IMAGE),

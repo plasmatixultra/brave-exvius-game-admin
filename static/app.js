@@ -1537,7 +1537,43 @@
   }
 
   /* ------------------------------------------------------------------------- boot */
+  /* ------------------------------------------------------------------------- setup */
+  function renderHealth(health) {
+    var pill = $('#server-status');
+    var strip = $('#setup');
+    var ok = health && health.ok;
+    if (pill) {
+      pill.innerHTML = '<i class="dot' + (ok ? '' : ' bad') + '"></i> ' +
+        (ok ? (health.container + ' · ready') : 'setup needed');
+    }
+    var apply = $('#apply');
+    if (apply) apply.disabled = !ok;
+    if (!strip) return;
+    if (ok) { strip.hidden = true; return; }
+    strip.hidden = false;
+    strip.className = 'setup';
+    $('#setup-head').textContent = health && health.error
+      ? 'The app cannot reach the game yet' : 'Checking what this app can see…';
+    $('#setup-msg').textContent = (health && health.error) ||
+      'Set FFBE_SERVER_DIR and FFBE_DATA_DIR in admin.toml, or start the game container.';
+    $('#setup-container').textContent = (health && health.container) || '—';
+    $('#setup-save').textContent = (health && health.save) || '—';
+    $('#setup-backups').textContent = (health && health.backups) || '—';
+    $('#setup-engine').textContent = health && health.engine_ok
+      ? 'exported from ' + (health.image || 'the image') : 'not exported';
+  }
+
+  function loadHealth() {
+    return fetch('/api/health', {cache: 'no-store'})
+      .then(function (r) { return r.json(); })
+      .then(renderHealth)
+      .catch(function (error) {
+        renderHealth({ok: false, error: 'the app could not check itself: ' + error.message});
+      });
+  }
+
   function boot() {
+    loadHealth();
     bindViews();
     bindGrants();
     bindBuilder();

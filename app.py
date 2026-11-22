@@ -3,8 +3,9 @@
 
     python3 app.py            → http://127.0.0.1:8750
 
-Loopback only, no auth, one user. Every write goes through `pipeline.apply`, which runs
-`remote/apply.sh` on athena under a lock and a trap; this file never edits a save itself.
+Loopback only, no auth, one user. Every write goes through `pipeline.apply`, which stops
+the game container, edits a copy inside the image and swaps it atomically; this file never
+edits a save itself.
 """
 
 import json
@@ -14,14 +15,16 @@ import time
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+import config
+import engine
 import localdata
 import pipeline
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC = os.path.join(ROOT, "static")
 UNIT_CACHE = os.path.join(STATIC, "assets", "units")
-HOST = "127.0.0.1"
-PORT = 8750
+HOST = config.DEFAULT_BIND
+PORT = config.DEFAULT_PORT
 PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 CATALOG_TTL = 600
 
@@ -63,6 +66,35 @@ def fetch_unit_art(master_id):
             return handle.read()
     except OSError:
         return None
+
+
+def health(settings=None):
+    """What the app found, in the words a stranger needs to fix it.
+
+    Called by the page before anything is offered, so a wrong path or a stale
+    image shows up as a sentence rather than as a failed apply.
+    """
+    answer = {"ok": False, "container": None, "image": None, "image_id": None,
+              "save": None, "backups": None, "data_dir": None,
+              "engine_ok": False, "missing": [], "error": None}
+    try:
+        settings = settings or config.load()
+    except config.SettingsError as error:
+        answer["error"] = str(error)
+        return answer
+    answer.update(container=settings.container, image=settings.image,
+                  save=settings.save, backups=settings.backups, data_dir=settings.data_dir)
+    try:
+        answer["image_id"] = engine._image_id(settings)
+        engine.ensure(settings, localdata.CACHE)
+        answer["engine_ok"] = bool(localdata.cache_ready())
+        if not answer["engine_ok"]:
+            answer["missing"].append("the game's data tables")
+            answer["error"] = "the data directory has no mst_decoded/text_decoded tables"
+    except engine.EngineError as error:
+        answer["error"] = str(error)
+    answer["ok"] = answer["engine_ok"] and not answer["error"]
+    return answer
 
 
 def catalog():
@@ -110,6 +142,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._static_file("index.html")
             if path.startswith("/static/"):
                 return self._static_file(path[len("/static/"):])
+            if path == "/api/health":
+                return self._json(health())
             if path == "/api/summary":
                 if "refresh=1" in (self.path.split("?", 1) + [""])[1]:
                     localdata.refresh_save(force=True)

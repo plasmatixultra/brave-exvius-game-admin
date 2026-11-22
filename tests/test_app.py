@@ -19,6 +19,7 @@ REPO = os.path.dirname(HERE)
 sys.path.insert(0, REPO)
 
 import app  # noqa: E402
+import config  # noqa: E402
 
 PNG = b"\x89PNG\r\n\x1a\n" + b"fake-body"
 
@@ -36,6 +37,13 @@ class AppTest(unittest.TestCase):
                         "materials_held": {}, "tickets_held": {}, "exp_points": 3500000}
         self.catalog = {"tickets": [], "units": [], "awaken_chain": {}, "vision_cards": [],
                         "materials": [], "points": [], "xp_units": []}
+        self.server_dir = tempfile.mkdtemp(prefix="health-server-")
+        self.data_dir = tempfile.mkdtemp(prefix="health-data-")
+        self.settings = config.from_inspect([{
+            "Name": "/ffbe",
+            "Config": {"Image": "ffbe-ios-server:local"},
+            "Mounts": [{"Destination": config.CONTAINER_SERVER_ROOT, "Source": self.server_dir},
+                       {"Destination": config.CONTAINER_DATA, "Source": self.data_dir}]}])
         self.fetch_calls = []
         self.fetch_result = PNG
         self.patches = [
@@ -178,6 +186,40 @@ class AppTest(unittest.TestCase):
         self.assertEqual(payload["status"], "ok")
         self.assertEqual(payload["log"], ["apply complete"])
         self.assertEqual(self.calls[-1], ("apply", {"currencies": {"gil": 10}}, None))
+
+    def test_health_reports_what_it_found(self):
+        settings = self.settings
+        with mock.patch.object(app.config, "load", return_value=settings), \
+                mock.patch.object(app.localdata, "cache_ready", return_value=True), \
+                mock.patch.object(app.engine, "ensure", return_value="/cache/engine"), \
+                mock.patch.object(app.engine, "_image_id", return_value="sha256:abc"):
+            status, _type, body = self.get("/api/health")
+        payload = json.loads(body)
+        self.assertEqual(status, 200)
+        self.assertTrue(payload["engine_ok"], payload)
+        self.assertEqual(payload["container"], "ffbe")
+        self.assertEqual(payload["save"], settings.save)
+        self.assertEqual(payload["missing"], [])
+        self.assertIsNone(payload["error"])
+
+    def test_health_failure_is_not_a_500(self):
+        with mock.patch.object(app.config, "load",
+                               side_effect=app.config.SettingsError("container ffbe not found")):
+            status, _type, body = self.get("/api/health")
+        payload = json.loads(body)
+        self.assertEqual(status, 200)
+        self.assertFalse(payload["engine_ok"])
+        self.assertIn("not found", payload["error"])
+
+    def test_health_names_a_bad_image(self):
+        with mock.patch.object(app.config, "load", return_value=self.settings), \
+                mock.patch.object(app.engine, "ensure",
+                                  side_effect=app.engine.EngineError("no /app/server")):
+            status, _type, body = self.get("/api/health")
+        payload = json.loads(body)
+        self.assertEqual(status, 200)
+        self.assertFalse(payload["engine_ok"])
+        self.assertIn("no /app/server", payload["error"])
 
     def test_summary_route(self):
         status, payload = self.post("/api/preview", {"spec": {"master_id": "213000105", "level": 5}})
