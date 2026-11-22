@@ -1,0 +1,19 @@
+# Optional overlay for the Drama/Revival compose stack.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.admin.yml up -d
+#
+# The admin runs on the host today (`python3 app.py`), so this file does nothing
+# on its own: it is where a sidecar service will go for users who will not
+# install Python, and it records the port that service will publish.
+#
+# Whatever runs the admin publishes it on the host's LOOPBACK only — the game
+# container is tailnet-facing; the admin must never be.
+services:
+  admin:
+    profiles: ["admin"]           # never starts unless asked for by name
+    image: ffbe-game-admin:local  # built in a later release; not used by host mode
+    ports:
+      - "127.0.0.1:8750:8750"
+    environment:
+      FFBE_CONTAINER: ffbe
+    restart: unless-stopped

@@ -7,7 +7,7 @@ venv/
 # Local/tool state (agent config, distro state) — machine-specific
 .pi/distro-state.json
 
-# Runtime scratch: staged saves, downloaded saves, backups pulled from athena
+# Runtime scratch: staged saves, downloaded saves, backups pulled from the game
 scratch/
 backups/
 *.staging.json
@@ -32,7 +32,7 @@ id_*
 # LSP/tool cache (serena)
 .serena/
 
-# Unit-sprite cache: fetched from athena at runtime. Only the four Lightning seeds are fixtures.
+# Unit-sprite cache: fetched from the game at runtime. Only the four Lightning seeds are fixtures.
 static/assets/units/*.png
 !static/assets/units/213000105.png
 !static/assets/units/213000106.png

@@ -2,7 +2,7 @@
 
 Currencies are written straight into `data["currencies"]` on purpose: the server's own
 `add_currency` scores daily quests and writes the 400-entry quest audit ring, which a grant
-must not do (spec "Left to the builder" 2, verified on athena).
+must not do (spec "Left to the builder" 2, verified against the live save).
 
 Tickets go through `PlayerState.grant_item` (find-or-append on `inventory.items`), which does
 no validation of its own — every cap and existence check below is the agent's.

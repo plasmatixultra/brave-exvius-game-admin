@@ -1,6 +1,6 @@
 """The web app: routing, content types, the unit-art cache, and the loopback binding.
 
-The agent and the pipeline are faked here — nothing in this file touches athena, a save, or docker.
+The agent and the pipeline are faked here — nothing in this file touches a real container, a save, or docker.
 
     python3 -m unittest tests.test_app -v
 """
