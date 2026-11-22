@@ -41,6 +41,9 @@ restore() {
     fi
     if [ "$STOPPED" = "1" ] && [ "$DONE" != "1" ]; then
         ROLLED_BACK=1
+        # A rollback is NEVER a success. A TERM that lands while the agent is running leaves the
+        # trap with the child's exit code (0), which would otherwise read as "applied".
+        [ "$status" -eq 0 ] && status=1
         echo "ROLLBACK: restoring the pre-apply save" >&2
         if [ -n "$BACKUP" ] && [ -f "$BACKUP" ]; then
             sudo -n cp -p "$BACKUP" "$SAVE_DIR/campaign.json.tmp" \

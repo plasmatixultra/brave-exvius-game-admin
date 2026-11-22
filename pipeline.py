@@ -156,7 +156,11 @@ def apply(edits):
             return {"ok": False, "backup": _backup_from(log), "log": log,
                     "error": log[-1] if log else f"apply failed with exit {exc.returncode}"}
         log = [line for line in (result.stdout or "").splitlines() if line]
-        remote.run(f"rm -rf {remote_work}")     # a successful run needs no forensics
+        if not any(line.strip() == "apply complete" for line in log):
+            return {"ok": False, "backup": _backup_from(log), "log": log,
+                    "error": "the apply did not complete (exit 0 without the completion marker)"}
+        cleanup = f"rm -rf {remote_work}"      # a successful run needs no forensics
+        remote.run(cleanup)
         return {"ok": True, "backup": _backup_from(log), "log": log, "error": None}
     finally:
         shutil.rmtree(work, ignore_errors=True)

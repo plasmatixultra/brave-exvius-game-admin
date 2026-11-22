@@ -152,7 +152,9 @@ pid=$!
 sleep 1
 kill -TERM "$pid" 2>/dev/null
 wait "$pid" 2>/dev/null
+killed_code=$?
 for _ in $(seq 1 20); do started && break; sleep 0.5; done
+[ "${killed_code:-0}" != "0" ] && ok "killed midway exits non-zero" || no "killed midway exits non-zero (got ${killed_code:-0})"
 [ "$(sha "$T/state/campaign.json")" = "$before" ] && ok "killed midway restores the save" || no "killed midway restores the save"
 started && ok "killed midway starts the container again" || no "killed midway starts the container again"
 grep -q "ROLLBACK" "$T/out" && ok "killed midway logs a rollback" || no "killed midway logs a rollback"

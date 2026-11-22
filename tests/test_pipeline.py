@@ -82,6 +82,13 @@ class PipelineTest(unittest.TestCase):
         self.assertIsNone(result["error"])
         self.assertIn("apply complete", result["log"])
 
+    def test_pipeline_rejects_a_zero_exit_without_the_completion_marker(self):
+        """A trap-rolled-back run can exit 0; the marker is what says the save was replaced."""
+        self.fake.stdout = "stopping ffbe\nbackup /b/campaign-1.json\napplying edits\n"
+        result = pipeline.apply({"currencies": {"gil": 1}})
+        self.assertFalse(result["ok"])
+        self.assertIn("did not complete", result["error"])
+
     def test_pipeline_maps_exit_99(self):
         self.fake.raise_error = remote.RemoteError(99, "bash apply.sh", "apply already running\n")
         result = pipeline.apply({"currencies": {"gil": 1}})
