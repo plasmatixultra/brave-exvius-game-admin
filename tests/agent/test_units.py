@@ -85,6 +85,17 @@ class UnitBuilderTest(unittest.TestCase):
         self.assertNotEqual(str(changed["instance_id"]), original)
         self.assertIsNone(self.ps.roster_row(original))
 
+    def test_a_form_outside_the_series_is_refused(self):
+        """Review Focus 5: an awakening form not on the unit's chain is rejected, not saved."""
+        sol = ops_units.build_unit(self.ps, {"master_id": "100031607", "level": 1})
+        original = str(sol["instance_id"])
+        with self.assertRaises(ValueError) as caught:
+            ops_units.build_unit(self.ps, {"master_id": LIGHTNING_NV, "level": 1},
+                                 instance_id=original)
+        self.assertIn("chain", str(caught.exception))
+        self.assertIsNotNone(self.ps.roster_row(original))
+        self.assertEqual(self.ps.roster_row(original)["master_id"], "100031607")
+
     def test_super_trust_requires_7_star(self):
         with self.assertRaises(ValueError):
             ops_units.build_unit(self.ps, {"master_id": LIGHTNING, "level": 1, "super_trust": 500})

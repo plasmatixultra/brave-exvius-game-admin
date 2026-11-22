@@ -399,42 +399,62 @@ async function main() {
     !!failedStatus && /apply failed/.test(failedStatus.shown) && failedStatus.afterClick === '',
     JSON.stringify(failedStatus));
 
-  // the awakening kit must speak stars, grey out impossible forms, and chain the steps
-  const kit = await evaluate(`(function () {
+  // the awakening kit must speak stars, grey out impossible forms, and chain the steps.
+  // Data-driven: which unit can still awaken depends on the LIVE save, so pick the roster row with
+  // the longest remaining chain and derive every expectation from the catalog.
+  const kit = await evaluate(`(async function () {
+    const catalog = await fetch('/api/catalog').then((r) => r.json());
+    const summary = await fetch('/api/summary').then((r) => r.json());
+    const units = Object.fromEntries(catalog.units.map((u) => [u.master_id, u]));
+    const formsAfter = function (master) {
+      const info = units[master];
+      const chain = catalog.awaken_chain[info.nv_group] || [];
+      const all = [info.nv_group].concat(chain);
+      const at = all.indexOf(master);
+      return at >= 0 ? all.slice(at + 1) : chain;
+    };
+    const label = function (master) {
+      const info = units[master];
+      return info.nv ? 'NV' : String(info.rarity) + '\\u2605';
+    };
+    const pick = summary.roster.map((u) => ({ u, forms: formsAfter(u.master_id) }))
+      .filter((row) => row.forms.length)
+      .sort((a, b) => b.forms.length - a.forms.length)[0];
+    if (!pick) return { error: 'no roster unit can awaken further' };
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     document.querySelector('.rail a[data-view="kit"]').click();
-    const unit = document.querySelector('#kit-unit');
-    const chizuru = [...unit.options].find((o) => /Chizuru/.test(o.textContent));
-    if (!chizuru) return { error: 'Chizuru not in the kit list' };
-    unit.value = chizuru.value;
-    unit.dispatchEvent(new Event('change'));
-    return new Promise(function (resolve) {
-      setTimeout(function () {
-        const ex = [...document.querySelectorAll('[data-kit-type]')]
-          .find((c) => c.dataset.kitType === 'ex_class_up');
-        const target = document.querySelector('#kit-target');
-        const stars = [...target.options].map((o) => o.textContent);
-        const six = [...target.options].find((o) => o.textContent === '6★');
-        if (six) {
-          target.value = six.value;
-          target.dispatchEvent(new Event('change'));
-        }
-        setTimeout(function () {
-          const recipe = document.querySelector('#kit-recipe').textContent;
-          document.querySelector('[data-add="kit"]').click();
-          const pill = [...document.querySelectorAll('#cart .pill')].map((p) => p.textContent.trim()).pop();
-          resolve({ label: chizuru.textContent, exGreyed: ex.classList.contains('off'),
-                    stars, recipe, pill });
-        }, 2000);
-      }, 1500);
-    });
+    const select = document.querySelector('#kit-unit');
+    select.value = pick.u.instance_id;
+    select.dispatchEvent(new Event('change'));
+    await sleep(2000);
+    const ex = [...document.querySelectorAll('[data-kit-type]')]
+      .find((c) => c.dataset.kitType === 'ex_class_up');
+    const target = document.querySelector('#kit-target');
+    const stars = [...target.options].map((o) => o.textContent);
+    target.value = target.options[target.options.length - 1].value;
+    target.dispatchEvent(new Event('change'));
+    await sleep(2500);
+    const recipe = document.querySelector('#kit-recipe').textContent;
+    document.querySelector('[data-add="kit"]').click();
+    const pill = [...document.querySelectorAll('#cart .pill')].map((p) => p.textContent.trim()).pop();
+    return { labelText: select.selectedOptions[0].textContent, expectedLabel: label(pick.u.master_id),
+             stars, expected: pick.forms.map(label), steps: pick.forms.length, recipe, pill,
+             exGreyed: ex.classList.contains('off'),
+             nv: !!units[pick.u.master_id].nv,
+             from: pick.u.master_id, to: pick.forms[pick.forms.length - 1] };
   })()`);
-  check('the kit shows the current stars', !!kit && /4★/.test(kit.label || ''), JSON.stringify(kit && kit.label));
-  check('EX is greyed out for a unit with no NV form', !!kit && kit.exGreyed === true, JSON.stringify(kit && kit.exGreyed));
+  check('the kit shows the current stars', !!kit && (kit.labelText || '').includes(kit.expectedLabel || '?'),
+    JSON.stringify(kit && [kit.labelText, kit.expectedLabel]));
+  check('EX is greyed out unless the form is NV', !!kit && kit.exGreyed === !kit.nv,
+    JSON.stringify(kit && [kit.exGreyed, kit.nv]));
   check('the kit offers every later star form', !!kit
-    && (kit.stars || []).join() === '5★,6★', JSON.stringify(kit && kit.stars));
-  check('choosing 6★ chains both awakenings', !!kit
-    && /7500|6,500|2 step/.test(kit.recipe || ''), JSON.stringify(kit && kit.recipe));
-  check('the chained kit reaches the cart', !!kit && /Kit \u00b7 unit_class_up/.test(kit.pill || ''),
+    && (kit.stars || []).join() === (kit.expected || []).join(),
+    JSON.stringify(kit && [kit.stars, kit.expected]));
+  check('choosing the top form chains every step', !!kit
+    && String(kit.recipe || '').includes('· ' + kit.steps + ' step'),
+    JSON.stringify(kit && kit.recipe));
+  check('the chained kit reaches the cart', !!kit
+    && String(kit.pill || '').includes(kit.from + '->' + kit.to),
     JSON.stringify(kit && kit.pill));
 
   const silhouette = await evaluate(`(function () {

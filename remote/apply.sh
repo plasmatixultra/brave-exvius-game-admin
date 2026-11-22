@@ -81,10 +81,11 @@ log "backup $BACKUP"
 cp "$BACKUP" "$WORKDIR/baseline.json" || fail "cannot read the backup back"
 
 # Pre-apply identity, from the file the container just flushed.
-read -r PRE_NAME PRE_RANK PRE_ROSTER < <(python3 -I - "$SAVE" <<'PY'
+# TAB separated, read with IFS=$'\t': a handle with a space in it is still ONE field.
+IFS=$'\t' read -r PRE_NAME PRE_RANK PRE_ROSTER < <(python3 -I - "$SAVE" <<'PY'
 import json, sys
 d = json.load(open(sys.argv[1]))
-print(d["identity"]["handle_name"], int(d["rank"]["level"]), len(d["roster"]))
+print("%s\t%d\t%d" % (d["identity"]["handle_name"], int(d["rank"]["level"]), len(d["roster"])))
 PY
 ) || fail "cannot read the save's identity"
 [ -n "${PRE_NAME:-}" ] || fail "cannot read the save's identity"

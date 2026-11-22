@@ -20,6 +20,8 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
+import threading
 import time
 
 import remote
@@ -77,21 +79,37 @@ def sync_data(force=False, log=print):
     return True
 
 
-def refresh_save(force=False):
-    """Pull the live save into the cache. Returns True when a pull happened."""
+def _save_is_fresh():
     stamp = _stamp()
     age = time.time() - float(stamp.get("save_at") or 0)
-    if os.path.isfile(SAVE) and not force and age < SAVE_MAX_AGE:
+    return os.path.isfile(SAVE) and age < SAVE_MAX_AGE
+
+
+# The page is a ThreadingHTTPServer: on a stale save several requests arrive at once. One pull at a
+# time, or concurrent writers move the same temp file out from under each other.
+_SAVE_LOCK = threading.Lock()
+
+
+def refresh_save(force=False):
+    """Pull the live save into the cache. Returns True when a pull happened."""
+    if not force and _save_is_fresh():
         return False
-    os.makedirs(CACHE, exist_ok=True)
-    tmp = SAVE + ".tmp"
-    payload = remote.get_bytes("exvius/server/state/campaign.json")
-    with open(tmp, "wb") as fh:
-        fh.write(payload)
-    os.replace(tmp, SAVE)          # a half-written pull can never be read
-    stamp["save_at"] = time.time()
-    _write_stamp(stamp)
-    return True
+    with _SAVE_LOCK:
+        if not force and _save_is_fresh():     # another thread may have just done it
+            return False
+        os.makedirs(CACHE, exist_ok=True)
+        handle, tmp = tempfile.mkstemp(dir=CACHE, prefix="save.", suffix=".json")
+        try:
+            with os.fdopen(handle, "wb") as fh:
+                fh.write(remote.get_bytes("exvius/server/state/campaign.json"))
+            os.replace(tmp, SAVE)      # a half-written pull can never be read
+        finally:
+            if os.path.exists(tmp):
+                os.unlink(tmp)
+        stamp = _stamp()
+        stamp["save_at"] = time.time()
+        _write_stamp(stamp)
+        return True
 
 
 def env():

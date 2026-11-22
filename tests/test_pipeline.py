@@ -54,6 +54,13 @@ class PipelineTest(unittest.TestCase):
     def tearDown(self):
         pipeline.remote = self._real_remote
 
+    def test_query_flags_are_shell_quoted(self):
+        """A flag value from HTTP must never reach athena's shell as code."""
+        payload = "a" + chr(59) + "echo injected"      # a command separator, built at runtime
+        command = pipeline._exec_script("~/work", ["recipe", "/tmp/s.json", "--id", payload], seed=False)
+        self.assertIn("'" + payload + "'", command)
+        self.assertNotIn("--id " + payload, command)
+
     def test_preflight_refuses_when_edits_empty(self):
         result = pipeline.apply({})
         self.assertFalse(result["ok"])

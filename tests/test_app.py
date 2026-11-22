@@ -24,6 +24,7 @@ PNG = b"\x89PNG\r\n\x1a\n" + b"fake-body"
 
 
 class AppTest(unittest.TestCase):
+    # see tests/test_cache.py for the cache race tests
     def setUp(self):
         self.calls = []
         self.summary = {"gil": 2980094, "lapis_free": 2208, "lapis_paid": 0,

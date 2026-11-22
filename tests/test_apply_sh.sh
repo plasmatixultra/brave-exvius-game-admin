@@ -177,6 +177,19 @@ wait "$holder" 2>/dev/null
 [ ! -s "$CALLS" ] && ok "the locked-out apply never touches docker" || no "the locked-out apply never touches docker"
 cleanup
 
+# ---------------------------------------------------------------------- a handle with a space
+setup
+python3 - "$T/state/campaign.json" "$T/staging.json" <<'PY'
+import json, sys
+for path in sys.argv[1:]:
+    data = json.load(open(path))
+    data["identity"]["handle_name"] = "Rain & Fina"
+    json.dump(data, open(path, "w"))
+PY
+printf '{"has_save":true,"name":"Rain & Fina","rank":3}\n' > "$T/status.json"
+if run_apply > "$T/out" 2>&1; then ok "a handle with a space still applies"; else no "a handle with a space still applies ($(tail -2 "$T/out"))"; fi
+cleanup
+
 # ------------------------------------------------------------------------------------- summary
 echo "----"
 echo "$PASS passed, $FAIL failed"

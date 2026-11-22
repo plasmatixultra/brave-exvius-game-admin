@@ -344,6 +344,13 @@ def expected_roster_added(edits):
 # --------------------------------------------------------------------------- build
 
 
+def _series(master):
+    """A unit's awakening chain identity: every form in a chain shares `woghJa61` (the root form)."""
+    if not master:
+        return ""
+    return str(master.get("woghJa61") or master.get("3HriTp6B") or "")
+
+
 def build_unit(ps, spec, instance_id=None):
     """Create (instance_id None) or rebuild one roster row. Returns the resulting row."""
     clean = normalise_spec(spec)
@@ -357,6 +364,13 @@ def build_unit(ps, spec, instance_id=None):
         if unit is None:
             raise ValueError(f"unit {instance_id!r} is not owned")
         if str(unit.get("master_id")) != master_id:
+            # Only forms on THIS unit's chain: a cross-series edit would leave a roster row whose
+            # master and instance disagree, which no in-game action can ever fix.
+            current = player_state.unit_mst(str(unit.get("master_id"))) or {}
+            wanted = player_state.unit_mst(master_id) or {}
+            if _series(current) != _series(wanted):
+                raise ValueError(f"unit {instance_id}: {master_id} is not on {unit.get('master_id')}"
+                                 f"'s awakening chain (series {_series(current)}, not {_series(wanted)})")
             # A form change is an awakening without the cost: mirror `_awaken_unit` — move the master id,
             # re-level, clamp the LB, then renew the instance id (the client keys forms by instance).
             unit["master_id"] = master_id

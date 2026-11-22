@@ -9,6 +9,7 @@ payload, runs the script once, and turns its output into `{ok, backup, log, erro
 
 import json
 import os
+import shlex
 import shutil
 import tempfile
 import time
@@ -116,7 +117,8 @@ def _exec_script(work, args, seed):
         f"-e MST_DIR=/srv/ffbe/data/static/mst_decoded "
         f"-e TEXT_DIR=/srv/ffbe/data/static/text_decoded "
         f"-e FFBE_DATA=/tmp/scratch {config.CONTAINER} "
-        f"python3 {CONTAINER_AGENT}/agent.py " + " ".join(args))
+        # quote every arg: `--id` values come from HTTP query params and are joined into a shell line
+        f"python3 {CONTAINER_AGENT}/agent.py " + " ".join(shlex.quote(str(arg)) for arg in args))
     return " && ".join(lines)
 
 
