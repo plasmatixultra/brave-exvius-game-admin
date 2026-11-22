@@ -2,7 +2,6 @@
 
 import json
 import os
-import shutil
 import tempfile
 import unittest
 
@@ -11,6 +10,7 @@ import sys
 sys.path.insert(0, ROOT)
 
 import config
+from tests.fakedocker import FakeDocker
 
 FIXTURES = os.path.join(ROOT, "tests", "fixtures")
 
@@ -18,31 +18,6 @@ FIXTURES = os.path.join(ROOT, "tests", "fixtures")
 def fixture(name):
     with open(os.path.join(FIXTURES, name), encoding="utf-8") as handle:
         return json.load(handle)
-
-
-class FakeDocker:
-    """Puts tests/fixtures/fake-docker on PATH for the duration of a test."""
-
-    def __init__(self):
-        self.dir = tempfile.mkdtemp()
-        self.calls = os.path.join(self.dir, "calls")
-        shutil.copy(os.path.join(FIXTURES, "fake-docker"), os.path.join(self.dir, "docker"))
-        os.chmod(os.path.join(self.dir, "docker"), 0o755)
-        self.saved = dict(os.environ)
-
-    def __enter__(self):
-        os.environ["PATH"] = self.dir + os.pathsep + self.saved["PATH"]
-        os.environ["CALLS_FILE"] = self.calls
-        os.environ["FAKE_INSPECT_JSON"] = os.path.join(FIXTURES, "docker_inspect_standard.json")
-        return self
-
-    def __exit__(self, *exc):
-        os.environ.clear()
-        os.environ.update(self.saved)
-
-    def argv(self):
-        with open(self.calls, encoding="utf-8") as handle:
-            return handle.read().splitlines()
 
 
 class SettingsTest(unittest.TestCase):

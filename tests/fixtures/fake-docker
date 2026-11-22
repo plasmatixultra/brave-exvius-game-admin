@@ -23,7 +23,6 @@ case "$1" in
     echo "$2"
     ;;
   run)
-    printf 'run: %s\n' "$*" >> "${CALLS_FILE:-/dev/null}"
     if [ -n "${FAKE_AGENT_FAILS:-}" ] && printf '%s' "$*" | grep -q 'apply-files.sh apply'; then
       echo "apply-files: changes do not match the request" >&2
       exit 2

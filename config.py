@@ -132,29 +132,15 @@ class Settings:
 
 def detect(container=DEFAULT_CONTAINER, timeout=20):
     """Ask docker where the game's directories are."""
+    import transport
+
     try:
-        done = subprocess.run(
-            ["docker", "inspect", container],
-            capture_output=True, text=True, timeout=timeout, check=False)
-    except FileNotFoundError:
-        raise SettingsError(
-            "the docker command was not found; install Docker or set %s"
-            % ENV_KEYS["server_dir"])
-    except subprocess.TimeoutExpired:
-        raise SettingsError("docker inspect %s timed out" % container)
-    if done.returncode != 0:
-        detail = (done.stderr or done.stdout).strip().splitlines()
+        payload = transport.inspect(container, timeout=timeout)
+    except transport.TransportError as error:
+        detail = error.stderr.strip().splitlines()
         raise SettingsError("container %s not found%s" % (
             container, (": " + detail[0]) if detail else ""))
-    try:
-        payload = json.loads(done.stdout)
-    except ValueError:
-        raise SettingsError("docker inspect %s returned something that is not JSON" % container)
-    if isinstance(payload, dict):
-        payload = [payload]
-    if not payload:
-        raise SettingsError("container %s not found" % container)
-    return from_inspect(payload[0]).as_dict()
+    return from_inspect(payload).as_dict()
 
 
 def _read_toml(path):
