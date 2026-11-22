@@ -76,6 +76,9 @@ class AppTest(unittest.TestCase):
             return {"materials": [], "gil": 0, "table": "sublimation", "row_id": "1"}
         if op == "abilities":
             return {"recipes": []}
+        if op == "questline":
+            return {"regions": [{"region_id": 22, "name": "R", "arc": "The Beyond", "dungeon_count": 17}],
+                    "flags": flags}
         if op == "awaken":
             return {"from": "100004604", "to": "100004606", "steps": [], "materials": [], "gil": 0}
         raise AssertionError("unexpected op " + op)
@@ -199,6 +202,42 @@ class AppTest(unittest.TestCase):
                                        "Origin": "http://10.129.1.124:8751"})
         self.assertEqual(status, 200)
         self.assertEqual(len(self.calls), 1)
+
+    def test_questline_regions(self):
+        status, _, body = self.get("/api/questline/regions")
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body)["regions"][0]["region_id"], 22)
+
+    def test_questline_plan(self):
+        status, _, body = self.get("/api/questline?region=22&area=2210")
+        self.assertEqual(status, 200)
+        self.assertEqual(self.calls[-1][2], {"region": "22", "area": "2210"})
+
+    def test_questline_side(self):
+        status, _, body = self.get("/api/questline?world=1")
+        self.assertEqual(status, 200)
+        self.assertEqual(self.calls[-1][2], {"world": "1"})
+
+    def test_bad_area_is_400(self):
+        status, _, _ = self.get("/api/questline?region=22&area=abc")
+        self.assertEqual(status, 400)
+        self.assertEqual(self.calls, [])
+
+    def test_apply_accepts_checkpoint(self):
+        edits = {"progress": {"checkpoint": {"region": 22, "area": "2210"}},
+                 "expected": {"currencies": {"lapis_free": 1}, "roster_added": 0}}
+        status, body = self.post("/api/apply", {"edits": edits})
+        self.assertEqual(status, 200)
+        self.assertEqual(self.calls[-1][1]["progress"]["checkpoint"]["area"], "2210")
+
+    def test_apply_accepts_side_two_worlds_keep_both(self):
+        edits = {"progress": {"checkpoint": None, "side": {
+            "1": {"quests": ["1001001"], "dungeons": [{"dungeon_key": "11151", "grant_esper": True}]},
+            "3": {"quests": [], "dungeons": [{"dungeon_key": "113151", "grant_esper": False}]}}}}
+        status, _ = self.post("/api/apply", {"edits": edits})
+        self.assertEqual(status, 200)
+        side = self.calls[-1][1]["progress"]["side"]
+        self.assertEqual(sorted(side), ["1", "3"], "both worlds survive the cart")
 
     def test_recipe_route_decodes_encoded_ids(self):
         """`?id=213000117%3A1` must reach the agent as `213000117:1` (a colon, not %3A)."""

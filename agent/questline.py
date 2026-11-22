@@ -64,8 +64,11 @@ def _book(mst_dir, ps):
 
 # ------------------------------------------------------------------------------- plan building
 def _plan(book, progress_edit):
+    """Normalise the cart's shape (`checkpoint` + `side`) and the flat shapes the tests use."""
     if not isinstance(progress_edit, dict):
         raise QuestlineError("progress: expected an object")
+    if "checkpoint" in progress_edit or "side" in progress_edit:
+        return _merged_plan(book, progress_edit)
     if "region" in progress_edit:
         region, area = progress_edit.get("region"), str(progress_edit.get("area") or "")
         if book.area(area) is None:
@@ -74,6 +77,40 @@ def _plan(book, progress_edit):
     if "dungeons" in progress_edit or "quests" in progress_edit:
         return book.side_plan(progress_edit)
     raise QuestlineError("progress: needs a region/area checkpoint or a dungeons/quests selection")
+
+
+def _merged_plan(book, progress_edit):
+    """A checkpoint plus any number of worlds' side selections, as one plan."""
+    plans = []
+    checkpoint = progress_edit.get("checkpoint")
+    if checkpoint:
+        region, area = checkpoint.get("region"), str(checkpoint.get("area") or "")
+        if book.area(area) is None:
+            raise QuestlineError(f"progress: area {area!r} is not a story dungeon area")
+        plans.append(book.checkpoint_plan(int(region), area))
+    for world, selection in (progress_edit.get("side") or {}).items():
+        dungeons = [str(row.get("dungeon_key")) for row in (selection or {}).get("dungeons") or []]
+        no_grant = [str(row.get("dungeon_key")) for row in (selection or {}).get("dungeons") or []
+                    if not row.get("grant_esper")]
+        plans.append(book.side_plan({"dungeons": dungeons,
+                                     "quests": (selection or {}).get("quests") or [],
+                                     "no_grant": no_grant}))
+    if not plans:
+        raise QuestlineError("progress: nothing selected")
+    merged = {"missions": [], "excluded": [], "gates": [], "espers": [], "quests": [],
+              "rewards": {"lapis": 0, "gil": 0, "items": []}, "units": []}
+    seen = set()
+    for plan in plans:
+        for key in ("missions", "gates", "espers", "quests", "excluded", "units"):
+            for row in plan.get(key) or []:
+                token = json.dumps(row, sort_keys=True) if isinstance(row, dict) else str(row)
+                if token in seen:
+                    continue
+                seen.add(token)
+                merged[key].append(row)
+        for key in ("lapis", "gil"):
+            merged["rewards"][key] += (plan.get("rewards") or {}).get(key) or 0
+    return merged
 
 
 # ------------------------------------------------------------------------------------ the run

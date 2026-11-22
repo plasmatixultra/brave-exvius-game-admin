@@ -116,6 +116,20 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(catalog())
             if path == "/api/recipe":
                 return self._recipe()
+            if path == "/api/questline/regions":
+                return self._json(agent("questline"))
+            if path == "/api/questline":
+                params = self._query()
+                if params.get("world") is not None:
+                    return self._json(agent("questline", flags={"world": params["world"]}))
+                if params.get("region"):
+                    flags = {"region": params["region"]}
+                    if params.get("area"):
+                        flags["area"] = params["area"]
+                    if params.get("area") and not params["area"].isdigit():
+                        return self._error("area must be a numeric id", 400)
+                    return self._json(agent("questline", flags=flags))
+                return self._error("questline needs region or world", 400)
             if path == "/api/awaken":
                 return self._awaken()
             if path == "/api/abilities":

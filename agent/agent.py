@@ -45,8 +45,8 @@ USAGE = """usage:
 GROUP_ORDER = ("currencies", "tickets", "points", "materials", "cards",
                "card_levels", "units", "abilities", "progress")
 
-OPS = ("summary", "catalog", "preview", "apply", "validate", "recipe", "abilities", "awaken")
-FLAG_NAMES = ("out", "workdir", "baseline", "expected", "table", "id", "master", "from", "to")
+OPS = ("summary", "catalog", "preview", "apply", "validate", "recipe", "abilities", "awaken", "questline")
+FLAG_NAMES = ("out", "workdir", "baseline", "expected", "table", "id", "master", "from", "to", "region", "area", "world")
 
 
 # --------------------------------------------------------------------------- loading
@@ -474,6 +474,24 @@ def op_awaken(_save, _edits, flags):
     return ops_items.awaken_plan(flags["from"], flags["to"]), []
 
 
+def op_questline(save, _edits, flags):
+    """The Progress view's reads: regions, a region's areas, a checkpoint preview, a world's side content."""
+    from agent import questline, story
+    book = story.load_story(os.environ["MST_DIR"], os.environ.get("TEXT_DIR"))
+    if flags.get("world") is not None:
+        return {"world": flags["world"],
+                "content": book.side_content(flags["world"])}, []
+    if flags.get("region"):
+        region = int(flags["region"])
+        if not flags.get("area"):
+            return {"region": region, "areas": book.areas(region)}, []
+        ps = load_state(save)
+        preview = questline.preview(ps, os.environ["MST_DIR"],
+                                    {"checkpoint": {"region": region, "area": flags["area"]}})
+        return preview, []
+    return {"regions": book.regions()}, []
+
+
 def op_abilities(_save, _edits, flags):
     master_id = flags.get("master")
     if not master_id:
@@ -578,6 +596,7 @@ DISPATCH = {
     "recipe": op_recipe,
     "abilities": op_abilities,
     "awaken": op_awaken,
+    "questline": op_questline,
 }
 
 
