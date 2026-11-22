@@ -96,6 +96,26 @@ class UnitBuilderTest(unittest.TestCase):
         self.assertIsNotNone(self.ps.roster_row(original))
         self.assertEqual(self.ps.roster_row(original)["master_id"], "100031607")
 
+    def test_ex_rewards_are_paid_once_per_level(self):
+        """Re-applying the same unit at the same EX level must not pay the rewards again."""
+        cards = lambda: len([c for c in self.ps.data.get("vision_cards") or []
+                             if str(c.get("vc_id")) == "900020101"])
+        spec = {"master_id": LIGHTNING_NV, "level": 1, "nv_ex_level": 3, "grant_ex_rewards": True}
+        unit = ops_units.build_unit(self.ps, spec)
+        first = cards()
+        self.assertGreater(first, 0, "EX 3 pays Vision Cards")
+        ops_units.build_unit(self.ps, spec, instance_id=unit["instance_id"])
+        self.assertEqual(cards(), first, "a rebuild at the same level pays nothing")
+
+    def test_expected_roster_counts_only_new_ex_levels(self):
+        sol = ops_units.build_unit(self.ps, {"master_id": "100031607", "level": 1})
+        instance = str(sol["instance_id"])
+        edits = {"units": [{"instance_id": instance,
+                            "spec": {"master_id": "100031607", "level": 1, "nv_ex_level": 2,
+                                     "grant_ex_rewards": True}}]}
+        self.assertEqual(ops_units.expected_roster_added(edits, {instance: 0}), 1)
+        self.assertEqual(ops_units.expected_roster_added(edits, {instance: 2}), 0)
+
     def test_super_trust_requires_7_star(self):
         with self.assertRaises(ValueError):
             ops_units.build_unit(self.ps, {"master_id": LIGHTNING, "level": 1, "super_trust": 500})

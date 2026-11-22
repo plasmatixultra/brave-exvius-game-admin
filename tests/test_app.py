@@ -97,10 +97,12 @@ class AppTest(unittest.TestCase):
         connection.close()
         return response.status, response.getheader("Content-Type"), body
 
-    def post(self, path, payload, raw=None):
+    def post(self, path, payload, raw=None, headers=None):
         connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=10)
         body = raw if raw is not None else json.dumps(payload)
-        connection.request("POST", path, body=body, headers={"Content-Type": "application/json"})
+        all_headers = {"Content-Type": "application/json"}
+        all_headers.update(headers or {})
+        connection.request("POST", path, body=body, headers=all_headers)
         response = connection.getresponse()
         data = response.read()
         connection.close()
@@ -178,6 +180,25 @@ class AppTest(unittest.TestCase):
 
     def test_static_traversal_404(self):
         self.assertEqual(self.get("/static/../app.py")[0], 404)
+
+    def test_cross_origin_writes_are_refused(self):
+        """A hostile page must not be able to apply edits to the save through loopback."""
+        status, _ = self.post("/api/apply", {"edits": {"currencies": {"gil": 1}}},
+                              headers={"Origin": "http://evil.example"})
+        self.assertEqual(status, 403)
+        self.assertEqual(self.calls, [])
+        status, _ = self.post("/api/apply", {"edits": {"currencies": {"gil": 1}}},
+                              headers={"Sec-Fetch-Site": "cross-site"})
+        self.assertEqual(status, 403)
+        self.assertEqual(self.calls, [])
+
+    def test_same_origin_writes_are_accepted(self):
+        """The keyed proxy rewrites Host, so Sec-Fetch-Site (forwarded) is what must be trusted."""
+        status, _ = self.post("/api/apply", {"edits": {"currencies": {"gil": 1}}},
+                              headers={"Sec-Fetch-Site": "same-origin",
+                                       "Origin": "http://10.129.1.124:8751"})
+        self.assertEqual(status, 200)
+        self.assertEqual(len(self.calls), 1)
 
     def test_recipe_route_decodes_encoded_ids(self):
         """`?id=213000117%3A1` must reach the agent as `213000117:1` (a colon, not %3A)."""

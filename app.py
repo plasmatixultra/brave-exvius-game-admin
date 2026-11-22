@@ -184,8 +184,28 @@ class Handler(BaseHTTPRequestHandler):
         self._send(200, data, "image/png")
 
     # ---- POST
+    def _cross_origin(self):
+        """Writes are same-origin only.
+
+        The app has no auth on purpose (loopback, one user), but "one user" does not cover the
+        user's OTHER browser tabs: any page can POST to 127.0.0.1 and a form post cannot be refused
+        by CORS. Fetch Metadata is forwarded by the keyed proxy, so it is the reliable signal;
+        Origin/Host is the fallback for browsers that predate it.
+        """
+        site = (self.headers.get("Sec-Fetch-Site") or "").lower()
+        if site == "cross-site":
+            return True
+        if site:
+            return False                    # same-origin / same-site / none
+        origin = self.headers.get("Origin")
+        if not origin:
+            return False                    # curl, the tests, a browser with no Fetch Metadata
+        return urllib.parse.urlsplit(origin).netloc != (self.headers.get("Host") or "")
+
     def do_POST(self):
         path = self.path.split("?", 1)[0]
+        if self._cross_origin():
+            return self._error("cross-origin writes are refused", 403)
         try:
             body = self._body()
         except ValueError:

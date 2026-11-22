@@ -395,9 +395,9 @@ def requested_currencies(edits):
             for key in ops_basic.CURRENCY_KEYS}
 
 
-def requested_roster(edits):
+def requested_roster(edits, pre_ex_levels=None):
     """Roster rows the edits should add: built units plus the unit rewards they trigger."""
-    return ops_units.expected_roster_added(edits)
+    return ops_units.expected_roster_added(edits, pre_ex_levels)
 
 
 def snapshot(ps):
@@ -496,6 +496,8 @@ def op_preview(save, edits_path, _flags):
         return {"unit": ops_units.preview_unit(edits["unit_spec"])}, []
     ps = load_state(save)
     before = snapshot(ps)
+    pre_ex = {str(row.get("instance_id")): int(row.get("nv_ex_level") or 0)
+              for row in ps.data.get("roster") or []}
     results = {}
     apply_groups(ps, edits, results)
     after = snapshot(ps)
@@ -515,6 +517,8 @@ def op_apply(save, edits_path, flags):
         raise ValueError("no edits: at least one edit group is required")
     ps = load_state(save)
     before = snapshot(ps)
+    pre_ex = {str(row.get("instance_id")): int(row.get("nv_ex_level") or 0)
+              for row in ps.data.get("roster") or []}
     results = {}
     apply_groups(ps, edits, results)
     after = snapshot(ps)
@@ -529,7 +533,7 @@ def op_apply(save, edits_path, flags):
     want_currencies = requested_currencies(edits)
     for key in ops_basic.CURRENCY_KEYS:
         want_currencies[key] += ops_basic.as_int(declared_currencies.get(key, 0), f"expected.{key}")
-    want_roster = requested_roster(edits) + ops_basic.as_int(declared.get("roster_added", 0),
+    want_roster = requested_roster(edits, pre_ex) + ops_basic.as_int(declared.get("roster_added", 0),
                                                              "expected.roster_added")
     if actual_currencies != want_currencies:
         raise ValueError(f"currency deltas {actual_currencies} do not match the request {want_currencies}")

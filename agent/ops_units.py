@@ -264,11 +264,17 @@ def _apply_trust(ps, unit, spec):
                              f"{required} (the row would lose it); nothing was saved")
 
 
-def ex_reward_rows(master, ex_level):
-    """The `dX6cor8j` rewards for EX levels 1..ex_level, parsed exactly as `unit_ex_class_up` does."""
+def ex_reward_rows(master, ex_level, from_level=0):
+    """The `dX6cor8j` rewards for the EX levels in (from_level, ex_level], parsed as
+    `unit_ex_class_up` does.
+
+    `from_level` is the unit's CURRENT EX level: the game pays each level's reward exactly once,
+    when that level is bought, so a rebuild that keeps the level must pay nothing.
+    """
     group = str(master.get("JPW8Vs40") or "0")
     steps = [row for row in _rows("F_NV_EX_CLASS_UP_MST")
-             if str(row.get("JPW8Vs40")) == group and int(row.get("f8vk4JrD") or 0) <= ex_level]
+             if str(row.get("JPW8Vs40")) == group
+             and from_level < int(row.get("f8vk4JrD") or 0) <= ex_level]
     steps.sort(key=lambda row: int(row.get("f8vk4JrD") or 0))
     rewards = []
     for step in steps:
@@ -300,12 +306,12 @@ def ex_reward_rows(master, ex_level):
     return rewards
 
 
-def grant_ex_rewards(ps, unit, ex_level):
-    """Pay the EX awakening rewards for levels 1..ex_level through the server's own `_rewards`+`_grant`."""
+def grant_ex_rewards(ps, unit, ex_level, from_level=0):
+    """Pay the EX awakening rewards for the new levels only, via the server's own `_rewards`+`_grant`."""
     import ffbe_state
     from exvius_actions_shops import _grant, _rewards
     master = player_state.unit_mst(unit["master_id"]) or {}
-    rewards = ex_reward_rows(master, ex_level)
+    rewards = ex_reward_rows(master, ex_level, from_level)
     if not rewards:
         return []
     ffbe_state.State.player = ps     # `_grant` acts on the global player; without it cards lose their
@@ -314,8 +320,13 @@ def grant_ex_rewards(ps, unit, ex_level):
     return rewards
 
 
-def expected_roster_added(edits):
-    """Roster rows the `units` group will add: the built units plus any unit rewards they trigger."""
+def expected_roster_added(edits, pre_ex_levels=None):
+    """Roster rows the `units` group will add: the built units plus any unit rewards they trigger.
+
+    `pre_ex_levels` maps instance_id -> the EX level before this apply, so an already-paid level is
+    not counted again (the same rule `grant_ex_rewards` pays by).
+    """
+    pre_ex_levels = pre_ex_levels or {}
     added = 0
     for row in edits.get("units") or []:
         if not isinstance(row, dict):
@@ -327,8 +338,9 @@ def expected_roster_added(edits):
         master = player_state.unit_mst(master_id) or {}
         if spec.get("grant_ex_rewards"):
             ex_level = int(spec.get("nv_ex_level") or 0)
-            if ex_level:
-                for reward in ex_reward_rows(master, ex_level):
+            from_level = int(pre_ex_levels.get(str(row.get("instance_id")), 0) or 0)
+            if ex_level > from_level:
+                for reward in ex_reward_rows(master, ex_level, from_level):
                     if reward["kind"] == 10:
                         added += reward["count"]
         if spec.get("grant_trust_reward"):
@@ -385,13 +397,14 @@ def build_unit(ps, spec, instance_id=None):
     ps.set_unit_level(unit["instance_id"], clean["level"])
     unit = ps.roster_row(unit["instance_id"]) or unit
     unit["exp"] = 0
+    paid_ex = int(unit.get("nv_ex_level") or 0)     # already-paid EX levels: pay only the new ones
     unit["nv_ex_level"] = clean["nv_ex_level"]
     unit["lb_exp"] = 0
     unit["lb_level"] = clean["lb_level"]
     unit["stat_pots"] = list(clean["stat_pots"])
     unit["stat_doors"] = list(clean["stat_doors"])
     _apply_trust(ps, unit, clean)
-    if clean["grant_ex_rewards"] and clean["nv_ex_level"]:
-        grant_ex_rewards(ps, unit, clean["nv_ex_level"])
+    if clean["grant_ex_rewards"] and clean["nv_ex_level"] > paid_ex:
+        grant_ex_rewards(ps, unit, clean["nv_ex_level"], paid_ex)
     ps.dirty = True
     return unit
