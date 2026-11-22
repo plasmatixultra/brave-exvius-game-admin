@@ -133,8 +133,36 @@ def check_exbonus_gate(ps, instance_id, row, force=False):
                      "(pass force_exbonus to override)")
 
 
+def chain_to(unit, recipe_id):
+    """The recipes from the base skill up to `recipe_id`, in the order they must be learned.
+
+    In game you enhance one tier at a time; the result is the same map entry, so this admin path
+    walks the earlier tiers itself instead of making the user queue them by hand.
+    """
+    table = recipes()
+    row = table.get(str(recipe_id))
+    if row is None:
+        raise ValueError(f"unknown sublimation recipe {recipe_id!r}")
+    # Only recipes this unit may learn can be part of its chain (ids differ per unit family).
+    by_after = {}
+    for rid, candidate in table.items():
+        if str(candidate.get(AFTER_KEY)) in by_after:
+            continue
+        if unit_allowed(unit, candidate):
+            by_after[str(candidate.get(AFTER_KEY))] = rid
+    chain = [str(recipe_id)]
+    before = str(row.get(BEFORE_KEY))
+    seen = {str(recipe_id)}
+    while before in by_after and by_after[before] not in seen:
+        previous = by_after[before]
+        chain.append(previous)
+        seen.add(previous)
+        before = str(table[previous].get(BEFORE_KEY))
+    return list(reversed(chain))
+
+
 def apply_ability(ps, instance_id, recipe_id, grant_materials=False, force_exbonus=False):
-    """Learn one awakening step. Returns what changed; writes only `skills[iid][root]`."""
+    """Learn an awakening step (and any earlier tier it needs). Writes only `skills[iid][root]`."""
     unit = ps.roster_row(instance_id)
     if unit is None:
         raise ValueError(f"unit {instance_id!r} is not owned")
@@ -144,32 +172,43 @@ def apply_ability(ps, instance_id, recipe_id, grant_materials=False, force_exbon
     if not unit_allowed(unit, row):
         raise ValueError(f"recipe {recipe_id} is not allowed for unit {unit['master_id']}")
 
-    forced = check_exbonus_gate(ps, str(instance_id), row, force=force_exbonus)
-
     state = copy.deepcopy(ps.data.get(FEATURE_KEY) or {})
     skills = state.setdefault("skills", {}).setdefault(str(instance_id), {})
-    before, after = str(row.get(BEFORE_KEY)), str(row.get(AFTER_KEY))
     preds = predecessors()
-    root = next((key for key, current in skills.items() if str(current) == before), before)
-    if str(skills.get(root, "")) == after:
-        return {"recipe_id": str(recipe_id), "root": root, "before": before, "after": after,
-                "already": True, "forced_exbonus": forced}
-    if not (root in skills or before not in preds):
-        raise ValueError(f"the previous skill tier ({before}) has not been learned")
-    if root in skills and str(skills[root]) != before:
-        raise ValueError(f"skill recipe is stale: {root} is at {skills[root]}, the recipe expects {before}")
+    steps, granted = [], []
+    forced = False
+    for step_id in chain_to(unit, recipe_id):
+        step = recipes()[step_id]
+        before, after = str(step.get(BEFORE_KEY)), str(step.get(AFTER_KEY))
+        root = next((key for key, current in skills.items() if str(current) == before), before)
+        if str(skills.get(root, "")) == after:
+            continue
+        if not (root in skills or before not in preds):
+            raise ValueError(f"the previous skill tier ({before}) has not been learned")
+        if root in skills and str(skills[root]) != before:
+            raise ValueError(f"skill recipe is stale: {root} is at {skills[root]}, "
+                             f"the recipe expects {before}")
+        forced = check_exbonus_gate(ps, str(instance_id), step, force=force_exbonus) or forced
+        if grant_materials:
+            materials = ops_items._parse_cost(step.get(COST_KEY))
+            # Recipe costs carry ids as strings (data-native); the edits schema takes integers.
+            ops_items.apply_materials(ps, [{"item_id": int(item["item_id"]), "count": int(item["count"])}
+                                          for item in materials])
+            granted.extend(materials)
+        skills[root] = after
+        steps.append({"recipe_id": step_id, "root": root, "before": before, "after": after,
+                      "tier": tier_of(step_id, preds)})
 
-    granted = []
-    if grant_materials:
-        materials = ops_items._parse_cost(row.get(COST_KEY))
-        # Recipe costs carry ids as strings (data-native); the edits schema takes integers.
-        ops_items.apply_materials(ps, [{"item_id": int(item["item_id"]), "count": int(item["count"])}
-                                       for item in materials])
-        granted = materials
+    if not steps:
+        root = next((key for key, current in skills.items()
+                     if str(current) == str(row.get(AFTER_KEY))), str(row.get(BEFORE_KEY)))
+        return {"recipe_id": str(recipe_id), "root": root, "before": str(row.get(BEFORE_KEY)),
+                "after": str(row.get(AFTER_KEY)), "already": True, "steps": [],
+                "forced_exbonus": forced}
 
-    skills[root] = after
     ps.data[FEATURE_KEY] = state
     ps.dirty = True
-    return {"recipe_id": str(recipe_id), "root": root, "before": before, "after": after,
-            "tier": tier_of(recipe_id, preds), "granted_materials": granted,
+    return {"recipe_id": str(recipe_id), "root": steps[-1]["root"],
+            "before": steps[0]["before"], "after": steps[-1]["after"],
+            "tier": steps[-1]["tier"], "steps": steps, "granted_materials": granted,
             "forced_exbonus": forced}

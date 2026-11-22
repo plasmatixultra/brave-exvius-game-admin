@@ -365,6 +365,35 @@ async function main() {
     && abilityView.recipes.some((t) => /Blitz|Lightspeed|Crushing Blow|Blade of Thunder/.test(t)),
     JSON.stringify(abilityView));
 
+  // a failed apply leaves a dismissible footer message that also clears itself
+  const failedStatus = await evaluate(`(function () {
+    const original = window.fetch;
+    window.fetch = function (path, options) {
+      if (String(path).indexOf('/api/apply') >= 0) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({
+          ok: false, log: ['ROLLBACK: restoring the pre-apply save'], error: 'skill recipe is stale',
+          backup: null, status: 'failed' }) });
+      }
+      return original.apply(this, arguments);
+    };
+    window.confirm = function () { return true; };
+    document.querySelector('.rail a[data-view="grants"]').click();
+    document.querySelector('#gil-input').value = '5';
+    document.querySelector('[data-add-currency="gil"]').click();
+    document.querySelector('#apply').click();
+    return new Promise(function (resolve) {
+      setTimeout(function () {
+        const el = document.querySelector('#apply-status');
+        const shown = el.textContent;
+        el.click();
+        resolve({ shown, afterClick: el.textContent });
+      }, 900);
+    });
+  })()`);
+  check('a failed apply shows a dismissible reason',
+    !!failedStatus && /apply failed/.test(failedStatus.shown) && failedStatus.afterClick === '',
+    JSON.stringify(failedStatus));
+
   const silhouette = await evaluate(`(function () {
     const img = document.createElement('img');
     return new Promise((resolve) => {

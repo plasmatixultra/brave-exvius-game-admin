@@ -67,10 +67,21 @@ class AbilityTest(unittest.TestCase):
         self.assertIn("202070001", nv)
         self.assertEqual(len(nv), len(ops_abilities.list_recipes(LIGHTNING)))
 
-    def test_chain_requires_predecessor(self):
+    def test_a_later_tier_learns_its_predecessors(self):
+        """Asking for tier 2 with nothing learned applies tier 1 then tier 2, and says so."""
+        result = ops_abilities.apply_ability(self.ps, INSTANCE, TIER2)
+        self.assertEqual([step["recipe_id"] for step in result["steps"]], [TIER1, TIER2])
+        first, second = result["steps"]
+        self.assertEqual(first["root"], second["root"])
+        self.assertEqual(self.skills(), {first["root"]: second["after"]})
+
+    def test_stale_skill_state_is_refused(self):
+        """A root holding an unrelated skill must not be overwritten silently."""
+        ops_abilities.apply_ability(self.ps, INSTANCE, TIER1)
+        root = next(iter(self.skills()))
+        self.ps.data["exvius_sublimation"]["skills"][INSTANCE][root] = "99999"
         with self.assertRaises(ValueError):
             ops_abilities.apply_ability(self.ps, INSTANCE, TIER2)
-        self.assertEqual(self.skills(), {})
 
     def test_sets_root_to_after(self):
         result = ops_abilities.apply_ability(self.ps, INSTANCE, TIER1)

@@ -153,8 +153,10 @@ def apply(edits):
             log = [line for line in (exc.stderr or "").splitlines() if line]
             if exc.returncode == 99:
                 return {"ok": False, "backup": None, "log": log, "error": "apply already running"}
-            return {"ok": False, "backup": _backup_from(log), "log": log,
-                    "error": log[-1] if log else f"apply failed with exit {exc.returncode}"}
+            # Lead with the CAUSE: the last line is usually the trap's "ROLLBACK: ..." aftermath.
+            causes = [line[len("ERROR:"):].strip() for line in log if line.startswith("ERROR:")]
+            error = causes[0] if causes else (log[-1] if log else f"apply failed with exit {exc.returncode}")
+            return {"ok": False, "backup": _backup_from(log), "log": log, "error": error}
         log = [line for line in (result.stdout or "").splitlines() if line]
         if not any(line.strip() == "apply complete" for line in log):
             return {"ok": False, "backup": _backup_from(log), "log": log,

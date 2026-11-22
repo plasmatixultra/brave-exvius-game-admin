@@ -144,6 +144,10 @@
     if (!el) return;
     el.textContent = text;
     el.style.color = bad ? 'var(--warn)' : 'var(--pos)';
+    el.title = text ? 'click to dismiss' : '';
+    el.onclick = text ? function () { setStatus(''); } : null;
+    clearTimeout(S.statusTimer);
+    if (text) S.statusTimer = setTimeout(function () { setStatus(''); }, bad ? 20000 : 8000);
   }
 
   /* ----------------------------------------------------------------------- the API */
@@ -1048,7 +1052,9 @@
         var tail = (result.log || []).slice(-1)[0] || '';
         S.log.unshift({
           time: timeNow(), action: 'apply',
-          detail: S.pending.length + ' edits · ' + (result.backup || 'no backup'),
+          detail: result.ok
+            ? S.pending.length + ' edits · ' + (result.backup || 'no backup')
+            : (result.error || 'failed') + ' · nothing written',
           result: result.ok ? 'ok' : 'failed', ok: result.ok
         });
         if (result.backup) S.backups.unshift(result.backup);

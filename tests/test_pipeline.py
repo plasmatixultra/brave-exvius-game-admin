@@ -103,6 +103,14 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(result["backup"], "/b/campaign-2.json")
         self.assertIn("the agent refused", result["error"])
 
+    def test_pipeline_reports_the_cause_not_the_rollback_line(self):
+        self.fake.raise_error = remote.RemoteError(
+            2, "bash apply.sh",
+            "backup /b/campaign-3.json\nERROR: the agent refused the edits (nothing was written)\n"
+            "ROLLBACK: restoring the pre-apply save\n")
+        result = pipeline.apply({"currencies": {"gil": 1}})
+        self.assertEqual(result["error"], "the agent refused the edits (nothing was written)")
+
     def test_pipeline_cleans_its_local_workdir(self):
         seen = {}
 
