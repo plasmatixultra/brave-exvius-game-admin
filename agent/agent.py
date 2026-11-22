@@ -423,6 +423,7 @@ def op_summary(save, _edits, _flags):
         roster.append({
             "instance_id": str(unit.get("instance_id")),
             "master_id": master_id,
+            "no": _int_or_zero(master.get("Z0EN6jSh")),
             "name": names.get(master_id) or master.get("G4L0YIB2") or master_id,
             "level": _int_or_zero(unit.get("level")) or 1,
             "rarity": _int_or_zero(master.get("9fW0TePj")) or _int_or_zero(unit.get("granted_rarity")) or 1,

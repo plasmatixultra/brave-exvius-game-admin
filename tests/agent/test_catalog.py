@@ -80,6 +80,20 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(units["213000107"]["rarity"], 7)
         self.assertEqual(units["213000117"]["nv_group"], "213000105")
 
+    def test_units_carry_the_games_display_number(self):
+        """`No. 2706` is F_UNIT_MST.Z0EN6jSh, not the master id (100044907)."""
+        units = {row["master_id"]: row for row in self.cat["units"]}
+        self.assertEqual(units["100044907"]["no"], 2706)
+        self.assertEqual(units["100044907"]["max_level"], 120)
+        self.assertEqual(units["100044927"]["no"], 2707)
+        self.assertEqual(units["100044927"]["max_level"], 130)
+        self.assertEqual(units["100044927"]["lb_cap"], 50)
+        self.assertTrue(units["100044907"]["nv"] and units["100044927"]["nv"])
+        self.assertEqual(units["100044907"]["name"], "Azure Knight Lasswell")
+
+    def test_nv_plus_form_is_in_the_chain(self):
+        self.assertEqual(self.cat["awaken_chain"]["100044907"], ["100044927"])
+
     def test_units_exclude_nameless_ids(self):
         """A granted unit with no MST_UNIT_NAME_ row crashes the client's award screen (SW-78)."""
         named = player_state.named_unit_ids()

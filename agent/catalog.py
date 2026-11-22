@@ -233,6 +233,7 @@ def build_units(mst_dir, text_dir):
         levels = lb_caps.get(lb_id)
         units.append({
             "master_id": master_id,
+            "no": _int(row.get("Z0EN6jSh")),      # the number the game shows ("No. 2706")
             "name": name,
             "rarity": _int(row.get("9fW0TePj"), 1),
             "nv_group": str(row.get("woghJa61") or master_id),

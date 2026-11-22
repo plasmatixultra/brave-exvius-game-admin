@@ -163,6 +163,16 @@ class UnitBuilderTest(unittest.TestCase):
         self.assertEqual(rydia["max_level"], 120)
         self.assertEqual(rydia["lb_cap"], 40)                      # a real NV row, not Lightning's 30
 
+    def test_nv_plus_form_accepts_level_130_and_lb_50(self):
+        """Azure Knight Lasswell NV+ (No. 2707, master 100044927): 130 / LB 50 / EX 3."""
+        preview = ops_units.preview_unit({"master_id": "100044927", "level": 130, "lb_level": 50,
+                                          "nv_ex_level": 3})
+        self.assertEqual((preview["max_level"], preview["lb_cap"]), (130, 50))
+        self.assertEqual(preview["awaken_chain"], [])
+        base = ops_units.preview_unit({"master_id": "100044907", "level": 120, "lb_level": 40})
+        self.assertEqual((base["max_level"], base["lb_cap"]), (120, 40))
+        self.assertEqual(base["awaken_chain"], ["100044927"])
+
     def test_preview_reflects_pots(self):
         plain = ops_units.preview_unit({"master_id": LIGHTNING, "level": 5})
         pimped = ops_units.preview_unit({"master_id": LIGHTNING, "level": 5,

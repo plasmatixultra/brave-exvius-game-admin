@@ -196,6 +196,13 @@
   }
 
   /* -------------------------------------------------------------------- quick grants */
+  function unitNo(masterId) {
+    var info = (S.catalog ? S.catalog.units : []).filter(function (u) { return u.master_id === masterId; })[0];
+    if (info && info.no) return info.no;
+    var row = S.summary ? S.summary.roster.filter(function (u) { return u.master_id === masterId; })[0] : null;
+    return (row && row.no) || masterId;
+  }
+
   function unitName(masterId) {
     if (S.summary) {
       for (var i = 0; i < S.summary.roster.length; i++) {
@@ -249,7 +256,9 @@
     var query = ($('#unit-search').value || '').trim().toLowerCase();
     var list = (S.catalog ? S.catalog.units : []).filter(function (unit) {
       if (!query) return true;
-      return unit.name.toLowerCase().indexOf(query) >= 0 || unit.master_id.indexOf(query) >= 0;
+      return unit.name.toLowerCase().indexOf(query) >= 0
+        || unit.master_id.indexOf(query) >= 0
+        || String(unit.no || '').indexOf(query.replace(/^no\.?\s*/, '')) === 0;
     }).slice(0, 8);
     S.unitResults = list;
     var parent = $('#unit-results-count').parentElement;
@@ -264,8 +273,9 @@
       var row = document.createElement('div');
       row.className = 'res' + (S.unitPick && S.unitPick.master_id === unit.master_id ? ' on' : '');
       row.innerHTML = unitArt(unit.master_id)
-        + '<div><span class="nm">' + esc(unit.name) + '</span><span class="sub">No. ' + esc(unit.master_id)
-        + ' · ' + unit.rarity + '★</span></div><span class="owned" style="color:var(--dim)">grant</span>';
+        + '<div><span class="nm">' + esc(unit.name) + '</span><span class="sub">No. ' + esc(unit.no || unit.master_id)
+        + ' · ' + (unit.nv ? 'NV' : unit.rarity + '★') + ' · Lv ' + (unit.max_level || '?')
+        + '</span></div><span class="owned" style="color:var(--dim)">grant</span>';
       row.addEventListener('click', function () {
         S.unitPick = unit;
         renderUnitResults();
@@ -356,7 +366,7 @@
       row.className = 'urow' + (S.selected && S.selected.instance_id === unit.instance_id ? ' on' : '');
       row.innerHTML = unitArt(unit.master_id)
         + '<div><span class="uname">' + esc(unit.name) + '</span>'
-        + '<span class="umeta">No. ' + esc(unit.master_id) + (unit.nv_ex_level ? ' · EX +' + unit.nv_ex_level : '') + '</span></div>'
+        + '<span class="umeta">No. ' + esc(unit.no || unit.master_id) + (unit.nv_ex_level ? ' · EX +' + unit.nv_ex_level : '') + '</span></div>'
         + '<div class="uright"><span class="rar">' + stars(unit.rarity) + '</span>'
         + '<span class="ulv">Lv ' + unit.level + '</span></div>';
       row.addEventListener('click', function () { selectUnit(unit.instance_id); });
@@ -387,7 +397,7 @@
   function renderPortrait() {
     var row = selectedRow();
     if (!row) return;
-    $('#portrait-no').textContent = 'No. ' + S.form;
+    $('#portrait-no').textContent = 'No. ' + unitNo(S.form);
     $('#portrait-stars').textContent = stars(Math.max(row.rarity, 1));
     $('#portrait-name').textContent = unitName(S.form);
     var sprite = $('#portrait-sprite');

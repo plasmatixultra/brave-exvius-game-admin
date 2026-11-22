@@ -244,6 +244,23 @@ async function main() {
   check('the kit offers EX +1/+2/+3', !!exKit && exKit.visible
     && /:3$/.test((exKit.recipes || '').trim()), JSON.stringify(exKit));
 
+  // the picker must find a unit by the number the game shows
+  const byNumber = await evaluate(`(function () {
+    document.querySelector('.rail a[data-view="grants"]').click();
+    const search = document.querySelector('#unit-search');
+    search.value = '2706';
+    search.dispatchEvent(new Event('input'));
+    return new Promise(function (resolve) {
+      setTimeout(function () {
+        const rows = [...document.querySelectorAll('.unitgrant .res')].map((r) => r.textContent.trim());
+        resolve({ rows });
+      }, 800);
+    });
+  })()`);
+  check('searching 2706 finds Azure Knight Lasswell', !!byNumber
+    && byNumber.rows.some((t) => /Azure Knight Lasswell/.test(t) && /2706/.test(t)),
+    JSON.stringify(byNumber));
+
   const silhouette = await evaluate(`(function () {
     const img = document.createElement('img');
     return new Promise((resolve) => {
