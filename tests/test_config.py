@@ -46,11 +46,13 @@ class SettingsTest(unittest.TestCase):
             config.from_inspect(payload)
 
     def test_env_overrides_win(self):
+        custom = os.path.join(os.path.realpath(tempfile.mkdtemp()), "server")
+        os.makedirs(custom)
         settings = config.from_inspect(
             fixture("docker_inspect_standard.json")[0],
-            {"FFBE_SERVER_DIR": "/srv/custom/server", "ADMIN_PORT": "9000"})
-        self.assertEqual(settings.server_dir, "/srv/custom/server")
-        self.assertEqual(settings.save, "/srv/custom/server/state/campaign.json")
+            {"FFBE_SERVER_DIR": custom, "ADMIN_PORT": "9000"})
+        self.assertEqual(settings.server_dir, custom)
+        self.assertEqual(settings.save, os.path.join(custom, "state", "campaign.json"))
         self.assertEqual(settings.port, 9000)
 
     def test_unknown_override_is_refused(self):
@@ -79,19 +81,56 @@ class LoadTest(unittest.TestCase):
     def test_load_uses_the_toml_when_detection_is_unavailable(self):
         tmp = tempfile.mkdtemp()
         path = os.path.join(tmp, "admin.toml")
+        served = os.path.join(os.path.realpath(tempfile.mkdtemp()), "server")
+        data = os.path.join(os.path.dirname(served), "data")
+        os.makedirs(served)
+        os.makedirs(data)
         with open(path, "w", encoding="utf-8") as handle:
-            handle.write('[admin]\nserver_dir = "/srv/game/server"\ndata_dir = "/srv/game/data"\nport = 8800\n')
+            handle.write('[admin]\nserver_dir = "%s"\ndata_dir = "%s"\nport = 8800\n' % (served, data))
         settings = config.load({"ADMIN_CONFIG": path, "FFBE_CONTAINER": "no-such-container"})
-        self.assertEqual(settings.server_dir, "/srv/game/server")
+        self.assertEqual(settings.server_dir, served)
         self.assertEqual(settings.port, 8800)
+
+    def test_a_typo_in_the_toml_is_refused(self):
+        tmp = tempfile.mkdtemp()
+        path = os.path.join(tmp, "admin.toml")
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write('[admin]\nserver_dri = "/srv/game/server"\n')
+        with self.assertRaises(config.SettingsError) as caught:
+            config.load({"ADMIN_CONFIG": path, "FFBE_CONTAINER": "nosuch"})
+        self.assertIn("server_dri", str(caught.exception))
+
+    def test_a_misspelled_section_is_refused(self):
+        tmp = tempfile.mkdtemp()
+        path = os.path.join(tmp, "admin.toml")
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write('[Admin]\nserver_dir = "/srv/game/server"\n')
+        with self.assertRaises(config.SettingsError):
+            config.load({"ADMIN_CONFIG": path, "FFBE_CONTAINER": "nosuch"})
+
+    def test_a_relative_directory_is_refused(self):
+        with self.assertRaises(config.SettingsError) as caught:
+            config.from_inspect(fixture("docker_inspect_standard.json")[0],
+                                {"FFBE_SERVER_DIR": "exvius/server"})
+        self.assertIn("absolute", str(caught.exception))
+
+    def test_a_missing_directory_is_refused(self):
+        with self.assertRaises(config.SettingsError) as caught:
+            config.from_inspect(fixture("docker_inspect_standard.json")[0],
+                                {"FFBE_SERVER_DIR": "/definitely/not/here"})
+        self.assertIn("/definitely/not/here", str(caught.exception))
 
     def test_env_beats_toml(self):
         tmp = tempfile.mkdtemp()
         path = os.path.join(tmp, "admin.toml")
+        served = os.path.join(os.path.realpath(tempfile.mkdtemp()), "server")
+        other = os.path.join(os.path.dirname(served), "other")
+        os.makedirs(served)
+        os.makedirs(other)
         with open(path, "w", encoding="utf-8") as handle:
-            handle.write('[admin]\nserver_dir = "/srv/game/server"\ndata_dir = "/srv/game/data"\n')
-        settings = config.load({"ADMIN_CONFIG": path, "FFBE_SERVER_DIR": "/srv/other/server"})
-        self.assertEqual(settings.server_dir, "/srv/other/server")
+            handle.write('[admin]\nserver_dir = "%s"\ndata_dir = "%s"\n' % (served, served))
+        settings = config.load({"ADMIN_CONFIG": path, "FFBE_SERVER_DIR": other})
+        self.assertEqual(settings.server_dir, other)
 
 
 if __name__ == "__main__":

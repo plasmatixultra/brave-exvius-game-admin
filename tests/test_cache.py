@@ -115,9 +115,11 @@ class SaveCacheTest(unittest.TestCase):
                 pass
 
         self.addCleanup(restore_mode)
-        with FakeDocker():
+        with FakeDocker() as fake:
             os.environ["FAKE_CAT"] = json.dumps({"identity": {"handle_name": "Container"}})
             localdata.refresh_save(force=True)
+        reads = [c for c in fake.argv() if " cat " in c or c.startswith("run ")]
+        self.assertTrue(any("--entrypoint cat" in call for call in reads), reads)
         with open(localdata.SAVE, encoding="utf-8") as handle:
             self.assertEqual(json.load(handle)["identity"]["handle_name"], "Container")
 

@@ -17,8 +17,8 @@ prerequisites; nothing else is installed.
 ## Quick start
 
 ```bash
-# 1. On the machine that runs the game:
-git clone https://github.com/<you>/ffbe-game-admin
+# 1. On the machine that runs the game: copy this folder across
+#    (or `git clone` it once the repository is published):
 cd ffbe-game-admin
 
 # 2. Start it (Python 3.11 or newer, standard library only):
@@ -33,9 +33,10 @@ it looked for and the paths it would use — and refuses to apply anything until
 fixed. In the normal case there is nothing to configure.
 
 It looks for a container called `ffbe` (the name the Revival compose file uses) and reads
-its mounts with `docker inspect`. If yours is called something else, or Docker's daemon is
-not reachable from the page, copy `admin.toml.example` to `admin.toml` and fill in the two
-directories.
+its mounts with `docker inspect`. If yours is called something else — or Docker's daemon is
+not reachable from the page — copy `admin.toml.example` to `admin.toml` and set
+`container = "<its name>"`; the two directories are only needed when Docker cannot be asked
+at all.
 
 ## What it can do
 
@@ -86,7 +87,7 @@ The game is disconnected for roughly twenty seconds per apply.
 
 ## Requirements
 
-- Python 3.11+ (for `tomllib`; nothing else is imported)
+- Python 3.12+ (standard library only: `tomllib`, `http.server`)
 - Docker, with the game's container running or present
 - The `ffbe-ios-server:local` image from
   [Exvius-revival-ios](https://github.com/CreamySeaman6/Exvius-revival-ios)

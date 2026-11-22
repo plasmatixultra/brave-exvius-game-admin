@@ -19,6 +19,8 @@ REPO = os.path.dirname(HERE)
 sys.path.insert(0, REPO)
 
 import app  # noqa: E402
+import applysave  # noqa: E402
+import compat  # noqa: E402
 import config  # noqa: E402
 
 PNG = b"\x89PNG\r\n\x1a\n" + b"fake-body"
@@ -187,11 +189,35 @@ class AppTest(unittest.TestCase):
         self.assertEqual(payload["log"], ["apply complete"])
         self.assertEqual(self.calls[-1], ("apply", {"currencies": {"gil": 10}}, None))
 
+    def test_start_finishes_an_apply_that_died(self):
+        with mock.patch.object(app.config, "load", return_value=self.settings), \
+                mock.patch.object(app.applysave, "recover", return_value=True) as recovered, \
+                mock.patch.object(app, "create_server", return_value=mock.MagicMock()):
+            app.main(["--port", "0"])
+        self.assertTrue(recovered.called)
+
+    def test_start_uses_the_configured_bind_and_port(self):
+        with mock.patch.object(app.config, "load",
+                               return_value=app.config.from_inspect([{
+                                   "Name": "/ffbe",
+                                   "Config": {"Image": "ffbe-ios-server:local"},
+                                   "Mounts": [
+                                       {"Destination": config.CONTAINER_SERVER_ROOT,
+                                        "Source": self.server_dir},
+                                       {"Destination": config.CONTAINER_DATA,
+                                        "Source": self.data_dir}]}],
+                                   {"ADMIN_BIND": "127.0.0.2", "ADMIN_PORT": "9999"})), \
+                mock.patch.object(app.applysave, "recover", return_value=False), \
+                mock.patch.object(app, "create_server", return_value=mock.MagicMock()) as made:
+            app.main([])
+        made.assert_called_once_with(9999, "127.0.0.2")
+
     def test_health_reports_what_it_found(self):
         settings = self.settings
         with mock.patch.object(app.config, "load", return_value=settings), \
                 mock.patch.object(app.localdata, "cache_ready", return_value=True), \
                 mock.patch.object(app.engine, "ensure", return_value="/cache/engine"), \
+                mock.patch.object(app.compat, "check", return_value={"ok": True, "missing": []}), \
                 mock.patch.object(app.engine, "_image_id", return_value="sha256:abc"):
             status, _type, body = self.get("/api/health")
         payload = json.loads(body)
@@ -210,6 +236,31 @@ class AppTest(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertFalse(payload["engine_ok"])
         self.assertIn("not found", payload["error"])
+
+    def test_apply_reports_the_backup_as_a_host_path(self):
+        with mock.patch.object(app, "pipeline_apply", return_value={
+                "ok": True, "log": ["started ffbe"], "error": None,
+                "backup": "/srv/ffbe/server-root/state/backups/campaign-1.json"}), \
+                mock.patch.object(app.config, "load", return_value=self.settings):
+            status, payload = self.post("/api/apply", {"edits": {"currencies": {"gil": 1}}})
+        self.assertEqual(status, 200)
+        self.assertEqual(payload["backup"],
+                         os.path.join(self.settings.backups, "campaign-1.json"))
+
+    def test_health_names_a_drifted_engine(self):
+        with mock.patch.object(app.config, "load", return_value=self.settings), \
+                mock.patch.object(app.localdata, "cache_ready", return_value=True), \
+                mock.patch.object(app.engine, "ensure", return_value="/cache/engine"), \
+                mock.patch.object(app.compat, "check",
+                                  return_value={"ok": False, "missing": ["first_clear.rewards"]}), \
+                mock.patch.object(app.pipeline, "engine_problem",
+                                  return_value="missing first_clear.rewards"):
+            status, _type, body = self.get("/api/health")
+        payload = json.loads(body)
+        self.assertEqual(status, 200)
+        self.assertFalse(payload["ok"])
+        self.assertFalse(payload["engine_ok"])
+        self.assertIn("first_clear.rewards", payload["error"])
 
     def test_health_names_a_bad_image(self):
         with mock.patch.object(app.config, "load", return_value=self.settings), \

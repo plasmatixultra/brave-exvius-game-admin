@@ -69,6 +69,13 @@ grep -q '"name": "Rain"' "$T/work/identity.json" \
     && ok "backup records the identity the status poll needs" || no "backup records the identity"
 setup
 
+# two backups in the same second must not collide
+run backup "$T/server" "$T/work" > /dev/null
+run backup "$T/server" "$T/work" > /dev/null
+count="$(ls "$T/server/state/backups" | wc -l)"
+[ "$count" = "2" ] && ok "a second backup in the same second gets its own name" || no "two backups collide (got $count)"
+setup
+
 # --- apply -------------------------------------------------------------------------------------
 run backup "$T/server" "$T/work" > /dev/null
 run apply "$T/server" "$T/work" > /dev/null; code=$?

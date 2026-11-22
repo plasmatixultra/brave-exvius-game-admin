@@ -4,7 +4,7 @@
 [admin]
 # container = "ffbe"
 # image = "ffbe-ios-server:local"
-# server_dir = "/srv/ffbe/server"      # host path mounted at /srv/ffbe/server-root
-# data_dir = "/srv/ffbe/data"          # host path mounted at /srv/ffbe/data
+# server_dir = "~/exvius/server"       # HOST path mounted at /srv/ffbe/server-root
+# data_dir = "~/exvius/data"           # HOST path mounted at /srv/ffbe/data
 # bind = "127.0.0.1"
 # port = 8750

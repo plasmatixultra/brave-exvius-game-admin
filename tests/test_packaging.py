@@ -16,33 +16,29 @@ sys.path.insert(0, ROOT)
 
 import config  # noqa: E402
 
-FORBIDDEN = ("plasmatixultra", "10.129.1.139", "athena", "/home/plasmatixultra")
+FORBIDDEN = ("plasmatixultra", "10.129.1.139", "athena", "/home/plasmatixultra",
+             "pmtxdm-athena", "pmtxdmcachydev")
 
-# Everything a user installs, plus the docs they read first.
-PRODUCT_GLOBS = ("*.py", "runner/*.sh", "tests/*.py", "tests/*.sh", "tests/*.mjs",
-                 "static/*.js", "static/*.html", "static/*.css", "agent/*.py",
-                 ".gitignore", "README.md", "LICENSE", "compat.json",
-                 "admin.toml.example", "docker-compose.admin.yml")
+TEXT_SUFFIXES = (".py", ".sh", ".md", ".js", ".html", ".css", ".json", ".toml",
+                 ".yml", ".yaml", ".txt", ".mjs", ".cfg", ".ini", "")
+ALLOWED_MENTIONS = {"tests/test_packaging.py"}   # the list of tokens itself lives here
 
 
-def product_files():
-    for pattern in PRODUCT_GLOBS:
-        directory, _, name = pattern.rpartition("/")
-        base = os.path.join(ROOT, directory) if directory else ROOT
-        if not os.path.isdir(base):
+def tracked_files():
+    """Everything `git clone` hands somebody, not a hand-picked list."""
+    import subprocess
+    out = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True)
+    for relative in out.stdout.splitlines():
+        if relative in ALLOWED_MENTIONS:
             continue
-        for entry in sorted(os.listdir(base)):
-            path = os.path.join(base, entry)
-            if os.path.isfile(path) and re.fullmatch(name.replace(".", r"\.").replace("*", ".*"), entry):
-                yield os.path.relpath(path, ROOT)
+        if relative.endswith(TEXT_SUFFIXES):
+            yield relative
 
 
 class ProductSurfaceTest(unittest.TestCase):
     def test_no_personal_paths_in_what_ships(self):
         offenders = []
-        for relative in product_files():
-            if relative.endswith("test_packaging.py"):
-                continue
+        for relative in tracked_files():
             with open(os.path.join(ROOT, relative), encoding="utf-8", errors="ignore") as handle:
                 text = handle.read()
             for token in FORBIDDEN:

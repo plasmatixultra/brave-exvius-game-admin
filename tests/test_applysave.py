@@ -149,6 +149,78 @@ class ApplyTest(unittest.TestCase):
         restores = [line for line in result["log"] if "save restored" in line]
         self.assertEqual(len(restores), 1, result["log"])
 
+    def test_a_refused_apply_leaves_the_running_applys_marker_alone(self):
+        """A second tab's refused click must not erase the first apply's crash record."""
+        other = applysave.marker_path()
+        applysave._write_marker(other, {"workdir": self.cache, "backup": None, "pid": 999999999})
+        lock = applysave.Lock(applysave.lock_path())
+        with lock:
+            with FakeDocker():
+                result = applysave.apply_edits(self.settings, {}, app_dir=self.app)
+        self.assertEqual(result["code"], applysave.EXIT_BUSY)
+        self.assertTrue(os.path.exists(other), "the refused apply deleted the marker")
+
+    def test_a_failed_start_during_rollback_keeps_the_marker(self):
+        with FakeDocker():
+            os.environ["FAKE_AGENT_FAILS"] = "1"
+            os.environ["FAKE_START_FAILS"] = "1"
+            result = applysave.apply_edits(self.settings, {}, app_dir=self.app)
+        self.assertFalse(result["ok"])
+        self.assertIn("could not be started", " ".join(result["log"]))
+        self.assertTrue(os.path.exists(applysave.marker_path()),
+                        "a container left down must be recoverable")
+
+    def test_recovery_stops_the_server_before_restoring(self):
+        """Restoring under a running server would be overwritten by its next autosave."""
+        workdir = os.path.join(self.cache, "apply-dead")
+        os.makedirs(workdir)
+        backup = os.path.join(self.settings.backups, "campaign-20261122T200000Z.json")
+        with open(backup, "w", encoding="utf-8") as handle:
+            handle.write("{}")
+        applysave._write_marker(applysave.marker_path(),
+                                {"workdir": workdir, "backup": backup, "pid": 999999999})
+        with FakeDocker() as fake:
+            applysave.recover(self.settings, app_dir=self.app)
+        calls = fake.argv()
+        restore_at = next(i for i, c in enumerate(calls) if "apply-files.sh restore" in c)
+        stops = [i for i, c in enumerate(calls) if c == "stop ffbe"]
+        self.assertTrue(stops and stops[-1] < restore_at, calls)
+
+    def test_an_apply_finishes_a_dead_ones_recovery_first(self):
+        workdir = os.path.join(self.cache, "apply-dead")
+        os.makedirs(workdir)
+        backup = os.path.join(self.settings.backups, "campaign-20261122T200000Z.json")
+        with open(backup, "w", encoding="utf-8") as handle:
+            handle.write("{}")
+        applysave._write_marker(applysave.marker_path(),
+                                {"workdir": workdir, "backup": backup, "pid": 999999999})
+        with FakeDocker() as fake:
+            result = applysave.apply_edits(self.settings, {}, app_dir=self.app)
+        self.assertTrue(result["ok"], result)
+        calls = fake.argv()
+        restore_at = next(i for i, c in enumerate(calls) if "apply-files.sh restore" in c)
+        self.assertLess(restore_at, calls.index("stop ffbe") + 1 + calls[restore_at:].index("stop ffbe"),
+                        calls)
+        self.assertEqual(calls[0], "stop ffbe")   # the recovery's stop comes first
+
+    def test_it_runs_the_image_id_not_the_tag(self):
+        """`:latest` can be pulled under a running container; the id cannot move."""
+        settings = config.from_inspect([{
+            "Name": "/ffbe",
+            "Image": "sha256:abc123",
+            "Config": {"Image": "ffbe-ios-server:latest"},
+            "Mounts": [{"Destination": config.CONTAINER_SERVER_ROOT,
+                        "Source": self.settings.server_dir},
+                       {"Destination": config.CONTAINER_DATA,
+                        "Source": self.settings.data_dir}]}])
+        with FakeDocker() as fake:
+            applysave.apply_edits(settings, {}, app_dir=self.app)
+        runs = [c for c in fake.argv() if c.startswith("run ")]
+        self.assertTrue(runs)
+        for call in runs:
+            self.assertIn("sha256:abc123", call)
+            self.assertNotIn("ffbe-ios-server:latest", call)
+
     def test_recover_restores_a_dead_apply(self):
         workdir = os.path.join(self.cache, "apply-dead")
         os.makedirs(workdir)
@@ -164,6 +236,7 @@ class ApplyTest(unittest.TestCase):
         self.assertIn("restore", verbs[0])
         self.assertEqual(fake.argv()[-1], "start ffbe")
         self.assertFalse(os.path.exists(applysave.marker_path()))
+        self.assertFalse(os.path.exists(workdir), "the repaired workdir should be cleaned up")
 
     def test_recover_is_quiet_when_nothing_died(self):
         with FakeDocker() as fake:

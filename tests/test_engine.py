@@ -54,6 +54,27 @@ class EngineTest(unittest.TestCase):
         with open(os.path.join(path, ".image-id"), encoding="utf-8") as handle:
             self.assertEqual(handle.read().strip(), "sha256:next")
 
+    def test_two_callers_share_one_export(self):
+        """The page asks health and summary at once on first load."""
+        import threading
+        started = threading.Barrier(2)
+        results = []
+
+        def worker():
+            started.wait(timeout=5)
+            results.append(engine.ensure(self.settings, self.cache))
+
+        os.environ["FAKE_EXPORT_SLEEP"] = "0.3"
+        with FakeDocker() as fake:
+            threads = [threading.Thread(target=worker) for _ in range(2)]
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join(10)
+            exports = [c for c in fake.argv() if "-a /app/server/." in c]
+        self.assertEqual(len(exports), 1, exports)
+        self.assertEqual(len(set(results)), 1)
+
     def test_an_image_without_the_server_is_named(self):
         with FakeDocker():
             os.environ["FAKE_NO_SERVER"] = "1"

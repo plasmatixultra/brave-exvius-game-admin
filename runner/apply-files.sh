@@ -47,7 +47,7 @@ do_backup() {
     [ -f "$SAVE" ] || die "no save at $SAVE"
     mkdir -p "$SERVER/$BACKUP_REL" || die "cannot create $SERVER/$BACKUP_REL"
     local stamp backup
-    stamp="$(date -u +%Y%m%dT%H%M%SZ)"
+    stamp="$(date -u +%Y%m%dT%H%M%SZ)-$$"     # seconds collide: two applies, one name
     backup="$SERVER/$BACKUP_REL/campaign-$stamp.json"
     cp -p "$SAVE" "$backup" || die "backup failed; the live save is untouched"
     cp -p "$backup" "$WORKDIR/baseline.json" || die "cannot read the backup back"

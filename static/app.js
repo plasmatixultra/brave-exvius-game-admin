@@ -1530,7 +1530,11 @@
         renderLog();
         setStatus('apply failed: ' + error.message, true);
       }).then(function () {
-        $('#apply').disabled = false;
+        // Only a healthy app may apply: a failed apply may have been a failed setup.
+        return loadHealth();
+      }).then(function () {
+        var ok = HEALTH_OK;
+        $('#apply').disabled = !ok;
         return loadSummary().catch(function () { });
       });
     });
@@ -1538,10 +1542,13 @@
 
   /* ------------------------------------------------------------------------- boot */
   /* ------------------------------------------------------------------------- setup */
+  var HEALTH_OK = false;
+
   function renderHealth(health) {
     var pill = $('#server-status');
     var strip = $('#setup');
     var ok = health && health.ok;
+    HEALTH_OK = !!ok;
     if (pill) {
       pill.innerHTML = '<i class="dot' + (ok ? '' : ' bad') + '"></i> ' +
         (ok ? (health.container + ' · ready') : 'setup needed');
@@ -1555,7 +1562,7 @@
     $('#setup-head').textContent = health && health.error
       ? 'The app cannot reach the game yet' : 'Checking what this app can see…';
     $('#setup-msg').textContent = (health && health.error) ||
-      'Set FFBE_SERVER_DIR and FFBE_DATA_DIR in admin.toml, or start the game container.';
+      'Set container, server_dir and data_dir in admin.toml, or start the game container.';
     $('#setup-container').textContent = (health && health.container) || '—';
     $('#setup-save').textContent = (health && health.save) || '—';
     $('#setup-backups').textContent = (health && health.backups) || '—';

@@ -39,6 +39,10 @@ case "$1" in
     echo "$2"
     ;;
   start)
+    if [ -n "${FAKE_START_FAILS:-}" ]; then
+      echo "Error response from daemon: cannot start container: port is already allocated" >&2
+      exit 1
+    fi
     echo "$2"
     ;;
   run)
@@ -72,7 +76,7 @@ case "$1" in
     # files the real apply-files.sh writes there.
     WORK_HOST="$(printf '%s\n' "$*" | sed -n 's|.*[[:space:]]-v \([^ ]*\):/work:rw.*|\1|p')"
     case "$*" in
-      *" cat /srv/ffbe/"*)
+      *"--entrypoint cat"*)
         [ -n "${FAKE_CAT:-}" ] || FAKE_CAT='{}'
         printf '%s\n' "$FAKE_CAT" ;;
       *"apply-files.sh backup"*)

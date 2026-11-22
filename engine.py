@@ -7,10 +7,12 @@ keyed to the image, so a pulled image never runs against stale code.
 
 import os
 import shutil
-import tempfile
+import threading
 
 import transport
 
+
+_EXPORTING = threading.Lock()      # the page asks health and summary at once on first load
 
 class EngineError(RuntimeError):
     """The image does not carry the server source we need."""
@@ -69,9 +71,18 @@ def ensure(settings, cache_dir=None, timeout=1200):
         return target
 
     os.makedirs(cache_dir, exist_ok=True)
+    with _EXPORTING:
+        if os.path.isfile(os.path.join(target, "player_state.py")) and _stamp_matches(stamp, wanted):
+            return target            # another thread finished while we waited
+        _export(settings, cache_dir, target, wanted, timeout)
+    return target
+
+
+def _export(settings, cache_dir, target, wanted, timeout):
     try:
         transport.run_in_image(
-            settings.image, [(cache_dir, "/cache", "rw")], ["-c", EXPORT_SCRIPT],
+            settings.image_id or settings.image, [(cache_dir, "/cache", "rw")],
+            ["-c", EXPORT_SCRIPT],
             timeout=timeout, env={"IMAGE_ID": wanted}, entrypoint="sh")
     except transport.TransportError as error:
         detail = (error.stderr or str(error)).strip().splitlines()
@@ -81,4 +92,3 @@ def ensure(settings, cache_dir=None, timeout=1200):
         raise EngineError(
             "the image %s has no /app/server/player_state.py; is it the game image?"
             % settings.image)
-    return target

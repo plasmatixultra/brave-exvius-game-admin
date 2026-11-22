@@ -7,7 +7,6 @@ user who cannot be asked (no docker yet, or a stopped daemon) can answer with
 
 import json
 import os
-import subprocess
 
 CONTAINER_SERVER_ROOT = "/srv/ffbe/server-root"
 CONTAINER_DATA = "/srv/ffbe/data"
@@ -78,6 +77,15 @@ def _mount_host(payload, destination):
         "%s is not mounted; is this the game container?" % destination)
 
 
+def _checked_directory(path, source):
+    if not os.path.isabs(str(path)):
+        raise SettingsError("%s must be an absolute path, not %r" % (source, str(path)))
+    path = os.path.realpath(str(path))
+    if not os.path.isdir(path):
+        raise SettingsError("%s does not exist: %s" % (source, path))
+    return path
+
+
 def from_inspect(payload, overrides=None):
     """Build :class:`Settings` from one ``docker inspect`` element (or the list)."""
     if isinstance(payload, list):
@@ -92,10 +100,20 @@ def from_inspect(payload, overrides=None):
         "server_dir": _mount_host(payload, CONTAINER_SERVER_ROOT),
         "data_dir": _mount_host(payload, CONTAINER_DATA),
     }
-    found.update(_overrides_to_settings(overrides or {}))
+    given = _overrides_to_settings(overrides or {})
+    found.update(given)
+    # Only paths somebody typed are checked: docker's own mount sources are the
+    # container's truth, and Docker would have created them already.
+    for name in ("server_dir", "data_dir"):
+        if name in given:
+            found[name] = _checked_directory(found[name], ENV_KEYS[name])
+        else:
+            found[name] = os.path.realpath(found[name])
+    image_id = payload.get("Image") or ""
     return Settings(
         container=found["container"],
         image=found["image"],
+        image_id=image_id or found["image"],
         server_dir=found["server_dir"],
         data_dir=found["data_dir"],
         save=os.path.join(found["server_dir"], "state", "campaign.json"),
@@ -108,10 +126,10 @@ def from_inspect(payload, overrides=None):
 class Settings:
     """Resolved locations. Frozen so nothing rewrites them mid-apply."""
 
-    __slots__ = ("container", "image", "server_dir", "data_dir",
+    __slots__ = ("container", "image", "image_id", "server_dir", "data_dir",
                  "save", "backups", "bind", "port")
 
-    def __init__(self, container, image, server_dir, data_dir, save, backups, bind, port):
+    def __init__(self, container, image, image_id, server_dir, data_dir, save, backups, bind, port):
         for name in self.__slots__:
             object.__setattr__(self, name, locals()[name])
 
@@ -160,7 +178,12 @@ def _read_toml(path):
     except OSError as error:
         raise SettingsError("cannot read %s: %s" % (path, error))
     section = document.get("admin", document)
-    return {TOML_KEYS[key]: section[key] for key in TOML_KEYS if key in section}
+    unknown = sorted(set(section) - set(TOML_KEYS))
+    if unknown:
+        raise SettingsError(
+            "%s has keys this app does not read: %s. Valid keys: %s"
+            % (path, ", ".join(unknown), ", ".join(sorted(TOML_KEYS))))
+    return {key: section[key] for key in TOML_KEYS if key in section}
 
 
 def load(env=None, container=None):
@@ -196,8 +219,3 @@ def load(env=None, container=None):
                               {"Destination": CONTAINER_DATA, "Source": base["data_dir"]}]}],
                         overrides)
 
-
-def ensure_directories(settings):
-    """Create the backup directory; the save's own directory must already exist."""
-    os.makedirs(settings.backups, exist_ok=True)
-    return settings.backups

@@ -15,6 +15,8 @@ import time
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+import applysave
+import compat
 import config
 import engine
 import localdata
@@ -86,15 +88,35 @@ def health(settings=None):
                   save=settings.save, backups=settings.backups, data_dir=settings.data_dir)
     try:
         answer["image_id"] = engine._image_id(settings)
-        engine.ensure(settings, localdata.CACHE)
+        engine_dir = engine.ensure(settings, localdata.CACHE)
         answer["engine_ok"] = bool(localdata.cache_ready())
         if not answer["engine_ok"]:
             answer["missing"].append("the game's data tables")
             answer["error"] = "the data directory has no mst_decoded/text_decoded tables"
+        else:
+            drift = compat.check(engine_dir, settings.data_dir)
+            if not drift["ok"]:
+                answer["engine_ok"] = False
+                answer["missing"] = list(drift["missing"])
+                answer["error"] = pipeline.engine_problem(settings) or "engine drift"
     except engine.EngineError as error:
         answer["error"] = str(error)
     answer["ok"] = answer["engine_ok"] and not answer["error"]
     return answer
+
+
+def _host_backup(path):
+    """The backup as a path the user can type: the container's own path is useless in a shell."""
+    if not path:
+        return path
+    try:
+        settings = config.load()
+    except config.SettingsError:
+        return path
+    if path.startswith(config.CONTAINER_SERVER_ROOT):
+        return os.path.join(settings.server_dir,
+                            os.path.relpath(path, config.CONTAINER_SERVER_ROOT))
+    return path
 
 
 def catalog():
@@ -291,7 +313,8 @@ class Handler(BaseHTTPRequestHandler):
                 if result.get("ok"):
                     localdata.refresh_save(force=True)   # the live file just changed
                 return self._json({"ok": bool(result.get("ok")), "log": result.get("log") or [],
-                                   "backup": result.get("backup"), "error": result.get("error"),
+                                   "backup": _host_backup(result.get("backup")),
+                                   "error": result.get("error"),
                                    "status": "ok" if result.get("ok") else "failed"})
             return self._error("not found", 404)
         except RuntimeError as exc:
@@ -308,8 +331,22 @@ def create_server(port=PORT, host=HOST):
 
 def main(argv=None):
     argv = argv or sys.argv[1:]
-    port = int(argv[0]) if argv else PORT
-    server = create_server(port)
+    settings = None
+    try:
+        settings = config.load()
+    except config.SettingsError:
+        pass                      # the page still starts and says what is wrong
+    port = int(argv[1]) if len(argv) > 1 and argv[0] == "--port" else PORT
+    bind = HOST
+    if settings is not None:
+        port, bind = settings.port, settings.bind
+    if settings is not None:
+        try:
+            if applysave.recover(settings):
+                print("recovered an apply that did not finish", flush=True)
+        except Exception as error:   # noqa: BLE001 - never refuse to start over a repair
+            print("recovery failed: %s" % error, flush=True)
+    server = create_server(port, bind)
     host, bound = server.server_address[0], server.server_address[1]
     print(f"FFBE Game Admin on http://{host}:{bound}", flush=True)
     try:

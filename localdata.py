@@ -119,8 +119,8 @@ def _read_save_bytes():
         return transport.run_in_image(
             _settings().image,
             [(_settings().server_dir, "/srv/ffbe/server-root", "ro")],
-            ["cat", "/srv/ffbe/server-root/state/campaign.json"],
-            timeout=120).stdout.encode()
+            ["/srv/ffbe/server-root/state/campaign.json"],
+            timeout=120, entrypoint="cat").stdout.encode()
 
 
 # The page is a ThreadingHTTPServer: on a stale save several requests arrive at once. One pull at a
