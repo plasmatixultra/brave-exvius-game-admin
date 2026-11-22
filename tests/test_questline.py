@@ -88,6 +88,16 @@ class QuestlineTest(unittest.TestCase):
         questline.apply(self.ps, MST, CHECKPOINT)
         self.assertTrue(self.gate_on("10004003"), "area 103 (a town)'s gate is written")
 
+    def test_side_dungeon_opens_its_own_unlock(self):
+        """A side dungeon's node appears only once `F_DUNGEON_MST.juA0Z4m7` is granted — the key is a
+        story key, so the sub-table lookup used by checkpoints found nothing and wrote nothing."""
+        report = questline.apply(self.ps, MST, {"checkpoint": None,
+                                                "side": {"1": {"quests": [],
+                                                               "dungeons": [{"dungeon_key": "11151",
+                                                                             "grant_esper": True}]}}})
+        self.assertGreaterEqual(report["gates"], 1)
+        self.assertTrue(self.gate_on("10014001"), "Inferno Hollow's unlock switch")
+
     def test_non_area_prereqs_written(self):
         questline.apply(self.ps, MST, CHECKPOINT)
         self.assertTrue(self.gate_on("10034003"), "area 205's orphan prerequisite")

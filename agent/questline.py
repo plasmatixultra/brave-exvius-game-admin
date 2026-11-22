@@ -186,7 +186,14 @@ def _clear_missions(ps, book, missions, warnings):
 
 
 def _write_gates(ps, book, plan):
-    """Every passed area's gate — towns included, so the raw sub-table is the lookup, not `area()`."""
+    """Every passed area's gate — towns included, so the raw sub-table is the lookup, not `area()`.
+
+    A side dungeon is not a story area: its key is a story key and its unlock lives in
+    `F_DUNGEON_MST.juA0Z4m7`, not in `F_STORY_SUB_MST`. Looking one up in the sub-table alone found
+    nothing and wrote nothing, so the dungeon's map node stayed hidden even after its missions were
+    cleared — measured live on Inferno Hollow, whose node only appeared after the retail Lydira →
+    Ordol Port unlock chain.
+    """
     written = []
     gates_of = {}
     for row in book.sub:
@@ -194,6 +201,12 @@ def _write_gates(ps, book, plan):
     for area_id in plan.get("gates") or []:
         row = gates_of.get(str(area_id))
         if row is None:
+            dungeon = book.dungeons.get(str(area_id)) or {}
+            for switch in story._ids(dungeon.get("juA0Z4m7")):
+                pos = player_state.switch_position(switch)
+                if pos and pos[1] not in ps.switches.get(pos[0], set()):
+                    ps.grant_switch(*pos)
+                    written.append(switch)
             continue
         for switch in story._ids(row.get("dIPkNn61")):
             pos = player_state.switch_position(switch)
