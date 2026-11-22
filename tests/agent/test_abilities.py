@@ -53,6 +53,20 @@ class AbilityTest(unittest.TestCase):
         self.assertEqual(by_id[TIER1]["gil"], 250000)
         self.assertFalse(any(row["needs_exbonus"] for row in rows))
 
+    def test_recipes_carry_ability_names(self):
+        """The picker must show skills, not recipe ids."""
+        rows = {row["recipe_id"]: row for row in ops_abilities.list_recipes(LIGHTNING)}
+        self.assertEqual(rows["202070001"]["before_name"], "Blitz")
+        self.assertEqual(rows["202010001"]["before_name"], "Lightspeed")
+        rain = {row["recipe_id"]: row for row in ops_abilities.list_recipes("100000102")}
+        self.assertEqual(rain["204550001"]["before_name"], "Leadership")
+
+    def test_nv_form_inherits_its_series_recipes(self):
+        """The built NV row (213000117) still sees the series recipes (root 213000105)."""
+        nv = {row["recipe_id"] for row in ops_abilities.list_recipes("213000117")}
+        self.assertIn("202070001", nv)
+        self.assertEqual(len(nv), len(ops_abilities.list_recipes(LIGHTNING)))
+
     def test_chain_requires_predecessor(self):
         with self.assertRaises(ValueError):
             ops_abilities.apply_ability(self.ps, INSTANCE, TIER2)

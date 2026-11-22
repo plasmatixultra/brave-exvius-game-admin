@@ -39,6 +39,26 @@
     $$('.rail a[data-view]').forEach(function (a) { a.classList.toggle('active', a.dataset.view === id); });
     $$('.view').forEach(function (v) { v.classList.toggle('on', v.dataset.view === id); });
     if (location.hash.slice(1) !== id) history.replaceState(null, '', '#' + id);
+    syncUnitPickers(id);
+  }
+
+  // The kit and the ability view work on ONE unit: keep them on the one being built.
+  function syncUnitPickers(id) {
+    if (!S.selected) return;
+    if (id === 'ability') {
+      var select = $('#ability-unit');
+      if (select && select.value !== S.selected.instance_id) {
+        select.value = S.selected.instance_id;
+        loadRecipes();
+      }
+    }
+    if (id === 'kit') {
+      var kit = $('#kit-unit');
+      if (kit && kit.value !== S.selected.instance_id) {
+        kit.value = S.selected.instance_id;
+        loadKit();
+      }
+    }
   }
 
   function bindViews() {
@@ -909,10 +929,16 @@
       (payload.recipes || []).forEach(function (recipe) {
         var entry = document.createElement('option');
         entry.value = recipe.recipe_id;
-        entry.textContent = 'tier ' + recipe.tier + ' · recipe ' + recipe.recipe_id
-          + ' · ' + fmt(recipe.gil) + ' gil' + (recipe.needs_exbonus ? ' · EX-bonus' : '');
+        var name = recipe.before_name === recipe.after_name
+          ? recipe.before_name
+          : recipe.before_name + ' → ' + recipe.after_name;
+        entry.textContent = name + ' · tier ' + recipe.tier + ' · ' + fmt(recipe.gil) + ' gil'
+          + (recipe.needs_exbonus ? ' · EX-bonus' : '');
         recipes.appendChild(entry);
       });
+      if (!(payload.recipes || []).length) {
+        recipes.innerHTML = '<option value="">no awakening recipes for this unit</option>';
+      }
     }).catch(function (error) {
       setStatus('recipes: ' + error.message, true);
     });

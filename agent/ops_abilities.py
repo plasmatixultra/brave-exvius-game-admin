@@ -13,6 +13,8 @@ synthetic row.
 """
 
 import copy
+import json
+import os
 
 import player_state
 from agent import ops_basic, ops_items
@@ -29,6 +31,32 @@ GIL_KEY = "7UR4J2SE"
 
 def recipes():
     return player_state._load_ndjson("F_SUBLIMATION_RECIPE_MST.ndjson", RECIPE_KEY)
+
+
+_ABILITY_NAMES = None
+
+
+def ability_names():
+    """{skill id: English name} from `F_TEXT_ABILITY_NAME` (key `MST_ABILITY_NAME_<id>`)."""
+    global _ABILITY_NAMES
+    if _ABILITY_NAMES is None:
+        names = {}
+        path = os.path.join(player_state.TEXT_DIR, "F_TEXT_ABILITY_NAME.ndjson")
+        try:
+            with open(path, encoding="utf-8") as fh:
+                for line in fh:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    row = json.loads(line)
+                    key = str(row.get("key", ""))
+                    if key.startswith("MST_ABILITY_NAME_"):
+                        values = row.get("v") or []
+                        names[key[len("MST_ABILITY_NAME_"):]] = str(values[0]) if values else ""
+        except (OSError, ValueError):
+            names = {}
+        _ABILITY_NAMES = names
+    return _ABILITY_NAMES
 
 
 def predecessors():
@@ -64,15 +92,19 @@ def list_recipes(unit_master_id):
     master = player_state.unit_mst(unit_master_id) or {}
     root = str(master.get("woghJa61") or unit_master_id)
     preds = predecessors()
+    names = ability_names()
     out = []
     for recipe_id, row in recipes().items():
         allowed = allowed_units(row)
         if str(unit_master_id) not in allowed and root not in allowed:
             continue
+        before, after = str(row.get(BEFORE_KEY)), str(row.get(AFTER_KEY))
         out.append({
             "recipe_id": str(recipe_id),
-            "before": str(row.get(BEFORE_KEY)),
-            "after": str(row.get(AFTER_KEY)),
+            "before": before,
+            "after": after,
+            "before_name": names.get(before, before),
+            "after_name": names.get(after, after),
             "tier": tier_of(recipe_id, preds),
             "materials": ops_items._parse_cost(row.get(COST_KEY)),
             "gil": int(row.get(GIL_KEY) or 0),

@@ -292,6 +292,9 @@ async function main() {
     row.click();
     return new Promise(function (resolve) {
       setTimeout(function () {
+        // pin the 5-star form: the owned row is whatever the save holds (it may already be NV)
+        const forms = [...document.querySelectorAll('#chain .form')];
+        forms[0].click();
         document.querySelector('#max-stats').click();
         setTimeout(function () {
           const doors = [...document.querySelectorAll('[data-spec^="door"]')].map((i) => i.value);
@@ -338,6 +341,29 @@ async function main() {
   check('Grant max stats on the NV form sets 120 / LB 30 / EX 3',
     !!nvMax && nvMax.level === '120' && nvMax.lb === '30' && nvMax.ex === '3'
     && nvMax.exReward === true && nvMax.stmr.trim() === '100.0 %', JSON.stringify(nvMax));
+
+  // the ability view follows the unit being built, and lists SKILLS not recipe ids
+  const abilityView = await evaluate(`(function () {
+    document.querySelector('.rail a[data-view="units"]').click();
+    const row = [...document.querySelectorAll('#roster .urow')]
+      .find((r) => r.textContent.indexOf('Lightning') >= 0);
+    row.click();
+    return new Promise(function (resolve) {
+      setTimeout(function () {
+        document.querySelector('.rail a[data-view="ability"]').click();
+        setTimeout(function () {
+          const select = document.querySelector('#ability-unit');
+          const chosen = select.selectedOptions[0];
+          const recipes = [...document.querySelectorAll('#ability-recipe option')].map((o) => o.textContent);
+          resolve({ unit: chosen ? chosen.textContent : null, recipes: recipes.slice(0, 3) });
+        }, 3000);
+      }, 2500);
+    });
+  })()`);
+  check('the ability view follows the built unit and names skills',
+    !!abilityView && /Lightning/.test(abilityView.unit || '')
+    && abilityView.recipes.some((t) => /Blitz|Lightspeed|Crushing Blow|Blade of Thunder/.test(t)),
+    JSON.stringify(abilityView));
 
   const silhouette = await evaluate(`(function () {
     const img = document.createElement('img');
