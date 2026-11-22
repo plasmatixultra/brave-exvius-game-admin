@@ -535,6 +535,7 @@
     });
     $$('.chain').forEach(function (root) { root.addEventListener('click', function () { }); });
     $('#preview').addEventListener('click', previewStats);
+    $('#max-stats').addEventListener('click', fillMaxStats);
     $('[data-add="build"]').addEventListener('click', function () {
       var spec = currentSpec();
       if (!spec) return;
@@ -543,6 +544,43 @@
         + (spec.nv_ex_level ? ' · EX ' + spec.nv_ex_level : ''),
         { units: [{ instance_id: row.instance_id, spec: spec }] });
     });
+  }
+
+  // Fill the strip with this form's ceilings: level, LB, EX, pots+doors, TMR/STMR.
+  function fillMaxStats() {
+    var row = selectedRow();
+    var info = formInfo(S.form);
+    if (!row || !info) return;
+    var caps = info.stat_caps || [];
+    $('#spec-level').value = info.max_level;
+    $('#spec-lb').value = info.lb_cap;
+    S.ex = info.nv ? 3 : 0;
+    [0, 1, 2, 3, 4, 5].forEach(function (index) {
+      var pair = caps[index] || [0, 0];
+      var door = $('[data-spec="door' + index + '"]');
+      var pot = $('[data-spec="pot' + index + '"]');
+      if (!door || !pot) return;
+      door.value = pair[1];                 // doors first: they raise the pot ceiling
+      if (door.oninput) door.oninput();
+      pot.value = pair[0] + pair[1];
+    });
+    S.trust = info.trust_cap || 0;
+    S.superTrust = (info.rarity >= 7 || String(S.form).indexOf("906") === 0)
+      ? (info.super_trust_cap || 0) : 0;
+    // Landing exactly on the cap without the reward flag would lose the TMR item for good:
+    // `gain_trust` only pays on the crossing, and a maxed row never crosses.
+    if (S.trust > 0 || S.superTrust > 0) {
+      var reward = $('[data-flag="trust_reward"]');
+      if (reward) reward.classList.add('on');
+    }
+    if (S.ex > 0) {
+      var exReward = $('[data-flag="ex_rewards"]');
+      if (exReward) exReward.classList.add('on');
+    }
+    paintLimits();
+    paintTrust();
+    setStatus('filled with ' + unitName(S.form) + ' max');
+    previewStats();
   }
 
   function currentSpec() {

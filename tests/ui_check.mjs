@@ -284,6 +284,61 @@ async function main() {
     !!capPair && capPair.before.label === '65 + 0' && capPair.after.label === '65 + 32'
     && Number(capPair.after.max) === 97, JSON.stringify(capPair));
 
+  // Grant max stats fills every field with the form's ceilings
+  const maxStats = await evaluate(`(function () {
+    document.querySelector('.rail a[data-view="units"]').click();
+    const row = [...document.querySelectorAll('#roster .urow')]
+      .find((r) => r.textContent.indexOf('Lightning') >= 0);
+    row.click();
+    return new Promise(function (resolve) {
+      setTimeout(function () {
+        document.querySelector('#max-stats').click();
+        setTimeout(function () {
+          const doors = [...document.querySelectorAll('[data-spec^="door"]')].map((i) => i.value);
+          const pots = [...document.querySelectorAll('[data-spec^="pot"]')].map((i) => i.value);
+          resolve({
+            level: document.querySelector('#spec-level').value,
+            levelCap: document.querySelector('#spec-level-cap').textContent,
+            lb: document.querySelector('#spec-lb').value,
+            ex: [...document.querySelectorAll('[data-ex]')].find((c) => c.classList.contains('on')).dataset.ex,
+            doors, pots,
+            trust: document.querySelector('#trust-readout').textContent,
+            reward: document.querySelector('#flag-trust').classList.contains('on')
+          });
+        }, 600);
+      }, 3500);
+    });
+  })()`);
+  check('Grant max stats fills level, LB, EX, pots, doors and TMR',
+    !!maxStats && maxStats.level === '80' && maxStats.lb === '20' && maxStats.ex === '0'
+    && maxStats.doors.join() === '450,75,32,32,32,32'
+    && maxStats.pots.join() === '1350,225,97,97,97,97'
+    && maxStats.trust.trim() === '100.0 %' && maxStats.reward === true,
+    JSON.stringify(maxStats));
+
+  // the same button on the NV form: 120 / LB 30 / EX 3, and the EX reward box ticked
+  const nvMax = await evaluate(`(function () {
+    const forms = [...document.querySelectorAll('#chain .form')];
+    forms[forms.length - 1].click();
+    return new Promise(function (resolve) {
+      setTimeout(function () {
+        document.querySelector('#max-stats').click();
+        setTimeout(function () {
+          resolve({
+            level: document.querySelector('#spec-level').value,
+            lb: document.querySelector('#spec-lb').value,
+            ex: [...document.querySelectorAll('[data-ex]')].find((c) => c.classList.contains('on')).dataset.ex,
+            exReward: document.querySelector('#flag-ex').classList.contains('on'),
+            stmr: document.querySelector('#super-trust-readout').textContent
+          });
+        }, 600);
+      }, 3000);
+    });
+  })()`);
+  check('Grant max stats on the NV form sets 120 / LB 30 / EX 3',
+    !!nvMax && nvMax.level === '120' && nvMax.lb === '30' && nvMax.ex === '3'
+    && nvMax.exReward === true && nvMax.stmr.trim() === '100.0 %', JSON.stringify(nvMax));
+
   const silhouette = await evaluate(`(function () {
     const img = document.createElement('img');
     return new Promise((resolve) => {
