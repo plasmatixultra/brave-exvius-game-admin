@@ -230,6 +230,20 @@ class Handler(BaseHTTPRequestHandler):
                 if not isinstance(spec, dict):
                     return self._error("preview needs a spec object", 400)
                 return self._json(agent("preview", {"unit_spec": spec}))
+            if path == "/api/progress/preview":
+                progress = body.get("progress") if isinstance(body, dict) else None
+                if not isinstance(progress, dict):
+                    return self._error("progress preview needs a progress object", 400)
+                result = agent("preview", {"progress": progress})
+                group = (result.get("groups") or {}).get("progress") or {}
+                expected = {
+                    "currencies": {name: row.get("delta", 0)
+                                   for name, row in (result.get("currencies") or {}).items()},
+                    "roster_added": result.get("roster_added", 0),
+                    "extra": {key: group[key] for key in ("cleared", "quests", "espers_granted", "gates")
+                              if key in group},
+                }
+                return self._json({"expected": expected, "report": group})
             if path == "/api/apply":
                 edits = body.get("edits") if isinstance(body, dict) else None
                 if not isinstance(edits, dict):

@@ -554,6 +554,11 @@ def op_apply(save, edits_path, flags):
                          for key in ops_basic.CURRENCY_KEYS}
     actual_roster = after["roster"] - before["roster"]
     declared = edits.get("expected") or {}
+    if "progress" in edits and not declared:
+        # A progress run pays quest and first-clear rewards, so it cannot pass the exact-delta check
+        # below without a promise. Say so, instead of reporting a currency mismatch the caller never
+        # asked for (the app's side cart hit exactly this).
+        raise ValueError("progress edits must carry `expected` — run /api/progress/preview first")
     declared_currencies = declared.get("currencies") or {}
     want_currencies = requested_currencies(edits)
     for key in ops_basic.CURRENCY_KEYS:

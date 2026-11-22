@@ -583,9 +583,13 @@
         row.querySelector('.cb').addEventListener('click', function (ev) {
           ev.currentTarget.classList.toggle('on');
           renderSideSummary();
+          queueSidePreview();
         });
         var box = row.querySelector('.grantbox[data-grant]');
-        if (box) box.addEventListener('click', function (ev) { ev.currentTarget.classList.toggle('on'); });
+        if (box) box.addEventListener('click', function (ev) {
+          ev.currentTarget.classList.toggle('on');
+          queueSidePreview();
+        });
         host.appendChild(row);
       });
     }
@@ -604,9 +608,35 @@
       row.querySelector('.cb').addEventListener('click', function (ev) {
         ev.currentTarget.classList.toggle('on');
         renderSideSummary();
+        queueSidePreview();
       });
       host.appendChild(row);
     });
+  }
+
+  var sideExpected = null;
+  var sidePreviewTimer = null;
+
+  // A side selection pays quest rewards, so the cart has to declare them: the agent refuses an apply
+  // whose actual currency deltas differ from what was promised. The preview is the promise.
+  function requestSidePreview() {
+    var selection = sideSelection();
+    if (!Object.keys(selection).length) {
+      sideExpected = null;
+      renderSideSummary();
+      return;
+    }
+    api('/api/progress/preview', { progress: { checkpoint: null, side: selection } })
+      .then(function (data) {
+        sideExpected = data.expected || null;
+        renderSideSummary();
+      })
+      .catch(function (error) { console.error('side preview failed', error); sideExpected = null; });
+  }
+
+  function queueSidePreview() {
+    clearTimeout(sidePreviewTimer);
+    sidePreviewTimer = setTimeout(requestSidePreview, 350);
   }
 
   function renderSideSummary() {
@@ -618,11 +648,17 @@
       dungeons += selection[world].dungeons.length;
       selection[world].dungeons.forEach(function (row) { if (row.grant_esper) granted += 1; });
     });
-    $('#side-summary').innerHTML = '<div class="sum-row"><span class="sum-k">Worlds</span>'
+    var rows = '<div class="sum-row"><span class="sum-k">Worlds</span>'
       + '<span class="sum-v small">' + (worlds.length ? worlds.map(function (w) { return 'W' + w; }).join(' · ') : 'none') + '</span></div>'
       + '<div class="sum-row"><span class="sum-k">Quests</span><span class="sum-v">' + quests + '</span></div>'
       + '<div class="sum-row"><span class="sum-k">Esper dungeons</span><span class="sum-v">' + dungeons + '</span></div>'
       + '<div class="sum-row"><span class="sum-k">Espers granted</span><span class="sum-v g">' + granted + '</span></div>';
+    if (sideExpected) {
+      var currencies = sideExpected.currencies || {};
+      rows += '<div class="sum-row"><span class="sum-k">Lapis paid</span><span class="sum-v">' + fmt(currencies.lapis_free || 0) + '</span></div>'
+        + '<div class="sum-row"><span class="sum-k">Gil paid</span><span class="sum-v">' + fmt(currencies.gil || 0) + '</span></div>';
+    }
+    $('#side-summary').innerHTML = rows;
   }
 
   function sideSelection() {
@@ -654,8 +690,9 @@
       var side = sideSelection();
       var worlds = Object.keys(side);
       if (!worlds.length) return;
-      addEdit('Progress · side ' + worlds.map(function (w) { return 'W' + w; }).join('+'),
-              { progress: { checkpoint: null, side: side } });
+      var edit = { progress: { checkpoint: null, side: side } };
+      if (sideExpected) edit.expected = sideExpected;
+      addEdit('Progress · side ' + worlds.map(function (w) { return 'W' + w; }).join('+'), edit);
     });
     var sideLink = $('#side-link');
     if (sideLink) sideLink.addEventListener('click', function () { sideMode(true); });

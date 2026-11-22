@@ -69,6 +69,12 @@ class AppTest(unittest.TestCase):
             return self.summary
         if op == "catalog":
             return self.catalog
+        if op == "preview" and edits and "progress" in edits:
+            return {"currencies": {"gil": {"before": 0, "after": 736, "delta": 736},
+                                   "lapis_free": {"before": 0, "after": 500, "delta": 500},
+                                   "lapis_paid": {"before": 0, "after": 0, "delta": 0}},
+                    "roster_added": 0,
+                    "groups": {"progress": {"cleared": 9, "quests": 2, "espers_granted": 1, "gates": 0}}}
         if op == "preview":
             return {"unit": {"stats": [1, 2, 3, 4, 5, 6], "max_level": 80, "lb_cap": 20,
                              "trust_cap": 1000, "super_trust_cap": 1000}}
@@ -238,6 +244,21 @@ class AppTest(unittest.TestCase):
         status, _, body = self.get("/api/questline?world=1")
         self.assertEqual(status, 200)
         self.assertEqual(self.calls[-1][2], {"world": "1"})
+
+    def test_progress_preview_declares_the_side_rewards(self):
+        """The side cart cannot promise what it does not know: this is where it finds out."""
+        side = {"1": {"quests": ["1001001"], "dungeons": [{"dungeon_key": "11151", "grant_esper": True}]}}
+        status, payload = self.post("/api/progress/preview", {"progress": {"checkpoint": None, "side": side}})
+        self.assertEqual(status, 200)
+        self.assertEqual(payload["expected"]["currencies"]["lapis_free"], 500)
+        self.assertEqual(payload["expected"]["currencies"]["gil"], 736)
+        self.assertEqual(payload["expected"]["extra"]["cleared"], 9)
+        self.assertEqual(self.calls[-1][0], "preview")
+        self.assertIn("progress", self.calls[-1][1])
+
+    def test_progress_preview_needs_a_progress_object(self):
+        status, _ = self.post("/api/progress/preview", {"progress": "nope"})
+        self.assertEqual(status, 400)
 
     def test_bad_area_is_400(self):
         status, _, _ = self.get("/api/questline?region=22&area=abc")

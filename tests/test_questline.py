@@ -55,6 +55,16 @@ class QuestlineTest(unittest.TestCase):
             questline.apply(self.ps, MST, edit)
 
     # ---- the run -----------------------------------------------------------------------------
+    def test_apply_needs_a_declared_expectation_through_the_cli(self):
+        """`agent.py apply` refuses a progress run that declares nothing — the side cart's old shape."""
+        from agent import agent as agent_cli
+        edits = os.path.join(self.tmp, "edits.json")
+        with open(edits, "w", encoding="utf-8") as fh:
+            json.dump({"progress": {"checkpoint": {"region": 22, "area": "2210"}}}, fh)
+        with self.assertRaises(ValueError) as caught:
+            agent_cli.op_apply(self.path, edits, {})
+        self.assertIn("expected", str(caught.exception))
+
     def test_apply_works_with_no_global_player(self):
         """The agent process never sets `ffbe_state.State.player`; the payers need it anyway."""
         import ffbe_state
