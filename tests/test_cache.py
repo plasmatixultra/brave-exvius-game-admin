@@ -76,7 +76,7 @@ class AgentPayloadTest(unittest.TestCase):
          localdata.sync_data, localdata.refresh_save) = self._real
         shutil.rmtree(self.tmp, ignore_errors=True)
 
-    def test_each_call_writes_its_own_edits_file(self):
+    def test_a_second_call_while_one_is_running_waits(self):
         seen = []
 
         class Proc:

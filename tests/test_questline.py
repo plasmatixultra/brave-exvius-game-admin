@@ -65,6 +65,33 @@ class QuestlineTest(unittest.TestCase):
             agent_cli.op_apply(self.path, edits, {})
         self.assertIn("expected", str(caught.exception))
 
+    def test_a_checkpoint_before_region_4_leaves_its_orphans_shut(self):
+        """205 (Dwarves' Forge) needs a switch no area opens; a checkpoint that never passes it, and
+        the side selections, must not write it — nor its opened switch, which unlocks area 211."""
+        early = {"region": 3, "area": "308"}      # Kolobos Isle, well before region 4
+        questline.apply(self.ps, MST, early)
+        self.assertFalse(self.gate_on("10034003"), "205's prerequisite belongs to a region-4 checkpoint")
+        self.assertFalse(self.gate_on("10048500"), "and 211 must stay shut")
+
+    def test_orphan_prerequisites_need_a_checkpoint(self):
+        questline.apply(self.ps, MST, {"checkpoint": None, "side": {"1": {
+            "quests": [], "dungeons": [{"dungeon_key": "11151", "grant_esper": True}]}}})
+        self.assertFalse(self.gate_on("10034003"), "a side selection unlocks nothing in region 4")
+
+    def test_a_quest_gated_dungeon_brings_its_quest(self):
+        plan = story.load_story(MST).side_plan({"dungeons": ["11251"], "quests": []})
+        self.assertIn("2001001", plan["quests"], "Zadehl Southersands is opened by quest 2001001")
+        self.assertEqual(plan["gate_quests"], [{"dungeon_key": "11251", "quest_id": "2001001"}])
+
+    def test_the_promise_is_read_from_one_place(self):
+        """The cart puts `expected` beside `progress`; the flat test shapes put it inside. One reader,
+        so a caller that sets both is not counted twice."""
+        from agent import agent as agent_cli
+        both = {"expected": {"roster_added": 3},
+                "progress": {"expected": {"roster_added": 3}}}
+        self.assertEqual(agent_cli.declared_expected(both)["roster_added"], 3)
+        self.assertEqual(agent_cli.requested_roster(both, []), 3, "not 6")
+
     def test_a_finished_quest_is_not_a_refusal(self):
         """The second run of the same selection must not die on 'quests refused'."""
         progress = {"checkpoint": None, "side": {"1": {"quests": ["1001001", "1001002"], "dungeons": []}}}

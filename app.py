@@ -123,11 +123,13 @@ class Handler(BaseHTTPRequestHandler):
                 if params.get("world") is not None:
                     return self._json(agent("questline", flags={"world": params["world"]}))
                 if params.get("region"):
+                    if not str(params["region"]).isdigit():
+                        return self._error("region must be a numeric id", 400)
+                    if params.get("area") and not str(params["area"]).isdigit():
+                        return self._error("area must be a numeric id", 400)
                     flags = {"region": params["region"]}
                     if params.get("area"):
                         flags["area"] = params["area"]
-                    if params.get("area") and not params["area"].isdigit():
-                        return self._error("area must be a numeric id", 400)
                     return self._json(agent("questline", flags=flags))
                 return self._error("questline needs region or world", 400)
             if path == "/api/awaken":
@@ -207,10 +209,11 @@ class Handler(BaseHTTPRequestHandler):
         Origin/Host is the fallback for browsers that predate it.
         """
         site = (self.headers.get("Sec-Fetch-Site") or "").lower()
-        if site == "cross-site":
+        if site in ("cross-site", "same-site"):
+            # `same-site` is another port on 127.0.0.1 — a different application, not this page.
             return True
         if site:
-            return False                    # same-origin / same-site / none
+            return False                    # same-origin / none
         origin = self.headers.get("Origin")
         if not origin:
             return False                    # curl, the tests, a browser with no Fetch Metadata

@@ -19,7 +19,7 @@ const BASE = process.argv[2] || 'http://127.0.0.1:8750';
 const CHROME = process.env.CHROME_BIN
   || `${process.env.HOME}/.cache/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-linux64/chrome-headless-shell`;
 const PORT = 9333;
-const VIEWS = ['grants', 'units', 'kit', 'ability', 'vision', 'log'];
+const VIEWS = ['grants', 'units', 'kit', 'ability', 'vision', 'log', 'progress'];
 const MIN_FONT = 13.5;
 
 const results = [];

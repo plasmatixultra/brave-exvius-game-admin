@@ -77,14 +77,23 @@
   }
 
   /* ------------------------------------------------------------------------ the cart */
+  // Only numbers add up. A structural payload (a checkpoint's area, a pill's explicit null, a string
+  // id) must never be marched through the accumulator: `0 + "2210"` is the string "02210", which the
+  // agent then refuses as "not a story dungeon area", and `{} + null` is "[object Object]null".
   function mergeInto(target, add) {
     Object.keys(add).forEach(function (key) {
       var value = add[key];
-      if (Array.isArray(value)) target[key] = (target[key] || []).concat(value);
-      else if (value && typeof value === 'object') {
-        target[key] = target[key] || {};
+      if (value === null || value === undefined) return;          // "not set by this pill"
+      if (Array.isArray(value)) {
+        target[key] = (target[key] || []).concat(value);
+      } else if (typeof value === 'object') {
+        target[key] = (target[key] && typeof target[key] === 'object') ? target[key] : {};
         mergeInto(target[key], value);
-      } else target[key] = (target[key] || 0) + value;
+      } else if (typeof value === 'number') {
+        target[key] = (typeof target[key] === 'number' ? target[key] : 0) + value;
+      } else {
+        target[key] = value;                                      // strings and booleans: last wins
+      }
     });
     return target;
   }
@@ -484,10 +493,13 @@
       row.classList.toggle('ckpt', row.dataset.area === String(areaId));
     });
     var region = progressCache.region;
+    var token = (progressCache.areaToken = (progressCache.areaToken || 0) + 1);
+    $('#checkpoint-apply').disabled = true;   // nothing to add until this area's preview lands
     $('#plan-summary').innerHTML = '<div class="sum-row"><span class="sum-k">Previewing</span>'
       + '<span class="sum-v small">' + esc(areaId) + '</span></div>';
     api('/api/questline?region=' + encodeURIComponent(region) + '&area=' + encodeURIComponent(areaId))
       .then(function (data) {
+        if (token !== progressCache.areaToken) return;    // a later click owns the pane now
         progressCache.plan = { region: region, area: areaId, expected: data.expected };
         var plan = data.plan || {};
         var excluded = {};
@@ -516,6 +528,7 @@
         if ($('#sum-tag')) $('#sum-tag').textContent = areaId;   // the pane may have switched to side
         $('#checkpoint-apply').disabled = false;
       }).catch(function (error) {
+        if (token !== progressCache.areaToken) return;
         $('#plan-summary').textContent = error.message;
         $('#checkpoint-apply').disabled = true;
       });
@@ -646,7 +659,8 @@
         return sideExpected;
       })
       .catch(function (error) {
-        console.error('side preview failed', error);
+        if (window.console) console.error('side preview failed', error);   // the pane shows it too
+        renderSideSummary(error && error.message);
         sideExpected = null;
         sideExpectedKey = null;
         return null;
@@ -669,7 +683,7 @@
     sidePreviewTimer = setTimeout(requestSidePreview, 350);
   }
 
-  function renderSideSummary() {
+  function renderSideSummary(errorText) {
     var selection = sideSelection();
     var worlds = Object.keys(selection);
     var quests = 0, dungeons = 0, granted = 0;
@@ -691,6 +705,10 @@
       rows += '<div class="sum-row"><span class="sum-k">Esper trials left</span><span class="sum-v">'
         + skipped + '</span></div>';
     }
+    if (errorText) {
+      rows += '<div class="sum-row"><span class="sum-k">Preview refused</span><span class="sum-v small">'
+        + esc(String(errorText).slice(0, 120)) + '</span></div>';
+    }
     if (sideExpected) {
       var currencies = sideExpected.currencies || {};
       rows += '<div class="sum-row"><span class="sum-k">Lapis paid</span><span class="sum-v">' + fmt(currencies.lapis_free || 0) + '</span></div>'
@@ -710,8 +728,10 @@
       var world = cb.dataset.world;
       side[world] = side[world] || { quests: [], dungeons: [] };
       var box = $('.grantbox[data-grant="' + cb.dataset.dungeon + '"]');
+      // No toggle at all (`no grant`, e.g. Bahamut) is not the same as a toggle switched off: the
+      // player cannot withhold what the game never offers, so the dungeon clears like any other.
       side[world].dungeons.push({ dungeon_key: cb.dataset.dungeon,
-                                  grant_esper: !!(box && box.classList.contains('on')) });
+                                  grant_esper: box ? box.classList.contains('on') : true });
     });
     return side;
   }

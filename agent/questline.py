@@ -98,10 +98,13 @@ def _merged_plan(book, progress_edit):
     if not plans:
         raise QuestlineError("progress: nothing selected")
     merged = {"missions": [], "excluded": [], "gates": [], "espers": [], "quests": [],
-              "rewards": {"lapis": 0, "gil": 0, "items": []}, "units": []}
+              "rewards": {"lapis": 0, "gil": 0, "items": []}, "units": [], "gate_quests": [],
+              "kinds": []}
     seen = set()
     for plan in plans:
-        for key in ("missions", "gates", "espers", "quests", "excluded", "units"):
+        if plan.get("kind"):
+            merged["kinds"].append(plan["kind"])
+        for key in ("missions", "gates", "espers", "quests", "excluded", "units", "gate_quests"):
             for row in plan.get(key) or []:
                 token = json.dumps(row, sort_keys=True) if isinstance(row, dict) else str(row)
                 if token in seen:
@@ -213,11 +216,18 @@ def _write_gates(ps, book, plan):
             if pos and pos[1] not in ps.switches.get(pos[0], set()):
                 ps.grant_switch(*pos)
                 written.append(switch)
-    for switch in story.ORPHAN_GATE_SWITCHES:
-        pos = player_state.switch_position(switch)
-        if pos and pos[1] not in ps.switches.get(pos[0], set()):
-            ps.grant_switch(*pos)
-            written.append(switch)
+    # The two orphans (205, 1401) are reachable only through a switch no area opens, so a checkpoint
+    # that PASSES them must write that switch — but only then: granting it for a region-3 checkpoint
+    # would unlock region 4 content the run never asked for.
+    passed = {str(area) for area in plan.get("gates") or []}
+    for area_id in story.ORPHAN_GATES:
+        if str(area_id) not in passed:
+            continue
+        for switch in story._ids((gates_of.get(str(area_id)) or {}).get("juA0Z4m7")):
+            pos = player_state.switch_position(switch)
+            if pos and pos[1] not in ps.switches.get(pos[0], set()):
+                ps.grant_switch(*pos)
+                written.append(switch)
     return written
 
 
@@ -356,8 +366,10 @@ def apply(ps, mst_dir, progress_edit):
         done, refused = _run_quests(ps, book, plan.get("quests") or [], warnings)
         for esper in plan.get("espers") or []:
             _grant_esper(ps, esper["esper_id"])
-        _restore(ps, saved)
     finally:
+        # The synthetic attempt and the ledgers it touches go back whether or not the run finished:
+        # a caller that catches the error and saves must not persist a fake mission end.
+        _restore(ps, saved)
         ffbe_state.State.player = real
     after = _snapshot(ps)
     paid_lapis = after["lapis"] - before["lapis"]
@@ -368,6 +380,14 @@ def apply(ps, mst_dir, progress_edit):
         want_lapis = int((declared.get("currencies") or {}).get("lapis_free") or 0)
         want_gil = int((declared.get("currencies") or {}).get("gil") or 0)
         want_roster = int(declared.get("roster_added") or 0)
+        want_cleared = int((declared.get("extra") or {}).get("cleared") or 0)
+        want_beasts = int((declared.get("extra") or {}).get("beasts") or 0)
+        if len(ran) < want_cleared:
+            raise QuestlineError("the run cleared %d missions; the preview promised %d"
+                                 % (len(ran), want_cleared))
+        if after["beasts"] - before["beasts"] < want_beasts:
+            raise QuestlineError("the run granted %d espers; the preview promised %d"
+                                 % (after["beasts"] - before["beasts"], want_beasts))
         if paid_lapis < want_lapis or paid_gil < want_gil or roster_added < want_roster:
             raise QuestlineError(
                 "the run paid less than the preview promised: lapis %d/%d, gil %d/%d, roster %d/%d"

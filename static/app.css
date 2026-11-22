@@ -526,7 +526,7 @@ html,body{height:100%}
 .sum-v.g{color:var(--gold-lt)}
 .sum-v.small{font-size:15px;color:#cfe0f5;letter-spacing:.04em}
 .mult{
-  font-size:12.5px;letter-spacing:.1em;color:#2b1e05;margin-left:7px;padding:1px 5px;border-radius:2px;
+  font-size:14px;letter-spacing:.1em;color:#2b1e05;margin-left:7px;padding:1px 5px;border-radius:2px;
   background:linear-gradient(180deg,#ffeeb8,#d8b45c);vertical-align:middle;
 }
 

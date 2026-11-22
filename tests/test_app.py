@@ -256,6 +256,16 @@ class AppTest(unittest.TestCase):
         self.assertEqual(self.calls[-1][0], "preview")
         self.assertIn("progress", self.calls[-1][1])
 
+    def test_same_site_writes_are_refused(self):
+        """Another loopback port is a different application, not this page."""
+        status, _ = self.post("/api/apply", {"edits": {"currencies": {"gil": 1}}},
+                              headers={"Sec-Fetch-Site": "same-site"})
+        self.assertEqual(status, 403)
+
+    def test_bad_region_is_400(self):
+        status, _, _ = self.get("/api/questline?region=abc")
+        self.assertEqual(status, 400)
+
     def test_progress_preview_needs_a_progress_object(self):
         status, _ = self.post("/api/progress/preview", {"progress": "nope"})
         self.assertEqual(status, 400)

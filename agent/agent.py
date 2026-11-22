@@ -396,11 +396,19 @@ def requested_currencies(edits):
             for key in ops_basic.CURRENCY_KEYS}
 
 
+def declared_expected(edits):
+    """The promise, wherever the caller put it: beside `progress` (the app's cart) or inside it
+    (the flat shapes the tests use). ONE reader, so the two locations can never be counted twice."""
+    declared = edits.get("expected")
+    if isinstance(declared, dict) and declared:
+        return declared
+    return (edits.get("progress") or {}).get("expected") or {}
+
+
 def requested_roster(edits, pre_ex_levels=None):
     """Roster rows the edits should add: built units, their rewards, and the progress run's own."""
     added = ops_units.expected_roster_added(edits, pre_ex_levels)
-    declared = (edits.get("progress") or {}).get("expected") or {}
-    return added + _int_or_zero(declared.get("roster_added"))
+    return added + _int_or_zero(declared_expected(edits).get("roster_added"))
 
 
 def snapshot(ps):
@@ -523,8 +531,15 @@ def op_preview(save, edits_path, _flags):
     before = snapshot(ps)
     pre_ex = {str(row.get("instance_id")): int(row.get("nv_ex_level") or 0)
               for row in ps.data.get("roster") or []}
+    declared = declared_expected(edits)
+    groups = edits
+    progress = groups.get("progress")
+    if isinstance(progress, dict) and declared and "expected" not in progress:
+        # `questline.apply` checks its own promise from the group it is handed, so hand it the one
+        # the caller declared instead of leaving that check dead.
+        groups = dict(groups, progress=dict(progress, expected=declared))
     results = {}
-    apply_groups(ps, edits, results)
+    apply_groups(ps, groups, results)
     after = snapshot(ps)
     result = {
         "currencies": {key: {"before": before["currencies"][key], "after": after["currencies"][key],
@@ -544,8 +559,15 @@ def op_apply(save, edits_path, flags):
     before = snapshot(ps)
     pre_ex = {str(row.get("instance_id")): int(row.get("nv_ex_level") or 0)
               for row in ps.data.get("roster") or []}
+    declared = declared_expected(edits)
+    groups = edits
+    progress = groups.get("progress")
+    if isinstance(progress, dict) and declared and "expected" not in progress:
+        # `questline.apply` checks its own promise from the group it is handed, so hand it the one
+        # the caller declared instead of leaving that check dead.
+        groups = dict(groups, progress=dict(progress, expected=declared))
     results = {}
-    apply_groups(ps, edits, results)
+    apply_groups(ps, groups, results)
     after = snapshot(ps)
 
     # The declared expectation (the app's and, later, the questline preview's) is a promise about
@@ -553,7 +575,6 @@ def op_apply(save, edits_path, flags):
     actual_currencies = {key: after["currencies"][key] - before["currencies"][key]
                          for key in ops_basic.CURRENCY_KEYS}
     actual_roster = after["roster"] - before["roster"]
-    declared = edits.get("expected") or {}
     if "progress" in edits and not declared:
         # A progress run pays quest and first-clear rewards, so it cannot pass the exact-delta check
         # below without a promise. Say so, instead of reporting a currency mismatch the caller never

@@ -18,8 +18,11 @@ from collections import defaultdict
 ARCS = ((1, 9, "Season 1"), (10, 19, "Paladia"), (20, 29, "The Beyond"), (30, 10 ** 9, "Rivonia"))
 DUNGEON_KIND = "3"          # F_STORY_SUB_MST.Lxj5u3WB: 3 = dungeon, 2 = town
 TRIAL_SWITCH_TYPE = "821"   # F_SWITCH_MST: awakening trials never clear
-ORPHAN_GATES = ("205", "1401")   # prerequisites no area opens; the run writes them by hand
-ORPHAN_GATE_SWITCHES = ("10034003", "10271004")   # their switches, written by hand
+# Areas 205 (Dwarves' Forge) and 1401 (Bug Eater's Den) are reachable only through switches no area
+# opens: `juA0Z4m7` 10034003 and 10271004. Their own `dIPkNn61` (10048500, 10272004) are what opens the
+# NEXT area (211, 1402) — writing those instead would unlock regions the checkpoint never passed.
+ORPHAN_GATES = ("205", "1401")
+ORPHAN_GATE_SWITCHES = ("10034003", "10271004")   # their own required switch, written by hand
 
 
 def _rows(mst_dir, table):
@@ -123,6 +126,7 @@ class Story:
         self.dungeons = {str(row.get("U9iHsau3")): row for row in dungeons}
         self.switch_type = {str(key): str(value) for key, value in switches.items()}
         self.explorations = set(map(str, explorations))
+        self._areas_cache = {}             # `regions()` asks for every region; each scan is ~20M comparisons
         root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.global_names = _global_names(root)
         # The same dungeon is shipped under two area ids (2201 and 2118 are both 秘密の抜け道): a name
@@ -230,8 +234,11 @@ class Story:
 
     def areas(self, region_id):
         region_id = int(region_id)
+        cached = self._areas_cache.get(region_id)
+        if cached is not None:
+            return cached
         out = []
-        owners = defaultdict(list)
+        owners = defaultdict(list)          # built once per call: the alias map, not a per-area scan
         for area in self._area_order():
             owners[str(area)].append(area)
         for row in sorted(self.dungeon_areas, key=lambda r: (int(r["0J2VIT8w"]), int(r["6a9TDRcj"]))):
@@ -254,6 +261,7 @@ class Story:
                         "name": self.global_names.get(area_id)
                         or self.texts.get("area", {}).get(area_id) or str(row.get("G4L0YIB2") or ""),
                         "missions": missions, "shares_with": shares})
+        self._areas_cache[region_id] = out
         return out
 
     def area_label(self, area_id):
@@ -405,7 +413,7 @@ class Story:
             if beast is not None:
                 espers.append({"mission_id": mission_id, "esper_id": beast})
         return {"region_id": int(region_id), "area_id": str(area_id), "missions": missions,
-                "excluded": excluded, "gates": gates + list(ORPHAN_GATES), "rewards": rewards,
+                "excluded": excluded, "gates": gates, "rewards": rewards, "kind": "checkpoint",
                 "units": units, "espers": espers,
                 "side_effects": {"claim": "run rewrites the quest audit ring and scores a daily quest"}}
 
@@ -418,10 +426,18 @@ class Story:
         dungeons = [str(key) for key in selection.get("dungeons") or []]
         quests = [str(qid) for qid in selection.get("quests") or []]
         missions, excluded, gates, espers = [], [], [], []
+        gate_quests = []
         for dungeon_key in dungeons:
             row = self.dungeons.get(dungeon_key) or {}
             gate = (_ids(row.get("juA0Z4m7")) or [""])[0]
-            if gate and self._gate_quest(gate) in (None, ""):
+            gating = self._gate_quest(gate) if gate else None
+            if gating:
+                # Three esper dungeons (11251, 11355, 210102) are opened by a quest, not by a switch:
+                # without that quest the node never appears, so the selection carries it along.
+                if str(gating) not in quests:
+                    quests.append(str(gating))
+                gate_quests.append({"dungeon_key": dungeon_key, "quest_id": str(gating)})
+            elif gate:
                 gates.append(dungeon_key)
             beat = None
             for mission_id in sorted([m for m in self.missions if self.area_of_key(m) == dungeon_key],
@@ -443,7 +459,8 @@ class Story:
             rewards["gil"] += self._helper("gil", mission_id)
             rewards["items"] += list(self._helper("items", mission_id) or [])
         return {"quests": quests, "dungeons": dungeons, "missions": missions, "excluded": excluded,
-                "gates": gates, "rewards": rewards, "units": [], "espers": espers,
+                "gates": gates, "gate_quests": gate_quests, "rewards": rewards, "units": [],
+                "espers": espers, "kind": "side",
                 "side_effects": {"claim": "quest completion rewrites the quest audit ring"}}
 
 
