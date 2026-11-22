@@ -1,0 +1,37 @@
+#!/bin/sh
+# Test double for the docker CLI: records argv, answers inspect/status from fixtures.
+printf '%s\n' "$*" >> "${CALLS_FILE:-/dev/null}"
+case "$1" in
+  inspect)
+    if [ "$2" = "nosuch" ]; then
+      echo "Error: No such object: nosuch" >&2
+      exit 1
+    fi
+    cat "${FAKE_INSPECT_JSON:-$(dirname "$0")/docker_inspect_standard.json}"
+    ;;
+  exec)
+    echo "Rain rank 3  roster 44  lapis 169458"
+    ;;
+  stop)
+    if [ "$2" = "missing" ]; then
+      echo "Error response from daemon: No such container: missing" >&2
+      exit 1
+    fi
+    echo "$2"
+    ;;
+  start)
+    echo "$2"
+    ;;
+  run)
+    printf 'run: %s\n' "$*" >> "${CALLS_FILE:-/dev/null}"
+    if [ -n "${FAKE_AGENT_FAILS:-}" ] && printf '%s' "$*" | grep -q 'apply-files.sh apply'; then
+      echo "apply-files: changes do not match the request" >&2
+      exit 2
+    fi
+    echo "apply complete"
+    ;;
+  *)
+    echo "fake docker: unsupported: $*" >&2
+    exit 1
+    ;;
+esac

@@ -1,0 +1,14 @@
+[
+  {
+    "Id": "b1a7d3f0c9e24a6f8d5b0e1c3a7f9d2e4b6c8a0f1e3d5b7c9a2f4e6d8b0c1a3",
+    "Name": "/ffbe",
+    "Image": "sha256:7f2c9a1e5b3d8f0a4c6e2b9d1f7a3c5e8b0d2f4a6c9e1b3d5f7a0c2e4b6d8f1a",
+    "State": {"Status": "running", "Running": true},
+    "Config": {"Image": "ffbe-ios-server:local"},
+    "Mounts": [
+      {"Type": "bind", "Source": "/home/revival/exvius/data", "Destination": "/srv/ffbe/data", "Mode": "rw", "RW": true},
+      {"Type": "bind", "Source": "/home/revival/exvius/server", "Destination": "/srv/ffbe/server-root", "Mode": "rw", "RW": true},
+      {"Type": "volume", "Name": "ffbe_tailscale", "Source": "/var/lib/docker/volumes/ffbe_tailscale/_data", "Destination": "/var/lib/tailscale", "Mode": "rw", "RW": true}
+    ]
+  }
+]

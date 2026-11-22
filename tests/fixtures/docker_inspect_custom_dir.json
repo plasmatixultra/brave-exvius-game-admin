@@ -1,0 +1,13 @@
+[
+  {
+    "Id": "c4e8a2b6d0f3a7c1e5b9d2f6a0c4e8b3d7f1a5c9e2b6d0f4a8c1e5b9d3f7a2c6",
+    "Name": "/ffbe",
+    "Image": "sha256:7f2c9a1e5b3d8f0a4c6e2b9d1f7a3c5e8b0d2f4a6c9e1b3d5f7a0c2e4b6d8f1a",
+    "State": {"Status": "running", "Running": true},
+    "Config": {"Image": "ffbe-ios-server:local"},
+    "Mounts": [
+      {"Type": "bind", "Source": "/mnt/user/appdata/ffbe/data", "Destination": "/srv/ffbe/data", "Mode": "rw", "RW": true},
+      {"Type": "bind", "Source": "/mnt/user/appdata/ffbe/server", "Destination": "/srv/ffbe/server-root", "Mode": "rw", "RW": true}
+    ]
+  }
+]

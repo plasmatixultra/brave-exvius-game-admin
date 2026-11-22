@@ -1,0 +1,10 @@
+# Copy to admin.toml only if automatic detection finds nothing.
+# By default the app reads the container's own mounts with
+# `docker inspect ffbe` and needs none of this.
+[admin]
+# container = "ffbe"
+# image = "ffbe-ios-server:local"
+# server_dir = "/srv/ffbe/server"      # host path mounted at /srv/ffbe/server-root
+# data_dir = "/srv/ffbe/data"          # host path mounted at /srv/ffbe/data
+# bind = "127.0.0.1"
+# port = 8750
