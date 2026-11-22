@@ -1,4 +1,4 @@
-"""pipeline.apply: staging, the single run, and the exit-code mapping. No ssh.
+"""pipeline.apply: the preflight, the one sequence, and the report. No containers.
 
 Run locally:  python3 -m unittest tests.test_pipeline -v
 """
@@ -13,14 +13,17 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 sys.path.insert(0, REPO)
 
+import applysave  # noqa: E402
+import config  # noqa: E402
 import pipeline  # noqa: E402
 import remote  # noqa: E402
+from tests.fakedocker import FakeDocker  # noqa: E402
 
 
 class FakeRemote:
     def __init__(self):
         self.calls = []
-        self.stdout = "stopping ffbe\nbackup /home/x/exvius/server/state/backups/campaign-1.json\napply complete\n"
+        self.stdout = ""
         self.stderr = ""
         self.returncode = 0
         self.raise_error = None
@@ -28,7 +31,7 @@ class FakeRemote:
 
     def run(self, cmd, **_kwargs):
         self.calls.append(("run", cmd))
-        if self.raise_error is not None and "apply.sh" in cmd:
+        if self.raise_error is not None:
             raise self.raise_error
         return SimpleNamespace(stdout=self.stdout, stderr=self.stderr, returncode=self.returncode)
 
@@ -50,84 +53,92 @@ class PipelineTest(unittest.TestCase):
         self.fake = FakeRemote()
         self._real_remote = pipeline.remote
         pipeline.remote = self.fake
+        import tempfile
+        self.tmp = tempfile.mkdtemp(prefix="pipeline-test-")
+        self.saved_env = dict(os.environ)
+        os.environ["XDG_CACHE_HOME"] = os.path.join(self.tmp, "cache")
+        server = os.path.join(self.tmp, "server")
+        data = os.path.join(self.tmp, "data")
+        os.makedirs(os.path.join(server, "state", "backups"), exist_ok=True)
+        os.makedirs(data, exist_ok=True)
+        self.settings = config.from_inspect([{
+            "Name": "/ffbe",
+            "Config": {"Image": "ffbe-ios-server:local"},
+            "Mounts": [{"Destination": config.CONTAINER_SERVER_ROOT, "Source": server},
+                       {"Destination": config.CONTAINER_DATA, "Source": data}]}])
 
     def tearDown(self):
         pipeline.remote = self._real_remote
+        os.environ.clear()
+        os.environ.update(self.saved_env)
 
     def test_query_flags_are_shell_quoted(self):
-        """A flag value from HTTP must never reach athena's shell as code."""
+        """A flag value from HTTP must never reach the host's shell as code."""
         payload = "a" + chr(59) + "echo injected"      # a command separator, built at runtime
         command = pipeline._exec_script("~/work", ["recipe", "/tmp/s.json", "--id", payload], seed=False)
         self.assertIn("'" + payload + "'", command)
         self.assertNotIn("--id " + payload, command)
 
     def test_preflight_refuses_when_edits_empty(self):
-        result = pipeline.apply({})
+        with FakeDocker() as docker:
+            result = pipeline.apply({}, settings=self.settings)
+            self.assertEqual(docker.argv(), [])
         self.assertFalse(result["ok"])
         self.assertIn("no edits", result["error"])
-        self.assertEqual(self.fake.calls, [])          # nothing uploaded, nothing touched
 
     def test_preflight_refuses_unknown_group_only(self):
-        result = pipeline.apply({"nonsense": 1})
+        with FakeDocker() as docker:
+            result = pipeline.apply({"nonsense": 1}, settings=self.settings)
+            self.assertEqual(docker.argv(), [])
         self.assertFalse(result["ok"])
-        self.assertEqual(self.fake.calls, [])
 
-    def test_pipeline_puts_agent_and_edits_then_runs_script_once(self):
-        result = pipeline.apply({"currencies": {"gil": 1000}})
+    def test_apply_runs_the_sequence_and_reports(self):
+        with FakeDocker() as docker:
+            result = pipeline.apply({"currencies": {"gil": 1000}}, settings=self.settings)
         self.assertTrue(result["ok"], result)
-        script_runs = [call for call in self.fake.calls
-                       if call[0] == "run" and "apply.sh" in call[1]]
-        self.assertEqual(len(script_runs), 1)
-        self.assertEqual(len([c for c in self.fake.calls if c[0] == "tree"]), 1)
-        self.assertEqual(len([c for c in self.fake.calls if c[0] == "put"]), 2)   # apply.sh + edits
-        self.assertEqual(self.fake.edits, {"currencies": {"gil": 1000}})
-
-    def test_pipeline_parses_the_backup_path(self):
-        result = pipeline.apply({"currencies": {"gil": 1}})
-        self.assertEqual(result["backup"],
-                         "/home/x/exvius/server/state/backups/campaign-1.json")
         self.assertIsNone(result["error"])
-        self.assertIn("apply complete", result["log"])
+        self.assertIn("save replaced", "\n".join(result["log"]))
+        calls = docker.argv()
+        self.assertEqual(calls[0], "stop ffbe")
+        self.assertEqual(calls[-2], "start ffbe")
 
-    def test_pipeline_rejects_a_zero_exit_without_the_completion_marker(self):
-        """A trap-rolled-back run can exit 0; the marker is what says the save was replaced."""
-        self.fake.stdout = "stopping ffbe\nbackup /b/campaign-1.json\napplying edits\n"
-        result = pipeline.apply({"currencies": {"gil": 1}})
+    def test_the_backup_path_is_handed_back(self):
+        expected = os.path.join(self.settings.backups, "campaign-20261122T201500Z.json")
+        os.environ["FAKE_BACKUP"] = expected
+        with FakeDocker():
+            result = pipeline.apply({"currencies": {"gil": 1}}, settings=self.settings)
+        self.assertEqual(result["backup"], expected)
+
+    def test_a_refusal_is_reported_with_its_cause(self):
+        with FakeDocker():
+            os.environ["FAKE_AGENT_FAILS"] = "1"
+            result = pipeline.apply({"currencies": {"gil": 1}}, settings=self.settings)
         self.assertFalse(result["ok"])
-        self.assertIn("did not complete", result["error"])
+        self.assertIn("refused", result["error"])
+        self.assertIn("restore", " ".join(result["log"]))
 
-    def test_pipeline_maps_exit_99(self):
-        self.fake.raise_error = remote.RemoteError(99, "bash apply.sh", "apply already running\n")
-        result = pipeline.apply({"currencies": {"gil": 1}})
+    def test_a_status_timeout_is_not_success(self):
+        with FakeDocker():
+            os.environ["FAKE_STATUS_BAD"] = "1"
+            result = pipeline.apply({"currencies": {"gil": 1}}, settings=self.settings,
+                                    status_timeout=0)
         self.assertFalse(result["ok"])
-        self.assertEqual(result["error"], "apply already running")
+        self.assertIn("healthy", result["error"])
 
-    def test_pipeline_reports_refusal(self):
-        self.fake.raise_error = remote.RemoteError(
-            2, "bash apply.sh", "backup /b/campaign-2.json\nERROR: the agent refused\n")
-        result = pipeline.apply({"currencies": {"gil": 1}})
+    def test_a_busy_apply_is_reported_in_words(self):
+        lock = applysave.Lock(applysave.lock_path())
+        with lock:
+            with FakeDocker():
+                result = pipeline.apply({"currencies": {"gil": 1}}, settings=self.settings)
         self.assertFalse(result["ok"])
-        self.assertEqual(result["backup"], "/b/campaign-2.json")
-        self.assertIn("the agent refused", result["error"])
+        self.assertIn("already running", result["error"])
 
-    def test_pipeline_reports_the_cause_not_the_rollback_line(self):
-        self.fake.raise_error = remote.RemoteError(
-            2, "bash apply.sh",
-            "backup /b/campaign-3.json\nERROR: the agent refused the edits (nothing was written)\n"
-            "ROLLBACK: restoring the pre-apply save\n")
-        result = pipeline.apply({"currencies": {"gil": 1}})
-        self.assertEqual(result["error"], "the agent refused the edits (nothing was written)")
-
-    def test_pipeline_cleans_its_local_workdir(self):
-        seen = {}
-
-        def capture(local, remote_path):
-            seen["dir"] = local
-            FakeRemote.put(self.fake, local, remote_path)
-
-        self.fake.put = capture
-        pipeline.apply({"currencies": {"gil": 1}})
-        self.assertFalse(os.path.exists(seen["dir"]))
+    def test_no_workdir_is_left_behind(self):
+        with FakeDocker():
+            pipeline.apply({"currencies": {"gil": 1}}, settings=self.settings)
+        leftovers = [name for name in os.listdir(os.environ["XDG_CACHE_HOME"] + "/ffbe-admin")
+                     if name.startswith("apply-")]
+        self.assertEqual(leftovers, [])
 
 
 if __name__ == "__main__":

@@ -232,6 +232,7 @@ def apply_edits(settings, edits, app_dir=None, status_timeout=60, expected=None)
     backup = None
     stopped = False
     done = False
+    keep = False
     marker = marker_path()
 
     try:
@@ -291,8 +292,8 @@ def apply_edits(settings, edits, app_dir=None, status_timeout=60, expected=None)
                     log.append(outcome)
                     # A rollback that failed leaves the marker behind: the next
                     # start of the app must try again, not forget the backup.
-                    if "ROLLBACK FAILED" not in outcome:
-                        _forget(marker, workdir)
+                    if "ROLLBACK FAILED" in outcome:
+                        keep = True
     except ApplyBusy as error:
         return {"ok": False, "code": EXIT_BUSY, "log": log, "backup": backup, "error": str(error)}
     except ApplyError as error:
@@ -302,5 +303,6 @@ def apply_edits(settings, edits, app_dir=None, status_timeout=60, expected=None)
         return {"ok": False, "code": error.returncode or EXIT_FAILED, "log": log,
                 "backup": backup, "error": str(error)}
     finally:
-        if done:
+        # A failed rollback keeps both the marker and the workdir: recover() needs them.
+        if not keep:
             _forget(marker, workdir)

@@ -14,13 +14,13 @@ import shutil
 import tempfile
 import time
 
+import applysave
 import config
 import remote
 from remote import RemoteError
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 AGENT_DIR = os.path.join(ROOT, "agent")
-APPLY_SH = os.path.join(ROOT, "remote", "apply.sh")
 REMOTE_ROOT = "exvius-admin-tests/apply"
 
 # The edit groups the agent knows how to apply (plan Task 3; `progress` is opaque until project two).
@@ -126,52 +126,26 @@ def edits_path_in_args(args):
     return any(str(arg).endswith("edits.json") for arg in args)
 
 
-def _remote_workdir():
-    stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
-    return f"~/{REMOTE_ROOT}/{stamp}-{os.getpid()}"
+def apply(edits, settings=None, app_dir=None, status_timeout=60):
+    """Run one apply and report. Never raises for a refused apply.
 
-
-def apply(edits):
-    """Stage, run one apply under the lock, and report. Never raises for a refused apply."""
+    The whole sequence lives in :mod:`applysave`; this wrapper only refuses bad
+    payloads locally and keeps the ``{ok, backup, log, error}`` shape the HTTP
+    layer speaks.
+    """
     try:
         preflight(edits)
     except ValueError as exc:
         return {"ok": False, "backup": None, "log": [], "error": str(exc)}
 
-    work = tempfile.mkdtemp(prefix="ffbe-apply-")
-    edits_path = os.path.join(work, "edits.json")
-    with open(edits_path, "w", encoding="utf-8") as fh:
-        json.dump(edits, fh)
-    remote_work = _remote_workdir()
-    log = []
     try:
-        remote.run(f"mkdir -p {remote_work}")
-        remote.put_tree(AGENT_DIR, f"{remote_work}/agent")
-        remote.put(APPLY_SH, f"{remote_work}/apply.sh")
-        remote.put(edits_path, f"{remote_work}/edits.json")
-        try:
-            result = remote.run(f"bash {remote_work}/apply.sh {remote_work}", timeout=600)
-        except RemoteError as exc:
-            log = [line for line in (exc.stderr or "").splitlines() if line]
-            if exc.returncode == 99:
-                return {"ok": False, "backup": None, "log": log, "error": "apply already running"}
-            # Lead with the CAUSE: the last line is usually the trap's "ROLLBACK: ..." aftermath.
-            causes = [line[len("ERROR:"):].strip() for line in log if line.startswith("ERROR:")]
-            error = causes[0] if causes else (log[-1] if log else f"apply failed with exit {exc.returncode}")
-            return {"ok": False, "backup": _backup_from(log), "log": log, "error": error}
-        log = [line for line in (result.stdout or "").splitlines() if line]
-        if not any(line.strip() == "apply complete" for line in log):
-            return {"ok": False, "backup": _backup_from(log), "log": log,
-                    "error": "the apply did not complete (exit 0 without the completion marker)"}
-        cleanup = f"rm -rf {remote_work}"      # a successful run needs no forensics
-        remote.run(cleanup)
-        return {"ok": True, "backup": _backup_from(log), "log": log, "error": None}
-    finally:
-        shutil.rmtree(work, ignore_errors=True)
+        settings = settings or config.load()
+    except config.SettingsError as exc:
+        return {"ok": False, "backup": None, "log": [], "error": str(exc)}
+
+    result = applysave.apply_edits(settings, edits, app_dir=app_dir,
+                                   status_timeout=status_timeout)
+    return {"ok": result["ok"], "backup": result["backup"], "log": result["log"],
+            "error": result["error"]}
 
 
-def _backup_from(log_lines):
-    for line in log_lines:
-        if line.startswith("backup "):
-            return line[len("backup "):].strip()
-    return None
