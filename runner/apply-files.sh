@@ -6,7 +6,7 @@
 #
 # Verbs, in the order the host orchestrator calls them:
 #   backup    copy the live save to <server_root>/state/backups/campaign-<UTC>.json,
-#             leave baseline.json + save.json + backup in <workdir>
+#             leave baseline.json + save.json + backup + identity.json in <workdir>
 #   apply     run the agent to write <workdir>/staging.json from save.json + edits.json
 #   validate  check staging.json against baseline.json and expected.json
 #   write     atomically replace the live save with staging.json
@@ -51,6 +51,15 @@ do_backup() {
     cp -p "$SAVE" "$backup" || die "backup failed; the live save is untouched"
     cp -p "$backup" "$WORKDIR/baseline.json" || die "cannot read the backup back"
     cp -p "$SAVE" "$WORKDIR/save.json" || die "cannot copy the save"
+    # The host never reads the save itself (it may be root-owned); ask the
+    # container for the identity the status poll has to match.
+    python3 - "$WORKDIR/save.json" "$WORKDIR/identity.json" <<'PY' || die "cannot read the save's identity"
+import json, sys
+save = json.load(open(sys.argv[1]))
+json.dump({"name": str(save["identity"]["handle_name"]),
+           "rank": int(save["rank"]["level"]),
+           "roster": len(save["roster"])}, open(sys.argv[2], "w"))
+PY
     printf '%s\n' "$backup" > "$WORKDIR/backup" || die "cannot record the backup path"
     say "backup $backup"
 }

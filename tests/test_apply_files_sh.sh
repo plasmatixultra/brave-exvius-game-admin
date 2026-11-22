@@ -65,6 +65,8 @@ cmp -s "$T/server/state/campaign.json" "$T/server/state/backups/"campaign-*.json
     && ok "the backup is byte-identical to the save" || no "the backup is byte-identical to the save"
 [ -f "$T/work/baseline.json" ] && ok "backup leaves a baseline in the workdir" || no "backup leaves a baseline in the workdir"
 [ -f "$T/work/backup" ] && ok "backup records its path for restore" || no "backup records its path for restore"
+grep -q '"name": "Rain"' "$T/work/identity.json" \
+    && ok "backup records the identity the status poll needs" || no "backup records the identity"
 setup
 
 # --- apply -------------------------------------------------------------------------------------

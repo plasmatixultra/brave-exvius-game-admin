@@ -10,7 +10,11 @@ case "$1" in
     cat "${FAKE_INSPECT_JSON:-$(dirname "$0")/docker_inspect_standard.json}"
     ;;
   exec)
-    echo "Rain rank 3  roster 44  lapis 169458"
+    if [ -n "${FAKE_STATUS_BAD:-}" ]; then
+      echo '{"has_save": false, "name": null, "rank": -1, "roster": 0}'
+    else
+      echo '{"has_save": true, "name": "Rain", "rank": 3, "roster": 44}'
+    fi
     ;;
   stop)
     if [ "$2" = "missing" ]; then
@@ -23,11 +27,36 @@ case "$1" in
     echo "$2"
     ;;
   run)
-    if [ -n "${FAKE_AGENT_FAILS:-}" ] && printf '%s' "$*" | grep -q 'apply-files.sh apply'; then
-      echo "apply-files: changes do not match the request" >&2
-      exit 2
-    fi
-    echo "apply complete"
+    # Behave like the image would: whatever host dir is mounted at /work gets the
+    # files the real apply-files.sh writes there.
+    WORK_HOST="$(printf '%s\n' "$*" | sed -n 's|.*[[:space:]]-v \([^ ]*\):/work:rw.*|\1|p')"
+    case "$*" in
+      *"apply-files.sh backup"*)
+        echo "apply-files: backup ${FAKE_BACKUP:-/tmp/fake-backup.json}"
+        if [ -d "$WORK_HOST" ]; then
+          echo '{"name": "Rain", "rank": 3, "roster": 44}' > "$WORK_HOST/identity.json"
+          echo '{"roster": []}' > "$WORK_HOST/save.json"
+          echo "${FAKE_BACKUP:-/tmp/fake-backup.json}" > "$WORK_HOST/backup"
+        fi ;;
+      *"apply-files.sh apply"*)
+        if [ -n "${FAKE_AGENT_FAILS:-}" ]; then
+          echo "apply-files: the agent refused the edits" >&2
+          exit 2
+        fi
+        echo "apply-files: staged 4096 bytes"
+        if [ -d "$WORK_HOST" ]; then
+          printf '{"roster": [%s]}\n' "$(seq -s, 1 44 | sed 's/[0-9]\+/{"id": &}/g')" > "$WORK_HOST/staging.json"
+        fi ;;
+      *"apply-files.sh validate"*)
+        if [ -n "${FAKE_VALIDATE_FAILS:-}" ]; then exit 2; fi
+        echo "apply-files: validated" ;;
+      *"apply-files.sh write"*)
+        echo "apply-files: save replaced" ;;
+      *"apply-files.sh restore"*)
+        echo "apply-files: save restored" ;;
+      *)
+        echo "apply complete" ;;
+    esac
     ;;
   *)
     echo "fake docker: unsupported: $*" >&2

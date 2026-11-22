@@ -31,7 +31,7 @@ class TransportTest(unittest.TestCase):
     def test_status_returns_the_line(self):
         with FakeDocker() as fake:
             line = transport.status("ffbe")
-            self.assertIn("roster 44", line)
+            self.assertIn('"roster": 44', line)
             self.assertIn("exec ffbe python3 /app/ffbe.py status", fake.argv()[-1])
 
     def test_failure_raises_with_stderr(self):
