@@ -360,8 +360,9 @@ def apply_abilities(ps, value):
 
 
 def apply_progress(ps, value):
-    """Opaque here: the questline project owns `progress` and plugs into this table."""
-    return {"ignored": True, "reason": "owned by the questline project"}
+    """Replay a story checkpoint or a side-content selection (agent/questline.py)."""
+    from agent import questline
+    return questline.apply(ps, os.environ["MST_DIR"], value)
 
 
 APPLIERS = {
@@ -396,8 +397,10 @@ def requested_currencies(edits):
 
 
 def requested_roster(edits, pre_ex_levels=None):
-    """Roster rows the edits should add: built units plus the unit rewards they trigger."""
-    return ops_units.expected_roster_added(edits, pre_ex_levels)
+    """Roster rows the edits should add: built units, their rewards, and the progress run's own."""
+    added = ops_units.expected_roster_added(edits, pre_ex_levels)
+    declared = (edits.get("progress") or {}).get("expected") or {}
+    return added + _int_or_zero(declared.get("roster_added"))
 
 
 def snapshot(ps):

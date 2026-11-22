@@ -19,6 +19,7 @@ ARCS = ((1, 9, "Season 1"), (10, 19, "Paladia"), (20, 29, "The Beyond"), (30, 10
 DUNGEON_KIND = "3"          # F_STORY_SUB_MST.Lxj5u3WB: 3 = dungeon, 2 = town
 TRIAL_SWITCH_TYPE = "821"   # F_SWITCH_MST: awakening trials never clear
 ORPHAN_GATES = ("205", "1401")   # prerequisites no area opens; the run writes them by hand
+ORPHAN_GATE_SWITCHES = ("10034003", "10271004")   # their switches, written by hand
 
 
 def _rows(mst_dir, table):
