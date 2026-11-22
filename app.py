@@ -16,7 +16,6 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import localdata
 import pipeline
-import remote
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC = os.path.join(ROOT, "static")
@@ -44,8 +43,9 @@ _CATALOG = {"at": 0.0, "value": None}
 def agent(op, edits=None, flags=None):
     """Run one agent op against the CACHED save (localdata) and return its result.
 
-    Reads never touch docker: the save and the shipped tables live in `scratch/cache`
-    (see localdata.py). Only `pipeline_apply` talks to athena, and only to write.
+    Reads never touch docker: the engine comes out of the image once, the save and the
+    tables are read from the game's own directories (see localdata.py). Only
+    `pipeline_apply` stops anything, and only to write.
     """
     return localdata.agent(op, edits, flags)
 
@@ -56,10 +56,12 @@ def pipeline_apply(edits):
 
 
 def fetch_unit_art(master_id):
-    """The server's cached per-form sprite, or None. Read-only, over ssh."""
+    """The server's cached per-form sprite, or None. A plain read of the game's own file."""
+    path = localdata.server_path("ios-cache", "notice-art", "unit_ills_%s.png" % master_id)
     try:
-        return remote.get_bytes(f"exvius/server/ios-cache/notice-art/unit_ills_{master_id}.png")
-    except remote.RemoteError:
+        with open(path, "rb") as handle:
+            return handle.read()
+    except OSError:
         return None
 
 
@@ -139,7 +141,7 @@ class Handler(BaseHTTPRequestHandler):
             if path.startswith("/api/unit-art/"):
                 return self._unit_art(path)
             return self._error("not found", 404)
-        except pipeline.AgentError as exc:
+        except RuntimeError as exc:
             return self._error(exc)
         except Exception as exc:  # noqa: BLE001 - the page must always get an answer
             return self._error(f"{type(exc).__name__}: {exc}")
@@ -258,7 +260,7 @@ class Handler(BaseHTTPRequestHandler):
                                    "backup": result.get("backup"), "error": result.get("error"),
                                    "status": "ok" if result.get("ok") else "failed"})
             return self._error("not found", 404)
-        except pipeline.AgentError as exc:
+        except RuntimeError as exc:
             return self._error(exc)
         except Exception as exc:  # noqa: BLE001
             return self._error(f"{type(exc).__name__}: {exc}")

@@ -3,11 +3,9 @@
 Run locally:  python3 -m unittest tests.test_pipeline -v
 """
 
-import json
 import os
 import sys
 import unittest
-from types import SimpleNamespace
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
@@ -16,43 +14,11 @@ sys.path.insert(0, REPO)
 import applysave  # noqa: E402
 import config  # noqa: E402
 import pipeline  # noqa: E402
-import remote  # noqa: E402
 from tests.fakedocker import FakeDocker  # noqa: E402
-
-
-class FakeRemote:
-    def __init__(self):
-        self.calls = []
-        self.stdout = ""
-        self.stderr = ""
-        self.returncode = 0
-        self.raise_error = None
-        self.edits = None
-
-    def run(self, cmd, **_kwargs):
-        self.calls.append(("run", cmd))
-        if self.raise_error is not None:
-            raise self.raise_error
-        return SimpleNamespace(stdout=self.stdout, stderr=self.stderr, returncode=self.returncode)
-
-    def put(self, local, remote_path):
-        self.calls.append(("put", local, remote_path))
-        if local.endswith("edits.json"):
-            with open(local, encoding="utf-8") as fh:
-                self.edits = json.load(fh)
-
-    def put_tree(self, local, remote_path):
-        self.calls.append(("tree", local, remote_path))
-
-    def kinds(self):
-        return [call[0] for call in self.calls]
 
 
 class PipelineTest(unittest.TestCase):
     def setUp(self):
-        self.fake = FakeRemote()
-        self._real_remote = pipeline.remote
-        pipeline.remote = self.fake
         import tempfile
         self.tmp = tempfile.mkdtemp(prefix="pipeline-test-")
         self.saved_env = dict(os.environ)
@@ -68,16 +34,8 @@ class PipelineTest(unittest.TestCase):
                        {"Destination": config.CONTAINER_DATA, "Source": data}]}])
 
     def tearDown(self):
-        pipeline.remote = self._real_remote
         os.environ.clear()
         os.environ.update(self.saved_env)
-
-    def test_query_flags_are_shell_quoted(self):
-        """A flag value from HTTP must never reach the host's shell as code."""
-        payload = "a" + chr(59) + "echo injected"      # a command separator, built at runtime
-        command = pipeline._exec_script("~/work", ["recipe", "/tmp/s.json", "--id", payload], seed=False)
-        self.assertIn("'" + payload + "'", command)
-        self.assertNotIn("--id " + payload, command)
 
     def test_preflight_refuses_when_edits_empty(self):
         with FakeDocker() as docker:

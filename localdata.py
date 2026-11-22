@@ -1,21 +1,3 @@
-"""Read-side cache: the save and the master data live on THIS machine.
-
-Why: every `docker run` costs ~1.8 s (container create + load), and a query used to need four ssh
-round trips on top. But the agent's read ops only need two things — the save and the shipped tables —
-and the server's own `player_state` runs correctly on the local interpreter (verified 2026-11-21:
-`unit_stats("213000105", 5)` = [1011, 44, 40, 35, 34, 34] on host Python 3.14.10 and inside the
-3.12.16 image, identical; `state_coherence_issues` empty on the live save). So the page reads from a
-cached copy and Docker is touched only when applying.
-
-    scratch/cache/server/            ~/exvius/repo/source/server       (the server code, 81 MB)
-    scratch/cache/data/mst_decoded/  ~/exvius/data/static/mst_decoded  (165 MB)
-    scratch/cache/data/text_decoded/ ~/exvius/data/static/text_decoded (91 MB)
-    scratch/cache/save.json          ~/exvius/server/state/campaign.json (pulled on a short TTL)
-
-`scratch/` is git-ignored. First use pays a one-time ~330 MB rsync; after that the only network
-traffic is the save pull (one `cp` over the multiplexed ssh connection).
-"""
-
 import json
 import os
 import subprocess
@@ -24,25 +6,51 @@ import tempfile
 import threading
 import time
 
-import remote
+import config
+import engine
+import transport
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-CACHE = os.path.join(ROOT, "scratch", "cache")
-SERVER = os.path.join(CACHE, "server")
-DATA = os.path.join(CACHE, "data")
+CACHE = engine.cache_root()
 SAVE = os.path.join(CACHE, "save.json")
-STAMP = os.path.join(CACHE, ".stamp.json")
 AGENT = os.path.join(ROOT, "agent", "agent.py")
 
-DATA_MAX_AGE = 24 * 3600      # the shipped tables only change on a server update
-SAVE_MAX_AGE = 20             # seconds; the save changes as you play
+ENGINE_MAX_AGE = 24 * 3600    # the image's source only changes on a pull
 
 MUTATING_OPS = ("apply",)
 
 
+_SETTINGS = [None]
+
+
+def _settings():
+    """The resolved :class:`config.Settings`, loaded once per process."""
+    if _SETTINGS[0] is None:
+        _SETTINGS[0] = config.load()
+    return _SETTINGS[0]
+
+
+def _server_dir():
+    """The engine source, exported from the image (cached by image id)."""
+    return os.path.join(CACHE, "engine")
+
+
+def server_path(*parts):
+    """A file inside the game's server directory, on the host."""
+    return os.path.join(_settings().server_dir, *parts)
+
+
+def _data_dir():
+    return os.path.join(_settings().data_dir, "static")
+
+
+def _stamp_path():
+    return os.path.join(CACHE, ".stamp.json")
+
+
 def _stamp():
     try:
-        with open(STAMP, encoding="utf-8") as fh:
+        with open(_stamp_path(), encoding="utf-8") as fh:
             return json.load(fh)
     except (OSError, ValueError):
         return {}
@@ -50,39 +58,69 @@ def _stamp():
 
 def _write_stamp(values):
     os.makedirs(CACHE, exist_ok=True)
-    with open(STAMP, "w", encoding="utf-8") as fh:
+    with open(_stamp_path(), "w", encoding="utf-8") as fh:
         json.dump(values, fh)
 
 
 def cache_ready():
-    return (os.path.isdir(os.path.join(DATA, "mst_decoded"))
-            and os.path.isdir(os.path.join(DATA, "text_decoded"))
-            and os.path.isfile(os.path.join(SERVER, "player_state.py")))
+    """True when the engine and the tables are readable. False, not an exception,
+    when the game cannot be found: /api/health has to be able to say so."""
+    try:
+        return (os.path.isdir(os.path.join(_data_dir(), "mst_decoded"))
+                and os.path.isdir(os.path.join(_data_dir(), "text_decoded"))
+                and os.path.isfile(os.path.join(_server_dir(), "player_state.py")))
+    except config.SettingsError:
+        return False
 
 
 def sync_data(force=False, log=print):
-    """Mirror the server code and the shipped tables. Idempotent and cheap once done."""
+    """Export the engine's source from the image. Idempotent and cheap once done."""
     stamp = _stamp()
     age = time.time() - float(stamp.get("data_at") or 0)
-    if cache_ready() and not force and age < DATA_MAX_AGE:
+    if cache_ready() and not force and age < ENGINE_MAX_AGE:
         return False
     os.makedirs(CACHE, exist_ok=True)
-    log("localdata: syncing the server code and master data (~330 MB, one time)…")
-    remote.put_tree_dirs([
-        ("exvius/repo/source/server/", os.path.join(CACHE, "server")),
-        ("exvius/data/static/mst_decoded/", os.path.join(DATA, "mst_decoded")),
-        ("exvius/data/static/text_decoded/", os.path.join(DATA, "text_decoded")),
-    ])
+    log("localdata: exporting the engine source from the image (one time)…")
+    engine.ensure(_settings(), CACHE)
+    if not cache_ready():
+        raise RuntimeError(
+            "the game's data directory is missing tables: %s" % _data_dir())
     stamp["data_at"] = time.time()
     _write_stamp(stamp)
     log("localdata: cache ready at " + CACHE)
     return True
 
 
+def _signature(path):
+    try:
+        info = os.stat(path)
+    except OSError:
+        return None
+    return (info.st_mtime_ns, info.st_size)
+
+
 def _save_is_fresh():
+    """Fresh means: the cache exists and the live file is the one we copied."""
+    if not os.path.isfile(SAVE):
+        return False
     stamp = _stamp()
-    age = time.time() - float(stamp.get("save_at") or 0)
-    return os.path.isfile(SAVE) and age < SAVE_MAX_AGE
+    recorded = stamp.get("save_source_signature")
+    return bool(recorded) and str(_signature(_settings().save)) == recorded
+
+
+def _read_save_bytes():
+    """The live save's bytes. Falls back to a container read: the game may
+    write it as root with no world-read permission."""
+    path = _settings().save
+    try:
+        with open(path, "rb") as handle:
+            return handle.read()
+    except PermissionError:
+        return transport.run_in_image(
+            _settings().image,
+            [(_settings().server_dir, "/srv/ffbe/server-root", "ro")],
+            ["cat", "/srv/ffbe/server-root/state/campaign.json"],
+            timeout=120).stdout.encode()
 
 
 # The page is a ThreadingHTTPServer: on a stale save several requests arrive at once. One pull at a
@@ -91,9 +129,10 @@ _SAVE_LOCK = threading.Lock()
 
 
 def refresh_save(force=False):
-    """Pull the live save into the cache. Returns True when a pull happened."""
+    """Mirror the live save into the cache. Returns True when a read happened."""
     if not force and _save_is_fresh():
         return False
+    live = str(_signature(_settings().save))
     with _SAVE_LOCK:
         if not force and _save_is_fresh():     # another thread may have just done it
             return False
@@ -101,13 +140,15 @@ def refresh_save(force=False):
         handle, tmp = tempfile.mkstemp(dir=CACHE, prefix="save.", suffix=".json")
         try:
             with os.fdopen(handle, "wb") as fh:
-                fh.write(remote.get_bytes("exvius/server/state/campaign.json"))
+                fh.write(_read_save_bytes())
             os.replace(tmp, SAVE)      # a half-written pull can never be read
         finally:
             if os.path.exists(tmp):
                 os.unlink(tmp)
         stamp = _stamp()
         stamp["save_at"] = time.time()
+        stamp["save_source_signature"] = live
+        stamp["save_signature"] = str(_signature(SAVE))
         _write_stamp(stamp)
         return True
 
@@ -115,9 +156,9 @@ def refresh_save(force=False):
 def env():
     return {
         **os.environ,
-        "PYTHONPATH": SERVER,
-        "MST_DIR": os.path.join(DATA, "mst_decoded"),
-        "TEXT_DIR": os.path.join(DATA, "text_decoded"),
+        "PYTHONPATH": _server_dir(),
+        "MST_DIR": os.path.join(_data_dir(), "mst_decoded"),
+        "TEXT_DIR": os.path.join(_data_dir(), "text_decoded"),
         "FFBE_DATA": os.path.join(CACHE, "work"),
     }
 

@@ -10,6 +10,12 @@ case "$1" in
     cat "${FAKE_INSPECT_JSON:-$(dirname "$0")/docker_inspect_standard.json}"
     ;;
   exec)
+    case "$*" in
+      *" cat "*)
+        [ -n "${FAKE_CAT:-}" ] || FAKE_CAT='{}'
+        printf '%s\n' "$FAKE_CAT"
+        exit 0 ;;
+    esac
     if [ -n "${FAKE_STATUS_BAD:-}" ]; then
       echo '{"has_save": false, "name": null, "rank": -1, "roster": 0}'
     else
@@ -27,10 +33,26 @@ case "$1" in
     echo "$2"
     ;;
   run)
+    # `cp -a /app/server/.` exports the engine source into whatever is mounted at /export.
+    case "$*" in
+      *"cp -a /app/server/."*)
+        if [ -n "${FAKE_NO_SERVER:-}" ]; then
+          echo "cp: cannot stat '/app/server'" >&2
+          exit 1
+        fi
+        EXPORT_HOST="$(printf '%s\n' "$*" | sed -n 's|.*[[:space:]]-v \([^ ]*\):/export:rw.*|\1|p')"
+        for name in player_state.py ffbe_state.py ffbe_battle.py first_clear.py; do
+          printf '# exported stub\n' > "$EXPORT_HOST/$name"
+        done
+        exit 0 ;;
+    esac
     # Behave like the image would: whatever host dir is mounted at /work gets the
     # files the real apply-files.sh writes there.
     WORK_HOST="$(printf '%s\n' "$*" | sed -n 's|.*[[:space:]]-v \([^ ]*\):/work:rw.*|\1|p')"
     case "$*" in
+      *" cat /srv/ffbe/"*)
+        [ -n "${FAKE_CAT:-}" ] || FAKE_CAT='{}'
+        printf '%s\n' "$FAKE_CAT" ;;
       *"apply-files.sh backup"*)
         echo "apply-files: backup ${FAKE_BACKUP:-/tmp/fake-backup.json}"
         if [ -d "$WORK_HOST" ]; then

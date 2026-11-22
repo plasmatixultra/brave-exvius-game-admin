@@ -42,6 +42,8 @@ class AppTest(unittest.TestCase):
             mock.patch.object(app, "agent", side_effect=self.fake_agent),
             mock.patch.object(app, "pipeline_apply", side_effect=self.fake_apply),
             mock.patch.object(app, "fetch_unit_art", side_effect=self.fake_fetch),
+            # The read cache needs a real save on disk; these tests are about the HTTP layer.
+            mock.patch.object(app.localdata, "refresh_save", side_effect=lambda force=False: False),
         ]
         for patch in self.patches:
             patch.start()

@@ -197,18 +197,3 @@ def ensure_directories(settings):
     """Create the backup directory; the save's own directory must already exist."""
     os.makedirs(settings.backups, exist_ok=True)
     return settings.backups
-
-
-# --- legacy names, removed as each consumer moves to Settings ---------------
-# remote.py (Task 2), pipeline.py (Task 5), localdata.py (Task 6) and app.py
-# (Task 7) still import these. Task 9's scrub test fails while any personal
-# path remains here, so they cannot outlive the port.
-HOST = "10.129.1.139"                       # noqa: legacy
-USER = "plasmatixultra"                     # noqa: legacy
-CONTAINER = DEFAULT_CONTAINER
-IMAGE = DEFAULT_IMAGE
-DATA_HOST = "/home/plasmatixultra/exvius/data"
-SAVE_HOST = "/home/plasmatixultra/exvius/server/state/campaign.json"
-SAVE_CONTAINER = CONTAINER_SAVE
-BACKUP_DIR = "/home/plasmatixultra/exvius/server/state/backups"
-STATUS_URL_CMD = "docker exec ffbe python3 /app/ffbe.py status"
