@@ -1,0 +1,53 @@
+{
+  "comment": "What the agent needs from the game image. Regenerate by grepping agent/ for module attributes; a missing entry is a refusal before anything stops.",
+  "modules": {
+    "player_state": [
+      "PlayerState",
+      "_load_ndjson",
+      "unit_mst",
+      "vision_card_mst",
+      "max_level",
+      "limit_burst",
+      "owned_unit_stats",
+      "switch_position",
+      "state_coherence_issues"
+    ],
+    "ffbe_state": [
+      "State",
+      "load_state",
+      "save_state"
+    ],
+    "ffbe_battle": [],
+    "first_clear": [
+      "rewards",
+      "is_due",
+      "pay",
+      "last"
+    ],
+    "mission_gil": [
+      "amount",
+      "pay"
+    ],
+    "story_units": [
+      "grant"
+    ]
+  },
+  "columns": {
+    "F_STORY_SUB_MST": [
+      "6uIYE15X",
+      "6a9TDRcj",
+      "0J2VIT8w",
+      "Lxj5u3WB",
+      "juA0Z4m7",
+      "dIPkNn61"
+    ],
+    "F_DUNGEON_MST": [
+      "U9iHsau3",
+      "juA0Z4m7"
+    ],
+    "F_BEAST_MST": [
+      "Iwfx42Wo",
+      "Z0EN6jSh"
+    ]
+  }
+}

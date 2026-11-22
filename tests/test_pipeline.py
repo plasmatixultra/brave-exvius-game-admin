@@ -11,6 +11,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 sys.path.insert(0, REPO)
 
+from unittest import mock  # noqa: E402
+
 import applysave  # noqa: E402
 import config  # noqa: E402
 import pipeline  # noqa: E402
@@ -27,6 +29,15 @@ class PipelineTest(unittest.TestCase):
         data = os.path.join(self.tmp, "data")
         os.makedirs(os.path.join(server, "state", "backups"), exist_ok=True)
         os.makedirs(data, exist_ok=True)
+        # A healthy engine by default; the drift test overrides both of these.
+        self.patchers = [
+            mock.patch.object(pipeline.engine, "ensure", return_value=os.path.join(self.tmp, "engine")),
+            mock.patch.object(pipeline.compat, "check",
+                              return_value={"ok": True, "missing": []}),
+        ]
+        for patcher in self.patchers:
+            patcher.start()
+        os.makedirs(os.path.join(self.tmp, "cache", "ffbe-admin"), exist_ok=True)
         self.settings = config.from_inspect([{
             "Name": "/ffbe",
             "Config": {"Image": "ffbe-ios-server:local"},
@@ -34,6 +45,8 @@ class PipelineTest(unittest.TestCase):
                        {"Destination": config.CONTAINER_DATA, "Source": data}]}])
 
     def tearDown(self):
+        for patcher in self.patchers:
+            patcher.stop()
         os.environ.clear()
         os.environ.update(self.saved_env)
 
@@ -49,6 +62,17 @@ class PipelineTest(unittest.TestCase):
             result = pipeline.apply({"nonsense": 1}, settings=self.settings)
             self.assertEqual(docker.argv(), [])
         self.assertFalse(result["ok"])
+
+    def test_engine_drift_is_refused_before_anything_stops(self):
+        with FakeDocker() as docker, \
+                mock.patch.object(pipeline.engine, "ensure", return_value="/cache/engine"), \
+                mock.patch.object(pipeline.compat, "check",
+                                  return_value={"ok": False,
+                                                "missing": ["first_clear.rewards"]}):
+            result = pipeline.apply({"currencies": {"gil": 1}}, settings=self.settings)
+            self.assertEqual(docker.argv(), [], "nothing may stop before the engine is checked")
+        self.assertFalse(result["ok"])
+        self.assertIn("first_clear.rewards", result["error"])
 
     def test_apply_runs_the_sequence_and_reports(self):
         with FakeDocker() as docker:

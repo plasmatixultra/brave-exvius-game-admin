@@ -9,7 +9,10 @@ layer speaks.
 """
 
 import applysave
+import compat
 import config
+import engine
+import localdata
 
 # The edit groups the agent knows how to apply (plan Task 3; `progress` is opaque until project two).
 GROUPS = ("currencies", "tickets", "points", "materials", "cards", "card_levels",
@@ -23,6 +26,26 @@ def preflight(edits):
     if not any(group in edits for group in GROUPS):
         raise ValueError("no edits: at least one edit group is required")
 
+
+
+def engine_problem(settings):
+    """None when the image can run the agent, else a sentence naming what is missing.
+
+    Checked before the container stops: an engine that has moved on must cost the
+    player nothing, not half an apply.
+    """
+    try:
+        engine_dir = engine.ensure(settings, localdata.CACHE)
+    except engine.EngineError as error:
+        return str(error)
+    result = compat.check(engine_dir, settings.data_dir)
+    if result["ok"]:
+        return None
+    shown = ", ".join(result["missing"][:8])
+    more = len(result["missing"]) - 8
+    return ("this engine cannot run the agent: missing %s%s. The app was built against "
+            "ffbe-ios-server:local; update compat.json only if the engine change is benign."
+            % (shown, (" (+%d more)" % more) if more > 0 else ""))
 
 
 def apply(edits, settings=None, app_dir=None, status_timeout=60):
@@ -41,6 +64,10 @@ def apply(edits, settings=None, app_dir=None, status_timeout=60):
         settings = settings or config.load()
     except config.SettingsError as exc:
         return {"ok": False, "backup": None, "log": [], "error": str(exc)}
+
+    drift = engine_problem(settings)
+    if drift:
+        return {"ok": False, "backup": None, "log": [], "error": drift}
 
     result = applysave.apply_edits(settings, edits, app_dir=app_dir,
                                    status_timeout=status_timeout)
