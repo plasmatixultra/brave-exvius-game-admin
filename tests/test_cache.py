@@ -56,3 +56,47 @@ class RefreshRaceTest(unittest.TestCase):
         with open(localdata.SAVE, "rb") as fh:
             self.assertEqual(json.loads(fh.read()), {"identity": {"handle_name": "Rain"}, "roster": []})
         self.assertEqual(len(self.calls), 1, "a stale save must be pulled once, not once per thread")
+
+
+class AgentPayloadTest(unittest.TestCase):
+    """Two previews can be in flight at once (the side pane debounces, the cart clicks)."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="cache-agent-")
+        self._real = (localdata.CACHE, localdata.SAVE, localdata.env,
+                      localdata.sync_data, localdata.refresh_save)
+        localdata.CACHE = self.tmp
+        localdata.SAVE = os.path.join(self.tmp, "save.json")
+        localdata.env = lambda: {}
+        localdata.sync_data = lambda *a, **k: False
+        localdata.refresh_save = lambda *a, **k: False
+
+    def tearDown(self):
+        (localdata.CACHE, localdata.SAVE, localdata.env,
+         localdata.sync_data, localdata.refresh_save) = self._real
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_each_call_writes_its_own_edits_file(self):
+        seen = []
+
+        class Proc:
+            stdout = '{"ok": true, "result": {}}'
+
+        def fake_run(argv, **kwargs):
+            path = argv[4]   # python, agent.py, op, SAVE, edits
+            seen.append((path, json.load(open(path, encoding="utf-8"))))
+            return Proc()
+
+        original = localdata.subprocess.run
+        localdata.subprocess.run = fake_run
+        try:
+            localdata.agent("preview", {"progress": {"quests": ["1"]}})
+            localdata.agent("preview", {"progress": {"quests": ["2"]}})
+        finally:
+            localdata.subprocess.run = original
+
+        self.assertEqual(len(seen), 2)
+        self.assertNotEqual(seen[0][0], seen[1][0], "one file per call, not a shared edits.json")
+        self.assertEqual(seen[0][1]["progress"]["quests"], ["1"])
+        self.assertEqual(seen[1][1]["progress"]["quests"], ["2"])
+        self.assertFalse(os.path.exists(seen[0][0]), "the temp payload is cleaned up")
