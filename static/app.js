@@ -579,15 +579,22 @@
           + esc(dungeon.esper_name || '') + '</span>'
           + (dungeon.grantable ? '<span class="grantbox on" data-grant="' + esc(dungeon.dungeon_key)
             + '">grant</span>' : '<span class="grantbox">no grant</span>')
-          + '</span><span class="rw">' + dungeon.missions.length + ' missions</span>';
+          + '</span><span class="rw"><span class="trialskip" data-trial="' + esc(dungeon.dungeon_key)
+          + '">trial left unplayed</span>' + dungeon.missions.length + ' missions</span>';
         row.querySelector('.cb').addEventListener('click', function (ev) {
           ev.currentTarget.classList.toggle('on');
           renderSideSummary();
           queueSidePreview();
         });
         var box = row.querySelector('.grantbox[data-grant]');
+        var skip = row.querySelector('.trialskip');
+        if (skip) skip.style.display = box && box.classList.contains('on') ? 'none' : '';
         if (box) box.addEventListener('click', function (ev) {
           ev.currentTarget.classList.toggle('on');
+          // Turning the grant off leaves the dungeon's beat mission — the esper trial — unplayed, so
+          // the node keeps showing as incomplete. That is a real consequence, not a missing clear.
+          if (skip) skip.style.display = ev.currentTarget.classList.contains('on') ? 'none' : '';
+          renderSideSummary();
           queueSidePreview();
         });
         host.appendChild(row);
@@ -653,6 +660,14 @@
       + '<div class="sum-row"><span class="sum-k">Quests</span><span class="sum-v">' + quests + '</span></div>'
       + '<div class="sum-row"><span class="sum-k">Esper dungeons</span><span class="sum-v">' + dungeons + '</span></div>'
       + '<div class="sum-row"><span class="sum-k">Espers granted</span><span class="sum-v g">' + granted + '</span></div>';
+    var skipped = 0;
+    worlds.forEach(function (world) {
+      selection[world].dungeons.forEach(function (row) { if (!row.grant_esper) skipped += 1; });
+    });
+    if (skipped) {
+      rows += '<div class="sum-row"><span class="sum-k">Esper trials left</span><span class="sum-v">'
+        + skipped + '</span></div>';
+    }
     if (sideExpected) {
       var currencies = sideExpected.currencies || {};
       rows += '<div class="sum-row"><span class="sum-k">Lapis paid</span><span class="sum-v">' + fmt(currencies.lapis_free || 0) + '</span></div>'

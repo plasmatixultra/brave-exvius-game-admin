@@ -562,7 +562,8 @@ html,body{height:100%}
   display:grid;place-items:center;font-size:11px;color:transparent}
 .qrow.on{background:linear-gradient(90deg,rgba(211,174,78,.16),transparent)}
 .qrow.on .cb{color:#2b1e05;border-color:#f7e7b0;background:linear-gradient(180deg,#ffeeb8,#d8b45c)}
-.qrow .rw{font-size:13px;letter-spacing:.06em;color:var(--dim)}
+.qrow .rw{font-size:13px;letter-spacing:.06em;color:var(--dim);text-align:right}
+.qrow .trialskip{display:block;color:var(--warn,#d8a13a);font-size:13px;letter-spacing:.04em}
 .qrow .esp{color:var(--gold-lt);font-size:13.5px;letter-spacing:.08em}
 .grantbox{font-size:11px;letter-spacing:.08em;color:#2b1e05;background:linear-gradient(180deg,#ffeeb8,#d8b45c);
   padding:2px 6px;border-radius:2px;margin-left:6px;white-space:nowrap}
