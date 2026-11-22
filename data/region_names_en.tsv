@@ -1,29 +1,43 @@
-# region_id	global name — Season 2 chapter regions from the walkthrough; the rest fall
-# back to the game's own text table. Season 4 chapters 2, 3 and 6 are unlabeled.
-5	Olderion
-7	Mysidia
-8	Gronoa
-9	Kingdom of Pharm
-10	Aldore & Georl
+# region_id	global name — the game's own subregion name for the region's largest part
+1	Grandshelt Isles
+2	Lanzelt
+3	Kolobos Isle
+4	Dirnado
+5	Olderion Federation
+6	Zoldaad Empire
+7	Magi Nation Mysidia · Fina's Psyche
+8	Dark Continent Gronoa
+9	Kingdom of Pharm · Land of the Crystals · Wandering Lands
+10	Georl
 11	Gungan
-12	Crystallis
+12	Crystallis Underground
 13	Visectrum
-14	Visectrum & Town of Desolation
-15	Town of Desolation & Magistellus
-16	Rubiena & The Six Realms
+14	Visectrum · Town of Desolation Visectrum
+15	Magistellus · Operations Map
+16	Rubiena
 17	Rubiena
-18	Aldore Tower & Grandore
-19	Grandore & Vlad
-20	Wohlstok
+18	Aldore Tower Final Battle · Grandore
+19	Vlad · Various Tomorrows
+20	Wohlstok · Theater City Wohlstok
 21	Kingdom of Illumia
 22	Kingdom of Couleur
 23	Symphonia, the Scholastic City
 24	The Fortress City of Berga
-25	The Evernight Kingdom of Andigo
-26	Equirelle
-27	A World Without Fina
-28	The Lightspring
+25	The Evernight Kingdom of Andigo · Equirelle · The Dwindling World
+26	The Will of Oblivion
+27	Dreary Days · Precious Memories
+28	The Lightspring · The Light of Rebirth · The All-Encompassing Light
 29	The Maidens' Return
-30	Republic of Sherna
-33	Kingdom of Elmont
-34	Rovina Ruins
+30	Chapter 1
+31	Chapter 2
+32	Chapter 3
+33	Kingdom of Elmont · The Capital
+34	Rovina Ruins · Paladia
+35	Chapter 6
+36	Rovina Ruins · Past Levonia
+37	Noble Kingdom of Gordo
+38	Sovereign State of Nouvgoran
+39	The Kingdom of Gernveld · Capital of Sherna Rohlestan
+40	Episcopacy of Sweonaev · Capital of Sherna Rohlestan
+41	The Fallen Land
+42	Chapter 13

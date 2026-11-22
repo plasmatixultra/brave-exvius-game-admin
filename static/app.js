@@ -537,8 +537,7 @@
     api('/api/questline?world=all').then(function (data) {
       (data.worlds || []).forEach(function (world) { renderSideWorld(world.world_id, world); });
       renderSideSummary();
-      if ($('#side-tag')) $('#side-tag').textContent = '';
-      $('#side-tag').parentNode.style.display = 'none';
+      $('#side-tag').style.display = 'none';   // the tag itself, not its parent: #side-list lives there too
       $('#mid-ph').innerHTML = 'Side content <span class="tag">' + (data.worlds || []).length + ' worlds</span>';
       renderSideSummary();
       $('#side-apply').disabled = false;

@@ -1,112 +1,362 @@
-# area_id	global name — translation table, walkthrough, and the bilingual workbook;
-# each entry matched to its Japanese name, never to an index.
+# area_id	global name — joined on the story key against aEnigmatic/ffbe dungeons.json
 100	Earth Shrine
 101	Latius Woods
 103	Dalnakya Cavern
+104	Siren's Tower
 105	Dalnakya Plains
 106	Grandshelt Catacombs
+107	Grandshelt Castle
 109	Fulan Pass
 112	Deserted Highroad
 113	Phantom Forest
 114	Lanzelt Estuary
 116	Kol Badlands
-118	Zadehl Westersand
+117	Zadehl Eastersands
+118	Zadehl Westersands
 119	Lechios Hills
 121	Lanzelt Lowlands
+122	Lanzelt Highlands
 123	Lanzelt Snowfields
 124	Wolfsfang Peak
 125	Lanzelt Ruins
 128	Kolobos Marsh
+129	Golzas Peak
 130	Golzas Canyon
-132	Felicitas Town
+131	Golzas Wharf
 133	Kolobos Reef
+134	Miasmatic Grotto
 135	Shrine of Decay
-204	Industrial City Dilmagia
+201	Maranda Coast
+202	Ballen Passage - Entrance
+203	Ballen Passage - Depths
 205	Dwarves' Forge
-212	Windy Heights West
-214	Windy Heights East
+211	Whispering Pass
+212	Windy Heights (West)
+214	Windy Heights (East)
+215	Mobreeze Airship Factory
 216	Junkyard
+218	Dilburg Mine
+219	Galebreak
 220	Wind Shrine
-301	Industrial City Dilmagia
+302	Argus Plains
 303	Shipwreck
-305	Aquapolis Olderion
+304	Tokkle Coast
+306	Old Olderion
 307	Mystic Woods
-308	Water Cave
+308	Aquatic Cove
 309	Squirming Burrow
 310	Lake Dorr
-311	Aquapolis Olderion
 312	New Olderion
-313	Aquapolis Olderion
+314	Pirate Ship
 315	Stormy Seas
 316	Ghost Ship
 317	Widow's Cape
+318	Subterranean Stream
 319	Waterfall Way
 321	Water Shrine
-322	Aquapolis Olderion
-401	Aquapolis Olderion
 402	Timber Tracks
+403	Barren Wastelands
 404	Abandoned Orphanage
-405	Raven's Hideaway
+406	Electric Tower
 407	Volcanic Grounds
 408	Surging Volcano
 409	Magitek Weapon Factory
 410	Fire Shrine
 411	Fire Shrine
+412	Mirez Valley
 414	Zoldaad Imperial Capital
 415	Zoldaad Castle Grounds
-416	Downtown Zoldaad
 417	Hangar
+418	Invincible Exterior
 419	Invincible Interior
-420	Downtown Zoldaad
-501	Downtown Zoldaad
+502	Snow Plains
 503	Snowy Woods
-505	Magi Nation Mysidia
+504	Mountaintop Village
+506	Nameless Ruins
 507	Magic Library
+508	Fina's Psyche Battlefield
+509	Fina's Psyche Badlands
+510	Fina's Psyche Frontlines
 511	Magic Library
+512	Magic Library
+514	Downtown Mysidia
 515	Mysidia Underground
+516	Magi Training Grounds
 517	Mysidia Tower
+518	Fina's Psyche Riverside
+519	Fina's Psyche Battleground
+520	Fina's Psyche Canyon
+521	Mysidia Tower Top
+602	Zanton Dunes
 603	Tainted Woods
+604	Misma Pass
 605	Societal Ruins
 607	Swamp of No Return
+608	Gigantic Underground Ruins
 609	Desolate Landing
 610	Gronoa Shrine Entrance
+611	Gronoa Shrine Entrance
 612	Gronoa Shrine Interior
 613	Duggle Village
 614	Zazall Valley
+615	Lordless Castle
 616	Grieving Knoll
 617	Ruggles Underground Pass
 618	Rotten Shrine
 619	Gronoa Shrine Depths
 701	Gronoa Shrine Depths
+702	Klon Palisades
 703	Mossy Woods
-704	Misty Bamboo Forest
-705	Town of Sian
+704	Foggy Thicket
+706	Rhao Hills
 707	Lumfa Plains
+708	Lake Ryusei
 709	Hashin Area
 710	Forgotten Walls
+711	Forgotten Walls
+712	Crystal Tower Entrance
 713	Crystal Way
+714	Sky Cave
 715	Azure Plateau
 717	Severed Land
+718	Clouds of Lasting Light
 719	Twilight Crystal Woods
+720	Summit of the Setting Sun
+721	Summit of the Setting Sun
+722	Floating Sands
 723	Heavensplit Peaks
+724	Roaring Volcano
 725	Rolling Snowlands
 727	Dim Wetlands
+728	Land of Darkness
 729	Pitch Black
+730	The Abyss
+1001	Aldore Tower
+1002	Vesta Ruins
 1003	Georl Tracks
+1004	Desolate Station
 1005	Underpass
-1007	Dragon's Village
+1006	Rail Bridge
+1008	Aldore Tower Zenith
+1009	Line Under Construction
+1010	Aldore Tower Zenith
+1011	Industrial Complex
+1012	Abandoned Railway
+1013	Outside Labor Camp
+1014	Inside Labor Camp
+1015	Aldore Tower Zenith
+1016	Outside Labor Camp
+1017	Nameless Wastelands
+1018	Zaharu Gallows
+1019	Medos Long-term Prison
+1021	Heznudo River
+1022	Georl Garrison Ruins
+1023	Danadea Factory Ruins
+1024	Georl Barrier Station
+1025	Zaharu Gallows
+1101	Uku Plains
 1102	Tiram Forest
+1103	Kopan Ruins
 1104	Tree of Naturia
+1106	Petra, Forest of Illusion
 1107	Budoon Jungle
+1108	Forbidden Land
+1109	Forbidden Land
 1110	Petra, Walkway Home
+1112	Giant Forest
 1114	Lake Granceno
+1115	Gagara Sand Cavern
 1117	Battlegrounds
+1119	Lutal Mine
 1120	Falfa Hill
+1121	Energy Transfer Station
+1201	Crystallis Cave
+1202	Quartz Sands
+1204	Skylight Desert
+1205	Prismatic Stream
+1207	Crystallis Barrier Station
+1208	Varved Wharf
+1209	Forest of Blades
+1210	Runferia Castle
+1211	Varved Wharf
+1212	Varved Wharf
+1213	Runferia Castle
+1214	Fuzzy Flats
+1215	Illusion Magic Research Facility
+1216	Silk Way
+1218	Quicksand Valley
+1219	Room of Oblivion
+1220	Hideaway Lanzatto
+1221	Energy Extraction Station
+1222	Energy Extraction Station
+1223	Hideaway Lanzatto
+1224	Nirvana Woods
+1225	Energy Extraction Station
+1226	Scalestone Way
+1227	Deadly Rock Path
+1229	Elmaul Archives
+1230	Road to the Village of the Whyt
+1301	Road to the Village of the Whyt
+1302	Elmaul Archives
+1303	Mizass Mountains
+1305	Arc Bay
+1306	Slumson Plains
+1307	Molera Flatlands
+1309	Camp Danacos
+1310	Savage Ruins
+1311	Madelle Bridge
+1312	Camp Danacos
+1313	Madelle Bridge
+1314	Madelle Bridge
+1315	Camp Danacos
+1316	Barriered Base
+1318	Grave of the Warriors
+1319	Grassy Road
+1320	Emerald Lake
+1321	Protta Forest
+1322	Rock Pile Hill
+1323	Barriered Base
+1324	Ghastly Valley
+1325	Helmna Heights
+1326	Ghastly Valley
+1327	Kudalaska Pass
+1328	Rilakka Grasslands
+1330	Fortress Outlook
+1331	Jima Wetlands
+1332	Vibrant Forest
+1333	Shrine of Prayers
+1334	Londell Road
+1401	Bug Eater's Den
+1403	Colosseum Train
+1404	Colosseum First Floor
+1405	Sandstorm Maze
+1406	Brown Sands
+1407	Colosseum First Floor
+1408	Colosseum Second Floor
+1410	Land of Fading Memories
+1411	Colosseum VIP Seating
+1412	Colosseum Third Floor
+1413	Visectrum Undeveloped Region
+1414	Visectrum Underground Waterway
+1416	Colosseum Train
+1417	Underground Train Control System
+1418	Main Colosseum
+1501	Main Colosseum
+1502	Londell Road
+1504	Magistellus Skies
+1505	Enhanced Soldier Research Facility
+1506	Chemical Weapon Research Facility
+1507	Magitek Weapon Development Facility
+1508	Beast Development Facility
+1510	Magistellus Military Facility
+1512	Lightshade Valley
+1513	Hidden Wasteland
+1514	Town of Lament Sacher
+1516	Magitek Weapon Production Factory
+1517	Labor Camp
+1519	New Energy Transfer Station
+1520	Forbidden Land
+1521	New Energy Transfer Station
+1522	Petra, Forest of Illusion
+1523	Land of Provenance
+1525	Prismatic Stream
+1526	Land of Provenance
+1527	Energy Extraction Station
+1529	Savage Ruins
+1530	Lezal Mountain Base
+1531	Emperor's Hall
+1601	Emperor's Hall
+1602	Driftwood Beach
+1603	Mossy Crag
+1604	Ashen Wasteland
+1605	Pillared Knoll
+1606	Pearl Cavern
+1608	Dragon Crag Spine
+1609	Ancient Glacier
+1610	Ancient Glacier
+1611	Giant Ice Wall
+1612	Azure Glacial Lake
+1614	Black Cliff Geysers
+1615	Grand Falls
+1616	Ultramarine Hot Springs
+1617	White Flower Knoll
+1618	Cracked Earth
+1701	Cracked Earth
+1702	Glistening Ice Caves
+1703	Sepia Plains
+1704	Stony Crag
+1705	Heaven's Pass
+1706	Stargazer's Point
+1707	Stargazer's Point
+1708	Smokey Caves
+1709	Lightfall Steppe
+1710	River of Fire
+1711	Scarlet Lookout
+1712	Shimmering Lands
+1801	Shimmering Lands
+1802	Deserted Island Forest
+1803	Aldore Tower Perimeter
+1804	Underground Control Facility
+1805	Aldore Tower
+1806	Aldore Tower Bulwark Interior
+1807	Aldore Tower Upper Levels
 1808	Aldore Tower Zenith
-1908	Ruins of the Water God
-1911	Aldore Tower Zenith
-1913	Royal Capital Grandshelt
-2001	Royal Capital Grandshelt
+1809	Zenith Interior
+1810	Zenith Interior
+1811	Transfer Gate
+1812	Transfer Space
+1813	Transfer Space - Interstice
+1814	Transfer Space - Valley of Memories
+1815	Grandore Gravity Block
+1816	Transfer Space - Light of Truth
+1817	Grandore Main Block
+1901	Grandore Main Block
+1902	Grandore Research Block
+1903	Vlad's Midsection
+1904	Vlad's Interior
+1905	Vlad's Head
+1906	Vlad's Depths
+1907	A Beautiful Tomorrow
+1908	A Hometown's Tomorrow
+1909	A Family's Tomorrow
+1910	A Soul's Tomorrow
+1911	A King's Tomorrow
+1912	Vast Skies of Tomorrow
+1913	Our Tomorrow
+2001	Our Tomorrow
+2002	Kalaruka Plains
+2003	Silent Village Corte
+2004	Forest Near Corte
+2005	Red-Roofed Town Rougelle
+2006	Wohlstok Highroad
+2008	Grand Theater
+2009	Kareca Cave
+2010	Kareca Cave
+2011	Kareca Plains
+2012	Shining Sunlight Alley
+2013	The Copse Behind The Theater
+2014	Stage Prop Warehouse
+2015	Grand Theater
+2016	Tomas River
+2017	Tomas River's Headwater
+2018	Verdant Waterfall
+2101	Verdant Waterfall
+2102	Swaying Forest
+2103	Illumia
+2104	Hill of Coiled Plants
+2105	Hilltop Village Tenule
+2106	Gobble Cave
+2107	Illumia
+2108	Stone Wall Plains
+2109	Rambling Rose Fortress
+2110	Rambling Rose Fortress
+2111	Striped Plains
+2112	Twisting Rock
+2113	Birdsong Lake
+2115	Table Rock Valley
+2116	Mage Tower
+2117	Illumia Castle
+2118	Hidden Escape Route
 2201	Hidden Escape Route
 2202	Balma Plateau
 2203	Granado Highway
@@ -124,4 +374,349 @@
 2215	Chamois Way
 2216	Lilac Forest
 2217	Schnee, the Town of Hope
+2301	Schnee, the Town of Hope
+2302	Fuga, a Village Among the Mountains
+2303	Symphonia, the Scholastic City
+2304	Infiltration Day 1 - The Dormitory
+2305	Infiltration Day 2 - The East Wing
+2306	Infiltration Day 3 - The Main Hall
+2307	Infiltration Day 4 - The Special Wing
+2308	Infiltration Day 5 - The Central Garden
+2309	Infiltration Day 6 - Outside the Auditorium
+2310	Infiltration Day 6 - Outside the Auditorium
+2311	Appearance of the Hollow: Day 1 - Inside the Auditorium
+2312	Appearance of the Hollow: Day 1 - The West Wing
+2313	Appearance of the Hollow: Day 1 - Path to the Special Wing
+2314	Appearance of the Hollow: Day 2 - The Gymnasium's Bathroom
+2315	Appearance of the Hollow: Day 3 - The Laboratory
+2316	Appearance of the Hollow: Day 4 - Bell, the Mountain of Monsters
+2317	Appearance of the Hollow: Day 4 - The Concert Hall
+2401	Appearance of the Hollow: Day 4 - The Concert Hall
+2402	East Side District Block F4
+2404	East Side District Block D3
+2405	East Side District Block E2
+2406	East Side District Block C1
+2407	East Side District Block A1
+2408	East Side District Block B3
+2409	East Side District Block A4
+2410	East Side District Block A4
+2411	West Side District Block H2
+2412	West Side District Block J2
+2413	West Side District Block H4
+2414	West Side District Block F3
+2415	West Side District Block E4
+2416	West Side District Block D2
+2417	West Side District Block B2
+2418	West Side District Block B2
+2501	West Side District Block B2
+2502	North Side District Block A3
+2503	North Side District Block C3
+2504	North Side District Block D4
+2505	North Side District Block F4
+2506	North Side District Block E2
+2507	North Side District Block C1
+2601	North Side District Block C1
+2602	Shadow Plains
+2603	The Hill Over the Lighthouse
+2604	Townlit Trail
+2605	Waverwish Lake
+2606	Sorrowful Memories
+2607	Happy Memories
+2608	The Seven-Color Road
+2609	The Seven-Color Road
+2701	Wardsflame
+2702	Flickering Path
+2703	The Etherstream
+2704	Glimmering Moor
+2705	Howling Woods
+2706	Radiant Hill
+2707	Daybreak Prairie
+2708	Daybreak Prairie
+2801	Pristine Plains
+2802	The Road to Truth
+2803	A Way to Confession
+2804	Path to a Brighter Tomorrow
+2805	Lightshower Forest
+2806	Sanctuary Hill
+2807	Sanctuary of Light
+2808	Sanctuary of Light
+2809	Vanishing Earth
+2810	Muted Stream
+2811	Soulless Lake
+2812	The Promised Land
+2813	Scattering Leaves
+2814	The Final Path
+2815	Heart of the Hollow
+2816	Heart of the Hollow
+2817	Unknown Memories: Snow
+2818	Unknown Memories: Experimentation
+2819	Unknown Memories: Flame
+2820	Memories of Battle
+2821	Flood of Light
+2822	Those Left Behind
+2823	Unfailing Light
+2824	Unfailing Light
+2901	Londell Road
+2902	Bug Eater's Den
+2903	Vibrant Forest
+2904	Wohlstok
+2905	Kingdom of Illumia
+2906	Kingdom of Couleur
+2907	Symphonia, the Scholastic City
+2908	Symphonia, the Scholastic City
+2909	Symphonia, the Scholastic City
+2910	Equirelle
+2911	The Fortress City of Berga
+2912	Kingdom of Couleur
+2913	Theater City Wohlstok
+2914	Doorway to Hope
+2915	Symphonia Factory
+2916	Symphonia Factory
+3001	Fina's Heart
+3002	The Lightspring (Level 1)
+3003	The Lightspring (Level 2)
+3004	The Lightspring (Level 3)
+3005	The Lightspring (Level 4)
+3006	The Lightspring (Level 5)
+3007	Rainbow Tower
+3008	Rainbow Tower
+3009	Rainbow Tower: Top (Rain)
+3010	Rainbow Tower: Top (Roca)
+3011	Rainbow Tower: Top (Daisy)
+3012	Towards the Orb of Light
+3013	Shining Orb of Light (I)
+3014	Shining Orb of Light (II)
+3015	Shining Orb of Light (The Heart)
+3016	Shining Orb of Light (The Heart)
+3017	The All-Encompassing Light (I)
+3018	The All-Encompassing Light (II)
+3019	The All-Encompassing Light (III)
+3020	The All-Encompassing Light (IV)
+3021	The All-Encompassing Light (V)
+3022	The All-Encompassing Light (VI)
+3023	The All-Encompassing Light (VII)
+3024	The All-Encompassing Light (VII)
+3101	Symphonia, the Scholastic City
+3102	Couleur, the Kingdom of Colors
+3103	Kingdom of Illumia
+3104	Wohlstok
+3105	The Fortress City of Berga
+3106	Paladia
 3107	Lapis
+3201	Prologue
+3202	Unknown Lands
+3203	Gamlasta Way
+3204	Trail to Yorte
+3205	Path to the Base
+3206	Cliffbase Forest
+3207	Luleo Road
+3208	Capital of Sherna, Rohlestan
+3209	Capital of Sherna, Rohlestan
+3301	Rohlestan Plains
+3302	Traces of Unit 7
+3303	Path through the Mountains
+3304	The Townview Lake
+3305	Southern Plaek Highway
+3306	Plaek Highway
+3307	The Man-Eating Fortress Ruins
+3308	The Man-Eating Fortress Ruins
+3401	Ivre Hills
+3402	Brightflame Forest
+3403	Brightflame Forest Depths
+3404	Northern Plaek Highway
+3405	Whitefog Woods
+3406	Whitefog Wetlands
+3407	Road to the Base
+3408	Road to the Base
+3409	Fort Vorn
+3410	Vorn Highroad
+3411	Zahhak Gorge
+3412	Zahhak Outpost
+3413	Galanthus Plateau
+3414	Galanthus Testing Grounds
+3415	Proto-Omega
+3416	Zahhak Outpost
+3417	Celessa Plains
+3418	Mukarve Medical Research Facility
+3419	Pursuing the Soldier and Girl
+3420	Mortamo Highlands
+3421	Fleetfoot Forest
+3422	Ghost Town
+3423	Crossroads of Determination
+3424	Pursuing the Soldier and Girl
+3425	Yelipa Prairie
+3426	Boulder Hill
+3427	Quellefreu Forest
+3428	In Search of a Lead
+3429	An Adventure for Two
+3430	Time Alone
+3431	Zeil Research Facility
+3432	Quellefreu Forest
+3433	Fort Felba
+3434	Northern Laukha Highroad
+3435	Laukha Highroad
+3436	Scrap-Iron Ruins
+3437	The Road to Myto
+3438	Voyage to Halsa
+3439	Halsa Magic Hospital
+3440	Halsa Magic Hospital
+3441	In Vital Need of Vitaligrass
+3442	Cavern of Vitaligrass
+3443	Den of Thieves
+3444	Scrap-Iron Ruins
+3445	Rohlestan
+3446	Rohlestan: Administrative District
+3447	Huvus Hills
+3448	Burning Vista
+3449	Burning Vista
+3450	The Agent of Destruction
+3451	The Chase for Vanharma
+3452	Ivre Hills
+3453	Slaget Heights
+3454	To the Omega Excavation Site
+3455	Omega Excavation Site I
+3456	Omega Excavation Site II
+3457	To Live as a Hero
+3458	To Live as a Hero
+3459	Daam Dunes 1
+3460	Sorgenha Gorge
+3461	Daam Dunes 2
+3462	Gransla Meadow
+3463	Elmont Plains
+3464	Elmont Highroad
+3465	Desolate Plains
+3466	Desolate Plains
+3467	The Capital - Secret Weapon
+3468	The Capital - Flight
+3469	The Capital - Resolve
+3470	The Capital - Defiance
+3471	The Capital - Climax
+3472	Rovina Ruins
+3473	The Capital - Omnibus
+3474	The Capital - Omnibus
+3475	Rovina Ruins 2
+3476	The Capital - Escape
+3477	The Capital - Catastrophe
+3478	Elmont Highroad West
+3479	The Inhuman King
+3480	Risen Resolve
+3481	An Unknown Land
+3482	Rovina Ruins 2
+3483	Rovina Ruins 3
+3484	Verdant Path
+3485	Karvell
+3486	Emerald Lake
+3487	Greenmoss Forest
+3488	Rovina Ruins 4
+3489	Rebel Bastion
+3490	Karvell
+3491	Emerald Lake
+3492	Emerald Lake
+3493	Unilucion
+3494	The Silent Sea
+3495	The Scarred Battlefield
+3496	The Scarred Battlefield
+3497	Fortress on the Brink
+3498	The Second Battlefield
+3499	Unilucion Coast
+3500	Legend's End
+3501	Legend's End
+3502	Conviction for Battle
+3503	The Mouth of Misery
+3504	Snovlinka's Heart
+3505	The Oracle's Protector
+3506	The Oracle's Protector
+3507	Precocious Cargo
+3508	Conviction for Battle
+3509	Blood of the Argent Oracle
+3510	A Place of Intertwined Fates
+3511	Conviction for Battle
+3512	Conviction for Battle
+3513	Verley Mountains
+3514	Gimelda Forest
+3515	Timeworn Highroad
+3516	Caledfwlch's Elites
+3517	Gordo Highroad
+3518	Sangdesrois Prison
+3519	Tomb of the Knight-Lord
+3520	Tomb of the Knight-Lord
+3521	Knoll of Wreaths
+3522	Gordo Plains
+3523	Suspicion of Gordo
+3524	Körbecke Hills
+3525	Fort Körbecke
+3526	Gordo Plains
+3527	Heimrig Southern Fields
+3528	Heimrig Fields
+3529	Heimrig Castle Remnants
+3530	Heimrig Castle Remnants - Ramparts
+3531	Noble Kingdom of Gordo - Castle
+3532	Noble Kingdom of Gordo - Castle
+3533	Vazerre Cavern
+3534	Novre, Capital of Nouvgoran
+3535	Seeking the Research Facility
+3536	Nouvgoran Research Facility
+3537	In Search of Malefactors
+3538	Destroyed Capital Novre
+3539	Novre, Capital of Nouvgoran
+3540	Novre Forest
+3541	Mount Gilna
+3542	Mount Gilna Ice Caves
+3543	Nouvgoran Snowfields
+3544	Nouvgoran East Snowfields
+3545	Nouvgoran Research Facility
+3546	Jakarhu Town
+3547	Jakarhu Town
+3548	Wellek Coast
+3549	Within Rohlestan Castle
+3550	Dypski Tavern
+3551	Bluecobble Alley
+3552	Rohlestan Underground Waterway
+3553	Sherna Assembly Hall
+3554	Sherna Assembly Hall - Conference Chamber
+3555	Sherna Assembly Hall - Conference Chamber
+3556	Sherna Assembly Hall 2
+3557	Olm River Downstream
+3558	Holy Altar
+3559	Rohlestan Castle - East Passage
+3560	Rohlestan Castle - White Lead Tower
+3561	Rohlestan Castle - Gate Control Station
+3562	Holy Altar
+3563	Holy Altar
+3564	Marguat Wetlands
+3565	Rohlestan Administrative District
+3566	Rohlestan Underground Waterway
+3567	Siffolk Lake
+3568	Sweonaev Cathedral
+3569	Lakeside Storehouse
+3570	Hidden Research Facility
+3571	Hidden Research Facility
+3572	East Blauer Prairie
+3573	West Blauer Prairie
+3574	Torred River
+3575	Old Church Site
+3576	Old Church Site 2
+3577	Caledfwlch Airship Deck
+3578	Terrifying Territory
+3579	Terrifying Territory
+3580	Beginning of the Rovina Ruins
+3581	Secret Cavern
+3582	Secret Cavern 2
+3583	Shadowed Coast
+3584	Wild Jungle
+3585	Secret Cavern
+3586	Secret Cavern Research Facility
+3587	Secret Cavern Research Facility
+3588	Scoria Hill
+3589	Mossy Plains
+3590	Scoria Hill 2
+3591	Unilucion Ruins
+3592	Unilucion Ruins 2
+3593	Unilucion Ruins 3
+3594	Downfallen Kingdom
+3595	Downfallen Kingdom
+3596	Memory Left Behind
+3597	Runda's Revival
+3598	Traveling with Vanharma
+3599	Traces of Taivas
+3600	Meeting Her

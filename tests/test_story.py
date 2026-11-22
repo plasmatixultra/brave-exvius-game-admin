@@ -104,6 +104,22 @@ class StoryCatalogTest(unittest.TestCase):
         leviathan = next(d for d in beats if d["esper_id"] == 12)
         self.assertEqual(leviathan["world_id"], 3)
 
+    def test_esper_names_match_their_dungeons(self):
+        """A beat's switch carries the esper number; the beast table's row order differs at 4 and 7,
+        so a row-id lookup labels Thunder Summit Carbuncle and Carbuncle Grove Ramuh (measured)."""
+        names = {}
+        for world in self.book.worlds():
+            for dungeon in world["dungeons"]:
+                names[dungeon["dungeon_key"]] = dungeon["esper_name"]
+        self.assertEqual(names["11355"], "Ramuh", "Thunder Summit grants Ramuh")
+        self.assertEqual(names["13251"], "Carbuncle", "Carbuncle Grove grants Carbuncle")
+        self.assertEqual(names["12301"], "Diabolos")
+        self.assertEqual(names["14251"], "Odin")
+        self.assertEqual(names["15151"], "Titan")
+        self.assertEqual(names["112151"], "Fenrir")
+        self.assertEqual(names["113151"], "Leviathan")
+        self.assertEqual(len([n for n in names.values() if n]), 19)
+
     def test_bahamut_not_grantable(self):
         for world in self.book.worlds():
             for dungeon in world["dungeons"]:
