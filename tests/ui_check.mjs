@@ -261,6 +261,29 @@ async function main() {
     && byNumber.rows.some((t) => /Azure Knight Lasswell/.test(t) && /2706/.test(t)),
     JSON.stringify(byNumber));
 
+  // "65 + 32": the pot ceiling rises with the door value, never past pot_cap + door_cap
+  const capPair = await evaluate(`(function () {
+    document.querySelector('.rail a[data-view="units"]').click();
+    const row = [...document.querySelectorAll('#roster .urow')]
+      .find((r) => r.textContent.indexOf('Lightning') >= 0);
+    if (!row) return null;
+    row.click();
+    return new Promise(function (resolve) {
+      setTimeout(function () {
+        const door = document.querySelector('[data-spec="door2"]');   // ATK
+        const pot = document.querySelector('[data-spec="pot2"]');
+        const before = { label: pot.parentElement.querySelector('i').textContent, max: pot.max };
+        door.value = '32';
+        door.dispatchEvent(new Event('input'));
+        const after = { label: pot.parentElement.querySelector('i').textContent, max: pot.max };
+        resolve({ before, after });
+      }, 3500);
+    });
+  })()`);
+  check('pot caps follow the door value (65 + 32)',
+    !!capPair && capPair.before.label === '65 + 0' && capPair.after.label === '65 + 32'
+    && Number(capPair.after.max) === 97, JSON.stringify(capPair));
+
   const silhouette = await evaluate(`(function () {
     const img = document.createElement('img');
     return new Promise((resolve) => {

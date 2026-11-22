@@ -608,17 +608,28 @@
   }
 
   function paintCaps(caps) {
+    // The server's own rule (unit_use_point): doors <= door_cap, pots <= pot_cap + doors.
+    // So the pot ceiling is the wiki's "900 + 450": 450 only becomes reachable by raising doors.
     [0, 1, 2, 3, 4, 5].forEach(function (index) {
       var pair = caps[index] || [0, 0];
-      [['pot', pair[0]], ['door', pair[1]]].forEach(function (entry) {
-        var input = $('[data-spec="' + entry[0] + index + '"]');
-        if (!input) return;
-        input.max = entry[1];
-        var host = input.parentElement;
-        var tag = host.querySelector('i');
-        if (!tag) { tag = document.createElement('i'); host.appendChild(tag); }
-        tag.textContent = entry[1];
-      });
+      var pot = $('[data-spec="pot' + index + '"]');
+      var door = $('[data-spec="door' + index + '"]');
+      if (!pot || !door) return;
+      var potTag = pot.parentElement.querySelector('i');
+      var doorTag = door.parentElement.querySelector('i');
+      if (!potTag) { potTag = document.createElement('i'); pot.parentElement.appendChild(potTag); }
+      if (!doorTag) { doorTag = document.createElement('i'); door.parentElement.appendChild(doorTag); }
+      door.max = pair[1];
+      doorTag.textContent = pair[1];
+      var sync = function () {
+        var doors = Math.max(0, Math.min(Number(door.value) || 0, pair[1]));
+        var ceiling = pair[0] + doors;
+        pot.max = ceiling;
+        potTag.textContent = pair[0] + ' + ' + doors;
+        if ((Number(pot.value) || 0) > ceiling) pot.value = ceiling;
+      };
+      door.oninput = sync;
+      sync();
     });
   }
 
