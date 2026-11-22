@@ -112,6 +112,17 @@ class Story:
         self.explorations = set(map(str, explorations))
         root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.global_names = _global_names(root)
+        # The same dungeon is shipped under two area ids (2201 and 2118 are both 秘密の抜け道): a name
+        # known for one id applies to every row that carries the same Japanese name.
+        by_japanese = {}
+        for row in sub:
+            name = self.global_names.get(str(row.get("6a9TDRcj")))
+            if name:
+                by_japanese.setdefault(str(row.get("G4L0YIB2")), name)
+        for row in sub:
+            area_id = str(row.get("6a9TDRcj"))
+            if area_id not in self.global_names and str(row.get("G4L0YIB2")) in by_japanese:
+                self.global_names[area_id] = by_japanese[str(row.get("G4L0YIB2"))]
         self.region_names = _region_names(root)
 
         self.dungeon_areas = [row for row in sub if str(row.get("Lxj5u3WB")) == DUNGEON_KIND]
@@ -221,7 +232,9 @@ class Story:
                 owner = next((a for a in group if a != area_id
                               and str((self.area_rows.get(a) or {}).get("0J2VIT8w")) == str(row_region)
                               and self.missions_of(a)), None)
-                shares = owner or next((a for a in group if a != area_id and self.missions_of(a)), None)
+                if owner is None:
+                    owner = next((a for a in group if a != area_id and self.missions_of(a)), None)
+                shares = self.area_label(owner) if owner else None
             if row_region != region_id:
                 continue
             out.append({"area_id": area_id, "region_id": row_region,
@@ -229,6 +242,13 @@ class Story:
                         or self.texts.get("area", {}).get(area_id) or str(row.get("G4L0YIB2") or ""),
                         "missions": missions, "shares_with": shares})
         return out
+
+    def area_label(self, area_id):
+        """The display name of an area: the global name, then the text table, then the master's own."""
+        row = self.area_rows.get(str(area_id)) or {}
+        return (self.global_names.get(str(area_id))
+                or self.texts.get("area", {}).get(str(area_id))
+                or str(row.get("G4L0YIB2") or area_id))
 
     def area(self, area_id):
         row = self.area_rows.get(str(area_id))
