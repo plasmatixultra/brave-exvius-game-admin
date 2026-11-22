@@ -71,6 +71,21 @@ def _global_names(root):
     return out
 
 
+def _region_names(root):
+    path = os.path.join(root, "data", "region_names_en.tsv")
+    out = {}
+    if not os.path.exists(path):
+        return out
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            if not line.strip() or line.startswith("#"):
+                continue
+            region_id, _, name = line.rstrip("\n").partition("\t")
+            if region_id and name:
+                out[int(region_id)] = name
+    return out
+
+
 def _ids(value):
     return [token.strip() for token in str(value or "").split(",") if token.strip() not in ("", "0")]
 
@@ -95,7 +110,9 @@ class Story:
         self.dungeons = {str(row.get("U9iHsau3")): row for row in dungeons}
         self.switch_type = {str(key): str(value) for key, value in switches.items()}
         self.explorations = set(map(str, explorations))
-        self.global_names = _global_names(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.global_names = _global_names(root)
+        self.region_names = _region_names(root)
 
         self.dungeon_areas = [row for row in sub if str(row.get("Lxj5u3WB")) == DUNGEON_KIND]
         self.area_rows = {str(row["6a9TDRcj"]): row for row in self.dungeon_areas}
@@ -180,7 +197,7 @@ class Story:
         out = []
         for region_id in sorted({int(row["0J2VIT8w"]) for row in self.sub}):
             areas = self.areas(region_id)
-            name = names.get(str(region_id)) or ""
+            name = self.region_names.get(region_id) or names.get(str(region_id)) or ""
             if not name:
                 name = "Region %d" % region_id
             out.append({"region_id": region_id, "name": name, "arc": arc_for(region_id),
