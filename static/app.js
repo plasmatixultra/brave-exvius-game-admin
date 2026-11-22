@@ -536,9 +536,26 @@
     if (Object.keys(progressCache.side).length) return;
     api('/api/questline?world=all').then(function (data) {
       (data.worlds || []).forEach(function (world) { renderSideWorld(world.world_id, world); });
-      $('#side-tag').innerHTML = '<b>' + (data.worlds || []).length + ' worlds</b> · side quests and esper dungeons';
+      renderSideSummary();
+      if ($('#side-tag')) $('#side-tag').textContent = '';
+      $('#side-tag').parentNode.style.display = 'none';
+      $('#mid-ph').innerHTML = 'Side content <span class="tag">' + (data.worlds || []).length + ' worlds</span>';
+      renderSideSummary();
       $('#side-apply').disabled = false;
     }).catch(function (error) { $('#side-list').textContent = error.message; });
+  }
+
+  // `dX6cor8j` is `kind:id:count:...`: render the first entry as the player would read it.
+  var REWARD_KINDS = { 10: 'unit', 20: 'item', 21: 'equip', 23: 'ticket', 27: 'card',
+                       50: 'Lapis', 60: 'gil', 821: 'esper' };
+
+  function rewardLabel(raw) {
+    var token = String(raw || '').split(',')[0];
+    var parts = token.split(':');
+    if (parts.length < 3) return '';
+    var kind = parts[0], count = parts[2];
+    var label = REWARD_KINDS[kind] || ('kind ' + kind);
+    return label + (count && count !== '1' ? ' ×' + fmt(count) : '');
   }
 
   function renderSideWorld(world, content) {
@@ -546,9 +563,37 @@
     var host = $('#side-list');
     var head = document.createElement('div');
     head.className = 'sidehead';
-    head.innerHTML = 'World ' + world + ' <span>' + (content.quests || []).length + ' quests · '
-      + (content.dungeons || []).length + ' dungeons</span>';
+    head.innerHTML = 'World ' + world + ' <span>' + (content.dungeons || []).length + ' dungeons · '
+      + (content.quests || []).length + ' quests</span>';
     host.appendChild(head);
+    if ((content.dungeons || []).length) {
+      var espHead = document.createElement('div');
+      espHead.className = 'sidehead';
+      espHead.innerHTML = 'Esper dungeons <span>' + content.dungeons.length
+        + ' · the esper is granted on the beat clear</span>';
+      host.appendChild(espHead);
+      content.dungeons.forEach(function (dungeon) {
+        var row = document.createElement('div');
+        row.className = 'qrow';
+        row.innerHTML = '<span class="cb" data-dungeon="' + esc(dungeon.dungeon_key) + '" data-world="'
+          + world + '">✓</span><span>' + esc(dungeon.name) + '<br><span class="esp">'
+          + esc(dungeon.esper_name || '') + '</span>'
+          + (dungeon.grantable ? '<span class="grantbox on" data-grant="' + esc(dungeon.dungeon_key)
+            + '">grant</span>' : '<span class="grantbox">no grant</span>')
+          + '</span><span class="rw">' + dungeon.missions.length + ' missions</span>';
+        row.querySelector('.cb').addEventListener('click', function (ev) {
+          ev.currentTarget.classList.toggle('on');
+          renderSideSummary();
+        });
+        var box = row.querySelector('.grantbox[data-grant]');
+        if (box) box.addEventListener('click', function (ev) { ev.currentTarget.classList.toggle('on'); });
+        host.appendChild(row);
+      });
+    }
+    var questHead = document.createElement('div');
+    questHead.className = 'sidehead';
+    questHead.innerHTML = 'Quests <span>' + (content.quests || []).length + ' · towns and the vortex</span>';
+    host.appendChild(questHead);
     (content.quests || []).forEach(function (quest) {
       var row = document.createElement('div');
       row.className = 'qrow';
@@ -556,28 +601,29 @@
         + '">✓</span><span class="qwrap"><span class="qname">' + esc(quest.name || quest.quest_id)
         + '</span><span class="loc"><span class="pin">◆</span>' + esc(quest.place)
         + (quest.delivery ? ' · delivery' : '') + '</span></span><span class="rw">'
-        + esc(quest.reward || '') + '</span>';
+        + esc(rewardLabel(quest.reward)) + '</span>';
       row.querySelector('.cb').addEventListener('click', function (ev) {
         ev.currentTarget.classList.toggle('on');
+        renderSideSummary();
       });
       host.appendChild(row);
     });
-    (content.dungeons || []).forEach(function (dungeon) {
-      var row = document.createElement('div');
-      row.className = 'qrow';
-      row.innerHTML = '<span class="cb" data-dungeon="' + esc(dungeon.dungeon_key) + '" data-world="'
-        + world + '">✓</span><span>' + esc(dungeon.name) + '<br><span class="esp">'
-        + esc(dungeon.esper_name || '') + '</span>'
-        + (dungeon.grantable ? '<span class="grantbox on" data-grant="' + esc(dungeon.dungeon_key)
-          + '">grant</span>' : '<span class="grantbox">no grant</span>')
-        + '</span><span class="rw">' + dungeon.missions.length + ' missions</span>';
-      row.querySelector('.cb').addEventListener('click', function (ev) {
-        ev.currentTarget.classList.toggle('on');
-      });
-      var box = row.querySelector('.grantbox[data-grant]');
-      if (box) box.addEventListener('click', function (ev) { ev.currentTarget.classList.toggle('on'); });
-      host.appendChild(row);
+  }
+
+  function renderSideSummary() {
+    var selection = sideSelection();
+    var worlds = Object.keys(selection);
+    var quests = 0, dungeons = 0, granted = 0;
+    worlds.forEach(function (world) {
+      quests += selection[world].quests.length;
+      dungeons += selection[world].dungeons.length;
+      selection[world].dungeons.forEach(function (row) { if (row.grant_esper) granted += 1; });
     });
+    $('#side-summary').innerHTML = '<div class="sum-row"><span class="sum-k">Worlds</span>'
+      + '<span class="sum-v small">' + (worlds.length ? worlds.map(function (w) { return 'W' + w; }).join(' · ') : 'none') + '</span></div>'
+      + '<div class="sum-row"><span class="sum-k">Quests</span><span class="sum-v">' + quests + '</span></div>'
+      + '<div class="sum-row"><span class="sum-k">Esper dungeons</span><span class="sum-v">' + dungeons + '</span></div>'
+      + '<div class="sum-row"><span class="sum-k">Espers granted</span><span class="sum-v g">' + granted + '</span></div>';
   }
 
   function sideSelection() {

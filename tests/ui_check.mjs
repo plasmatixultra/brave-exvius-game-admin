@@ -403,16 +403,21 @@ async function main() {
   const progress = await evaluate(`(async function () {
     document.querySelector('.rail a[data-view="progress"]').click();
     const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-    for (let i = 0; i < 60 && !document.querySelectorAll('#side-list .side-world').length; i += 1) {
+    document.querySelector('#side-link').click();        // side content renders on demand
+    for (let i = 0; i < 60 && !document.querySelectorAll('#side-list .qrow').length; i += 1) {
       await sleep(500);
     }
-    for (let i = 0; i < 40 && !/missions/.test(document.querySelector('#plan-summary').textContent); i += 1) {
+    const sideWorlds = [...new Set([...document.querySelectorAll('#side-list [data-world]')]
+      .map((n) => n.dataset.world))].sort();
+    const sideRows = document.querySelectorAll('#side-list .qrow').length;
+    document.querySelector('.rail a[data-view="progress"]').click();
+    document.querySelector('#side-link').click();
+    for (let i = 0; i < 40 && !/Missions in the span/.test(document.querySelector('#plan-summary').textContent); i += 1) {
       await sleep(500);
     }
-    return { regions: document.querySelectorAll('#region-list option').length,
-             areas: document.querySelectorAll('#area-list option').length,
-             worlds: [...document.querySelectorAll('#side-list .side-world')].map((n) => n.dataset.world),
-             rows: document.querySelectorAll('#side-list .side-row').length,
+    return { regions: document.querySelectorAll('#region-list .reg').length,
+             areas: document.querySelectorAll('#area-list .darea').length,
+             worlds: sideWorlds, rows: sideRows,
              summary: document.querySelector('#plan-summary').textContent,
              rewards: document.querySelector('#plan-rewards').textContent,
              sections: document.querySelectorAll('section.view').length };
@@ -421,8 +426,9 @@ async function main() {
     JSON.stringify(progress && progress.regions));
   check('side quests are grouped per world', !!progress && (progress.worlds || []).join() === '1,2,3,5',
     JSON.stringify(progress && progress.worlds));
-  check('a checkpoint previews its plan and rewards', !!progress && /missions/.test(progress.summary || '')
-    && /Lapis/.test(progress.rewards || ''), JSON.stringify(progress && [progress.summary, progress.rewards]));
+  check('a checkpoint previews its plan and rewards', !!progress
+    && /Missions in the span/.test(progress.summary || '') && /Lapis paid/.test(progress.summary || ''),
+    JSON.stringify(progress && progress.summary));
   check('the page has seven views', !!progress && progress.sections === 7,
     JSON.stringify(progress && progress.sections));
 
