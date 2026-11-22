@@ -55,6 +55,14 @@ class QuestlineTest(unittest.TestCase):
             questline.apply(self.ps, MST, edit)
 
     # ---- the run -----------------------------------------------------------------------------
+    def test_apply_works_with_no_global_player(self):
+        """The agent process never sets `ffbe_state.State.player`; the payers need it anyway."""
+        import ffbe_state
+        ffbe_state.State.player = None
+        report = questline.apply(self.ps, MST, CHECKPOINT)
+        self.assertGreater(report["cleared"], 0)
+        self.assertIsNone(ffbe_state.State.player, "the global is restored, not left pointing at the run")
+
     def test_apply_clears_and_reports(self):
         report = questline.apply(self.ps, MST, CHECKPOINT)
         self.assertGreater(report["cleared"], 1400)

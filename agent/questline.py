@@ -309,12 +309,23 @@ def apply(ps, mst_dir, progress_edit):
     before = _snapshot(ps)
     saved = _state_saved(ps)
     warnings = []
-    ran = _clear_missions(ps, book, plan["missions"], warnings)
-    gates = _write_gates(ps, book, plan)
-    done, refused = _run_quests(ps, book, plan.get("quests") or [], warnings)
-    for esper in plan.get("espers") or []:
-        _grant_esper(ps, esper["esper_id"])
-    _restore(ps, saved)
+    # The server's payers (`grant_cleared_mission`, `first_clear`, …) act on the GLOBAL player, not on
+    # the state passed in. In the agent process nothing has set it — `PlayerState.load` does not — so
+    # without this the run dies on `State.player.switches` being None. Preview points the global at its
+    # throwaway copy instead; here it points at the real state and is restored afterwards.
+    import ffbe_state
+
+    real = ffbe_state.State.player
+    ffbe_state.State.player = ps
+    try:
+        ran = _clear_missions(ps, book, plan["missions"], warnings)
+        gates = _write_gates(ps, book, plan)
+        done, refused = _run_quests(ps, book, plan.get("quests") or [], warnings)
+        for esper in plan.get("espers") or []:
+            _grant_esper(ps, esper["esper_id"])
+        _restore(ps, saved)
+    finally:
+        ffbe_state.State.player = real
     after = _snapshot(ps)
     paid_lapis = after["lapis"] - before["lapis"]
     paid_gil = after["gil"] - before["gil"]
