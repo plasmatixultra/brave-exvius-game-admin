@@ -65,12 +65,12 @@ to be the local one.
 
 | View | What it changes |
 |---|---|
-| Quick Grants | Gil, Lapis, unit EXP points, tickets, vision cards, and new units at the form you pick |
-| Unit Builder | Level, awakening stars, LB level, EX level, pots, doors, trust and super-trust |
-| Awakening Kit | Everything one awakening needs, in one apply, in the right order |
+| Quick Grants | Gil, Lapis, unit EXP points, grant tickets if you like the gacha, vision cards, and the units you want directly if you don't like pulls |
+| Unit Builder | Level, awakening stars, LB level, EX level, pots, doors, trust and super-trust. Raise your units to the max|
+| Awakening Kit | Awaken your units to any level you want all at once |
 | Ability Awakening | An ability to a target tier, including the lower tiers it needs |
 | Vision Cards | Card level and total EXP |
-| Progress | Story checkpoints (Lapis, gil, missions, quests, esper trials, roster rewards) and side content per world |
+| Progress | Story checkpoints (Lapis, gil, missions, quests, esper trials, roster rewards) and side content per world. Progress your save to any point you like and either continue from where you left off when FFBE ended or replay favored content.\ |
 | Log | Every apply, in order, with what it changed |
 
 The numbers in a preview come from the game's own code, so caps, ticket types and quest rules
@@ -128,7 +128,8 @@ refused apply and a rollback. The app checks the image for the engine symbols it
 refuses to apply, before stopping anything, if one is missing.
 
 Not tested: Windows, macOS, rootless Docker, and other engines. File operations run inside
-containers and the lock works on both platforms, but that is reasoning rather than evidence.
+containers and the lock works on both platforms, but test prior to use. Let me know how it goes and 
+I'll work on Windows and Android versions.
 
 ## What it does not do
 
