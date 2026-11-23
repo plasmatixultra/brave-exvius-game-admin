@@ -23,6 +23,10 @@ TEXT_SUFFIXES = (".py", ".sh", ".md", ".js", ".html", ".css", ".json", ".toml",
                  ".yml", ".yaml", ".txt", ".mjs", ".cfg", ".ini", "")
 ALLOWED_MENTIONS = {"tests/test_packaging.py"}   # the list of tokens itself lives here
 
+# The repository URL carries the owner's GitHub handle: that is public by design and is not
+# a leak. Everything else that names the build machine is.
+REPO_URL = "https://github.com/plasmatixultra/brave-exvius-game-admin"
+
 
 def tracked_files():
     """Everything `git clone` hands somebody, not a hand-picked list."""
@@ -40,11 +44,31 @@ class ProductSurfaceTest(unittest.TestCase):
         offenders = []
         for relative in tracked_files():
             with open(os.path.join(ROOT, relative), encoding="utf-8", errors="ignore") as handle:
-                text = handle.read()
+                text = handle.read().replace(REPO_URL, "")
             for token in FORBIDDEN:
                 if token in text:
                     offenders.append("%s names %s" % (relative, token))
         self.assertEqual(offenders, [])
+
+    def test_the_readme_clones_from_the_real_repository(self):
+        with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as handle:
+            readme = handle.read()
+        self.assertIn("https://github.com/plasmatixultra/brave-exvius-game-admin", readme)
+        self.assertNotIn("once the repository is published", readme)
+
+    def test_the_readme_covers_the_awkward_paths(self):
+        """A stranger needs the failure messages, the undo, and the test commands."""
+        with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as handle:
+            readme = handle.read()
+        for section in ("## If something goes wrong", "## Uninstall and rollback", "## Development"):
+            self.assertIn(section, readme)
+        self.assertIn("campaign-<UTC>-<pid>.json", readme)
+
+    def test_the_readme_agrees_with_itself_about_python(self):
+        with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as handle:
+            readme = handle.read()
+        self.assertNotIn("3.11", readme)
+        self.assertEqual(readme.count("Python 3.12"), 2)
 
     def test_the_readme_says_how_to_start(self):
         with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as handle:
