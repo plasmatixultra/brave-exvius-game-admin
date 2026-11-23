@@ -170,10 +170,10 @@ No dependencies, no build step, no virtualenv:
 ```bash
 python3 -m unittest tests.test_app tests.test_pipeline tests.test_parity tests.test_cache \
     tests.test_config tests.test_transport tests.test_applysave tests.test_engine \
-    tests.test_compat tests.test_packaging      # 119 tests, no game required
-bash tests/test_apply_files_sh.sh               # 29 tests for the in-container worker
-sh tests/run_in_container.sh                    # 97 agent tests, needs the game image
-node tests/ui_check.mjs http://127.0.0.1:8750   # 68 UI checks, needs a live stack
+    tests.test_compat tests.test_packaging      # no game required
+bash tests/test_apply_files_sh.sh               # the in-container file worker
+sh tests/run_in_container.sh                    # the agent suite, needs the game image
+node tests/ui_check.mjs http://127.0.0.1:8750   # the page itself, needs a live stack
 ```
 
 Layout: `app.py` (HTTP and the page's API), `applysave.py` (the write sequence),
