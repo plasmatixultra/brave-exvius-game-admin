@@ -45,4 +45,5 @@ static/assets/units/*.png
 design/
 docs/
 spikes/
-tools/
+tools/*
+!tools/gen_area_names.py

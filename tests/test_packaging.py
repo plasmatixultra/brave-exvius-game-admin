@@ -45,9 +45,12 @@ class ProductSurfaceTest(unittest.TestCase):
         import subprocess
         tracked = subprocess.run(["git", "ls-files"], cwd=ROOT,
                                  capture_output=True, text=True).stdout.splitlines()
-        for prefix in (".claude/", ".pi/agents/", "design/", "docs/", "spikes/", "tools/"):
+        for prefix in (".claude/", ".pi/agents/", "design/", "docs/", "spikes/"):
             offenders = [path for path in tracked if path.startswith(prefix)]
             self.assertEqual(offenders, [], "%s is still tracked" % prefix)
+        # One tool has to stay: it regenerates the tables the app ships.
+        self.assertEqual([path for path in tracked if path.startswith("tools/")],
+                         ["tools/gen_area_names.py"])
 
     def test_no_personal_paths_in_what_ships(self):
         offenders = []

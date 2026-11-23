@@ -168,7 +168,8 @@ Where things live:
 - `compat.py` checks the image for the symbols the agent imports.
 - `localdata.py` caches the save and the data tables for reads.
 - `agent/` holds the operations. `runner/apply-files.sh` is the worker that runs in the image.
-- `static/` is the page. `data/` holds the area and region name tables.
+- `static/` is the page. `data/` holds the area and region name tables, and
+  `tools/gen_area_names.py` rebuilds them from the community dumps (`--write`).
 
 ## Links
 
