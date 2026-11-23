@@ -1,5 +1,5 @@
 # FFBE Game Admin
-Note- Created in Pi coding harness using my custom ARCANIST coding setup with some initial planning assistance from Claude Code. If that turns you off, thanks for coming by!
+*Note- Created in Pi coding harness using my custom ARCANIST coding setup with some initial planning assistance from Claude Code. If that turns you off, thanks for coming by!*
 
 A web page that edits your own Exvius Revival save. It grants gil, Lapis, tickets, materials
 and vision cards, builds and awakens units, and replays story checkpoints and side content.
