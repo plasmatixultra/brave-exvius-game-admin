@@ -8,11 +8,11 @@ It runs on the machine that runs the game container. It finds the save, the back
 data directory through `docker inspect`, so there is nothing to configure in the normal case.
 Python and Docker are the only requirements.
 
-![Progress: story checkpoints and side content](docs/screenshots/progress.png)
+![Progress: story checkpoints and side content](screenshots/progress.png)
 
 | | |
 |---|---|
-| ![Quick Grants](docs/screenshots/grants.png) | ![Unit Builder](docs/screenshots/units.png) |
+| ![Quick Grants](screenshots/grants.png) | ![Unit Builder](screenshots/units.png) |
 
 ## Quick start
 
@@ -168,7 +168,7 @@ Where things live:
 - `compat.py` checks the image for the symbols the agent imports.
 - `localdata.py` caches the save and the data tables for reads.
 - `agent/` holds the operations. `runner/apply-files.sh` is the worker that runs in the image.
-- `static/` is the page. `docs/` holds the designs, plans and acceptance evidence.
+- `static/` is the page. `data/` holds the area and region name tables.
 
 ## Links
 

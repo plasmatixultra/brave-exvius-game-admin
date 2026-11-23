@@ -40,6 +40,15 @@ def tracked_files():
 
 
 class ProductSurfaceTest(unittest.TestCase):
+    def test_dev_material_is_not_tracked(self):
+        """The build record, the mockups and the agent config stay local."""
+        import subprocess
+        tracked = subprocess.run(["git", "ls-files"], cwd=ROOT,
+                                 capture_output=True, text=True).stdout.splitlines()
+        for prefix in (".claude/", ".pi/agents/", "design/", "docs/", "spikes/", "tools/"):
+            offenders = [path for path in tracked if path.startswith(prefix)]
+            self.assertEqual(offenders, [], "%s is still tracked" % prefix)
+
     def test_no_personal_paths_in_what_ships(self):
         offenders = []
         for relative in tracked_files():
@@ -79,7 +88,7 @@ class ProductSurfaceTest(unittest.TestCase):
     def test_every_image_the_readme_shows_exists(self):
         with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as handle:
             readme = handle.read()
-        for match in re.finditer(r"\]\((docs/screenshots/[^)]+)\)", readme):
+        for match in re.finditer(r"\]\(((?:docs/)?screenshots/[^)]+)\)", readme):
             self.assertTrue(os.path.isfile(os.path.join(ROOT, match.group(1))),
                             "%s is referenced but missing" % match.group(1))
 
