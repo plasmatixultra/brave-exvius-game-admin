@@ -177,6 +177,7 @@ Where things live:
 
 - Game server: [CreamySeaman6/Exvius-revival-ios](https://github.com/CreamySeaman6/Exvius-revival-ios)
 - Android side: [Elvlin/exvius-offline](https://github.com/Elvlin/exvius-offline)
+- "Final Fantasy" font by Juan Pablo Reyes Altamirano: [Final Fantasy font](https://www.fontspace.com/final-fantasy-font-f8000))
 
 ## Disclaimer
 
